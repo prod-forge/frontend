@@ -1,0 +1,6 @@
+{
+  "ignore": {
+    "files": ["e2e/**/*.spec.ts", "src/**/*.constants.ts", "src/**/*.test.ts", "src/**/*.test.tsx"],
+    "rules": []
+  }
+}
