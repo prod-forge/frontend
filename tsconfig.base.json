@@ -22,12 +22,9 @@
     "noFallthroughCasesInSwitch": false,
     "jsx": "react-jsx",
     "paths": {
-      "@prod-forge-todolist-frontend/core": [
-        "./packages/core/src/index.ts"
-      ],
-      "@prod-forge-todolist-frontend/ui-web": [
-        "./packages/ui-web/src/index.ts"
-      ]
+      "@prod-forge-todolist-frontend/core": ["./packages/core/src/index.ts"],
+      "@prod-forge-todolist-frontend/test-data": ["./packages/test-data/src/index.ts"],
+      "@prod-forge-todolist-frontend/ui-web": ["./packages/ui-web/src/index.ts"]
     }
   }
 }

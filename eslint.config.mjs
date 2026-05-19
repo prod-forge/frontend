@@ -64,7 +64,7 @@ const ignores = [
   'database-manager/migrations',
   'grafana/**',
   'ecs/**',
-  '.last-run.json',
+  '**/.last-run.json',
 ];
 
 const jsFiles = ['**/*.{js,jsx,mjs,cjs}'];

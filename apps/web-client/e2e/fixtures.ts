@@ -1,7 +1,8 @@
-import type { Order, SortBy, Todo } from '@prod-forge-todolist-frontend/core';
+/// <reference types="node" />
+import type { Order, SortBy, Todo } from '@prod-forge-todolist-frontend/test-data';
 
 import { test as base, expect } from '@playwright/test';
-import { filterTodos, todos as seedData, sortTodos } from '@prod-forge-todolist-frontend/core';
+import { filterTodos, todos as seedData, sortTodos } from '@prod-forge-todolist-frontend/test-data';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 

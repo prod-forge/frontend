@@ -1,7 +1,9 @@
 import type { Decorator, Preview } from '@storybook/react-vite';
 
 import { MemoryRouter } from 'react-router-dom';
-import '@prod-forge-todolist-frontend/design-tokens/global.css';
+import '@prod-forge-todolist-frontend/design-tokens/tokens.css';
+
+import './styles.css';
 
 const withTheme: Decorator = (Story, context) => {
   const theme = (context.globals['theme'] as string) ?? 'light';

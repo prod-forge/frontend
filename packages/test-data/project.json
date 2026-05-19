@@ -1,0 +1,24 @@
+{
+  "name": "test-data",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/test-data/src",
+  "tags": ["scope:test"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/test-data"
+      },
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run lint:ts",
+        "cwd": "packages/test-data"
+      }
+    }
+  }
+}

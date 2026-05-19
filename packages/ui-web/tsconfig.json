@@ -4,5 +4,5 @@
     "noEmit": true,
     "types": ["vite/client", "vitest/globals"]
   },
-  "include": ["src/**/*", "a11y-tests/**/*", "visual-tests/**/*", "vitest.setup.ts"]
+  "include": [".storybook/**/*", "src/**/*", "a11y-tests/**/*", "visual-tests/**/*", "vitest.setup.ts"]
 }

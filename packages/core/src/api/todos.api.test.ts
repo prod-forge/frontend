@@ -111,7 +111,16 @@ describe('todosApi.getAll', () => {
 
       await todosApi.getAll(filters);
 
-      expect(apiRequest).toHaveBeenCalledWith('todos?limit=10&offset=0&order=asc&sortBy=title');
+      expect(apiRequest).toHaveBeenCalledWith('todos?limit=10&offset=1&order=asc&sortBy=title');
+    });
+
+    it('converts items-based offset to a 1-based page number', async () => {
+      vi.mocked(apiRequest).mockResolvedValueOnce(response);
+
+      await todosApi.getAll({ ...filters, offset: 20 });
+
+      const [url] = vi.mocked(apiRequest).mock.calls[0] as [string];
+      expect(url).toContain('offset=3');
     });
 
     it('includes query param when query is non-empty', async () => {
