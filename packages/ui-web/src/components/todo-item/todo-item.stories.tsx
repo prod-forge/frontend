@@ -1,7 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { JSX } from 'react';
-
-import { MemoryRouter } from 'react-router-dom';
 
 import { TodoItem } from './todo-item';
 
@@ -12,13 +9,6 @@ const meta = {
     },
   },
   component: TodoItem,
-  decorators: [
-    (Story): JSX.Element => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
   parameters: {
     layout: 'padded',
   },

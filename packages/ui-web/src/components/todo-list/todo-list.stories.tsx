@@ -1,21 +1,11 @@
 import type { Todo } from '@prod-forge-todolist-frontend/core';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { JSX } from 'react';
-
-import { MemoryRouter } from 'react-router-dom';
 
 import { TodoItem } from '../todo-item/todo-item';
 import { TodoList } from './todo-list';
 
 const meta = {
   component: TodoList,
-  decorators: [
-    (Story): JSX.Element => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
   parameters: {
     layout: 'padded',
   },

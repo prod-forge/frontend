@@ -1,4 +1,4 @@
-import type * as CoreModule from '@prod-forge-todolist-frontend/core';
+import type { Store } from '@prod-forge-todolist-frontend/core';
 
 import {
   authReducer,
@@ -20,25 +20,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TodoDetail } from './todo-detail';
 
-vi.mock('@prod-forge-todolist-frontend/core', async (importActual) => {
-  const actual = await importActual<typeof CoreModule>();
-
-  return {
-    ...actual,
-    todosApi: {
-      create: vi.fn(),
-      delete: vi.fn(),
-      getAll: vi.fn(),
-      getOne: vi.fn(),
-      update: vi.fn(),
-    },
-  };
-});
-
 const openTodo = todos.data.find((t) => !t.completed)!;
 const completedTodo = todos.data.find((t) => t.completed)!;
 
-const renderAt = (path: string, options: { authenticated?: boolean } = {}): { store: CoreModule.Store } => {
+const renderAt = (path: string, options: { authenticated?: boolean } = {}): { store: Store } => {
   const { authenticated = true } = options;
   const store = configureStore({
     middleware: (getDefault) => getDefault().concat(errorMiddleware),
@@ -64,17 +49,17 @@ const renderAt = (path: string, options: { authenticated?: boolean } = {}): { st
 };
 
 beforeEach(() => {
-  vi.mocked(todosApi.getOne).mockResolvedValue(openTodo);
-  vi.mocked(todosApi.update).mockImplementation((id, data) =>
+  vi.spyOn(todosApi, 'getOne').mockResolvedValue(openTodo);
+  vi.spyOn(todosApi, 'update').mockImplementation((id, data) =>
     Promise.resolve({ completed: false, description: '', id, title: '', ...data }),
   );
-  vi.mocked(todosApi.delete).mockResolvedValue();
+  vi.spyOn(todosApi, 'delete').mockResolvedValue();
   localStorage.clear();
 });
 
 afterEach(() => {
   localStorage.clear();
-  vi.clearAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('<TodoDetail /> page', () => {

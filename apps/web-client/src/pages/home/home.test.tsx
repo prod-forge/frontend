@@ -1,4 +1,3 @@
-import type * as CoreModule from '@prod-forge-todolist-frontend/core';
 import type { TodoFilters, TodosResponse } from '@prod-forge-todolist-frontend/core';
 
 import {
@@ -18,21 +17,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Home } from './home';
-
-vi.mock('@prod-forge-todolist-frontend/core', async (importActual) => {
-  const actual = await importActual<typeof CoreModule>();
-
-  return {
-    ...actual,
-    todosApi: {
-      create: vi.fn(),
-      delete: vi.fn(),
-      getAll: vi.fn(),
-      getOne: vi.fn(),
-      update: vi.fn(),
-    },
-  };
-});
 
 const applyFilters = (filters: TodoFilters): Promise<TodosResponse> => {
   const filtered = filterTodos(todos.data, filters.query);
@@ -73,14 +57,14 @@ const completedCount = firstPage.filter((t) => t.completed).length;
 const totalCount = todos.data.length;
 
 beforeEach(() => {
-  vi.mocked(todosApi.getAll).mockImplementation(applyFilters);
-  vi.mocked(todosApi.create).mockResolvedValue({
+  vi.spyOn(todosApi, 'getAll').mockImplementation(applyFilters);
+  vi.spyOn(todosApi, 'create').mockResolvedValue({
     completed: false,
     description: '',
     id: 'new-id',
     title: '',
   });
-  vi.mocked(todosApi.update).mockImplementation((id, data) =>
+  vi.spyOn(todosApi, 'update').mockImplementation((id, data) =>
     Promise.resolve({
       completed: false,
       description: '',
@@ -89,13 +73,13 @@ beforeEach(() => {
       ...data,
     }),
   );
-  vi.mocked(todosApi.delete).mockResolvedValue();
+  vi.spyOn(todosApi, 'delete').mockResolvedValue();
   localStorage.clear();
 });
 
 afterEach(() => {
   localStorage.clear();
-  vi.clearAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('<Home /> page — unauthenticated', () => {

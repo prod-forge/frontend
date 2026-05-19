@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest';
-import { vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 
 vi.mock('@sentry/react', () => ({
   browserTracingIntegration: vi.fn(() => ({})),
@@ -33,3 +33,7 @@ if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
       removeEventListener: vi.fn(),
     }) as unknown as MediaQueryList;
 }
+
+afterEach(() => {
+  vi.clearAllMocks();
+});

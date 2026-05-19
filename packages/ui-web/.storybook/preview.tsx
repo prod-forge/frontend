@@ -41,6 +41,7 @@ const preview: Preview = {
         rules: [],
       },
       options: {
+        rules: { region: { enabled: false } },
         runOnly: {
           type: 'tag',
           values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'],

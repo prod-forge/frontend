@@ -14,6 +14,7 @@ import * as regexpPlugin from 'eslint-plugin-regexp';
 import sonar from 'eslint-plugin-sonarjs';
 import storybook from 'eslint-plugin-storybook';
 import unicorn from 'eslint-plugin-unicorn';
+import { globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -270,14 +271,20 @@ const regexpConfig = {
 };
 
 const disableDefaultExportBlockingForStorybook = {
-  files: ['**/*.stories.@(js|jsx|ts|tsx|mdx)', '**/playwright*.config.ts', '**/.storybook/**', '**/vite.config.ts', '**/vitest.config.ts'],
+  files: [
+    '**/*.stories.@(js|jsx|ts|tsx|mdx)',
+    '**/playwright*.config.ts',
+    '**/.storybook/**',
+    '**/vite.config.ts',
+    '**/vitest.config.ts',
+  ],
   rules: {
     '@import-lite/no-default-export': 'off',
   },
 };
 
 export default [
-  { ignores },
+  globalIgnores(ignores),
   ...recommendedTypeScriptConfigs,
   prettierRecommended,
   perfectionistConfig,
