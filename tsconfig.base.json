@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "incremental": false,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "jsx": "react-jsx",
+    "paths": {
+      "@prod-forge-todolist-frontend/core": [
+        "./packages/core/src/index.ts"
+      ],
+      "@prod-forge-todolist-frontend/ui-web": [
+        "./packages/ui-web/src/index.ts"
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "@prod-forge-todolist-frontend/web-client",
+  "version": "1.0.0",
+  "description": "Main web application for prod-forge-todolist-frontend",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "build:analyze": "tsc -b && ANALYZE=true vite build",
+    "dev": "vite",
+    "e2e": "playwright test",
+    "e2e:coverage": "playwright test -c playwright.coverage.config.ts",
+    "preview": "vite preview",
+    "start": "vite --port 5173",
+    "test": "vitest run",
+    "test:cov": "vitest run --project unit --coverage",
+    "test:e2e:cov": "rm -rf .nyc_output && playwright test --config=playwright.coverage.config.ts && nyc report && nyc check-coverage",
+    "test:watch": "vitest",
+    "format": "npm run format:prettier && npm run format:code",
+    "format:code": "eslint . --fix",
+    "format:prettier": "prettier --write \"src/**/*.{ts,json}\"",
+    "lint": "npm run lint:ts && npm run lint:code",
+    "lint:code": "eslint .",
+    "lint:commit": "commitlint --config .commitlintrc.cjs --edit",
+    "lint:ts": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prod-forge-todolist-frontend/core": "*",
+    "@prod-forge-todolist-frontend/design-tokens": "*",
+    "@prod-forge-todolist-frontend/ui-web": "*",
+    "logrock": "5.2.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-redux": "9.2.0",
+    "react-router-dom": "7.15.0"
+  },
+  "devDependencies": {
+    "@reduxjs/toolkit": "2.11.2",
+    "@sentry/vite-plugin": "5.3.0",
+    "rollup-plugin-visualizer": "7.0.1"
+  }
+}

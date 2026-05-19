@@ -1,0 +1,88 @@
+@import url('tailwindcss');
+@import url('./tokens.css');
+
+@theme inline {
+  /* Surfaces */
+  --color-page: var(--color-bg);
+  --color-page-soft: var(--color-bg-secondary);
+  --color-card: var(--color-surface);
+  --color-card-alpha: var(--color-surface-alpha);
+  --color-card-strong: var(--color-surface-elevated);
+
+  /* Borders */
+  --color-line: var(--color-border);
+  --color-line-soft: var(--color-border-subtle);
+
+  /* Foreground */
+  --color-fg: var(--color-text-primary);
+  --color-fg-soft: var(--color-text-secondary);
+  --color-fg-muted: var(--color-text-muted);
+
+  /* Brand */
+  --color-brand: var(--color-accent);
+  --color-brand-hover: var(--color-accent-hover);
+  --color-brand-fg: var(--color-accent-foreground);
+  --color-brand-soft: var(--color-accent-subtle);
+
+  /* Status */
+  --color-ok: var(--color-success);
+  --color-ok-soft: var(--color-success-subtle);
+  --color-warn: var(--color-warning);
+  --color-warn-soft: var(--color-warning-subtle);
+  --color-err: var(--color-danger);
+  --color-err-soft: var(--color-danger-subtle);
+
+  /* Typography */
+  --font-sans: var(--font-family);
+  --text-xs: var(--font-size-xs);
+  --text-sm: var(--font-size-sm);
+  --text-md: var(--font-size-md);
+  --text-lg: var(--font-size-lg);
+  --text-xl: var(--font-size-xl);
+  --text-2xl: var(--font-size-2xl);
+  --text-3xl: var(--font-size-3xl);
+  --leading-tight: var(--line-height-tight);
+  --leading-base: var(--line-height-base);
+  --leading-relaxed: var(--line-height-relaxed);
+
+  /* Container */
+  --container-page: var(--container-max);
+
+  /* Animations */
+  --animate-search-pulse: search-icon-pulse 600ms ease;
+
+  @keyframes search-icon-pulse {
+    0% {
+      transform: scale(1);
+    }
+
+    40% {
+      transform: scale(1.25);
+    }
+
+    100% {
+      transform: scale(1.1);
+    }
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-family);
+    line-height: var(--line-height-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    transition:
+      background-color var(--transition-base),
+      color var(--transition-base);
+  }
+
+  button {
+    cursor: pointer;
+  }
+}

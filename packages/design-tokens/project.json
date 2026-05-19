@@ -1,0 +1,23 @@
+{
+  "name": "@prod-forge-todolist-frontend/design-tokens",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/design-tokens/src",
+  "tags": ["scope:design"],
+  "targets": {
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run format",
+        "cwd": "packages/design-tokens"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run lint",
+        "cwd": "packages/design-tokens"
+      }
+    }
+  }
+}

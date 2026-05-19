@@ -87,7 +87,13 @@ const customTypescriptConfig = {
     ...languageOptions,
     parser: tsParser,
     parserOptions: {
-      project: ['./tsconfig.json', './tsconfig.storybook.json'],
+      project: [
+        './apps/*/tsconfig.json',
+        './apps/*/tsconfig.node.json',
+        './packages/*/tsconfig.json',
+        './packages/*/tsconfig.node.json',
+        './packages/ui-web/tsconfig.storybook.json',
+      ],
       tsconfigRootDir: import.meta.dirname,
     },
   },
@@ -264,7 +270,7 @@ const regexpConfig = {
 };
 
 const disableDefaultExportBlockingForStorybook = {
-  files: ['**/*.stories.@(js|jsx|ts|tsx|mdx)', 'playwright*.config.ts', '.storybook/**'],
+  files: ['**/*.stories.@(js|jsx|ts|tsx|mdx)', '**/playwright*.config.ts', '**/.storybook/**', '**/vite.config.ts', '**/vitest.config.ts'],
   rules: {
     '@import-lite/no-default-export': 'off',
   },

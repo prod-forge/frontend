@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": [
+    "vite.config.ts",
+    "vitest.setup.ts",
+    "vitest.shims.d.ts",
+    "playwright.a11y.config.ts",
+    "playwright.visual.config.ts"
+  ]
+}
