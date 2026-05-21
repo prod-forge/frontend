@@ -1,19 +1,20 @@
 {
   "name": "@prod-forge-todolist-frontend/design-tokens",
   "version": "1.0.0",
-  "description": "Design tokens (CSS custom properties) for prod-forge-todolist-frontend",
+  "description": "Platform-agnostic design tokens for prod-forge-todolist-frontend",
   "license": "MIT",
   "scripts": {
-    "format": "npm run format:prettier && npm run format:css",
-    "format:css": "stylelint \"src/**/*.css\" --fix",
-    "format:prettier": "prettier --write \"src/**/*.css\"",
-    "lint": "npm run lint:css",
-    "lint:css": "stylelint \"src/**/*.css\"",
+    "build": "node style-dictionary.config.mjs",
     "lint:commit": "commitlint --config .commitlintrc.cjs --edit"
   },
   "exports": {
-    "./tokens.css": "./src/tokens.css",
-    "./theme.css": "./src/theme.css",
-    "./global.css": "./src/global.css"
+    "./tokens.css": "./tokens.css",
+    "./js": {
+      "import": "./js/index.mjs",
+      "types": "./js/index.d.ts"
+    }
+  },
+  "devDependencies": {
+    "style-dictionary": "4.4.0"
   }
 }

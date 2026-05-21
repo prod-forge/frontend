@@ -14,6 +14,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@prod-forge-todolist-frontend/core': path.resolve(dirname, '../../packages/core/src/index.ts'),
+      '@prod-forge-todolist-frontend/design-tokens': path.resolve(dirname, '../../packages/design-tokens'),
     },
   },
   test: {

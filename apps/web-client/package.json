@@ -27,6 +27,7 @@
   "dependencies": {
     "@prod-forge-todolist-frontend/core": "*",
     "@prod-forge-todolist-frontend/design-tokens": "*",
+    "@prod-forge-todolist-frontend/styles-web": "*",
     "@prod-forge-todolist-frontend/ui-web": "*",
     "logrock": "5.2.0",
     "react": "19.2.6",

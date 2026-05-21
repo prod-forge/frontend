@@ -38,6 +38,7 @@
     "@axe-core/playwright": "4.11.3",
     "@chromatic-com/storybook": "5.2.1",
     "@prod-forge-todolist-frontend/design-tokens": "*",
+    "@prod-forge-todolist-frontend/styles-web": "*",
     "@storybook/addon-a11y": "10.4.0",
     "@storybook/addon-docs": "10.4.0",
     "@storybook/addon-vitest": "10.4.0",

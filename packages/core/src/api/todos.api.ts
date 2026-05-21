@@ -15,7 +15,7 @@ export const todosApi = {
   getAll: (filters: TodoFilters): Promise<TodosResponse> => {
     const params = new URLSearchParams({
       limit: String(filters.limit),
-      offset: String(Math.floor(filters.offset / filters.limit) + 1),
+      offset: String(filters.offset),
       order: filters.order,
       sortBy: filters.sortBy,
     });

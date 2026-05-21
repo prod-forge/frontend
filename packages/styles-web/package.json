@@ -1,0 +1,18 @@
+{
+  "name": "@prod-forge-todolist-frontend/styles-web",
+  "version": "1.0.0",
+  "description": "Web-specific styles (Tailwind theme, base layers) for prod-forge-todolist-frontend",
+  "license": "MIT",
+  "scripts": {
+    "format": "npm run format:prettier && npm run format:css",
+    "format:css": "stylelint \"src/**/*.css\" --fix",
+    "format:prettier": "prettier --write \"src/**/*.css\"",
+    "lint": "npm run lint:css",
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "lint:commit": "commitlint --config .commitlintrc.cjs --edit"
+  },
+  "exports": {
+    "./theme.css": "./src/theme.css",
+    "./global.css": "./src/global.css"
+  }
+}

@@ -79,7 +79,8 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
     resolve: {
       alias: {
         '@prod-forge-todolist-frontend/core': path.resolve(dirname, '../../packages/core/src/index.ts'),
-        '@prod-forge-todolist-frontend/design-tokens': path.resolve(dirname, '../../packages/design-tokens/src'),
+        '@prod-forge-todolist-frontend/design-tokens': path.resolve(dirname, '../../packages/design-tokens'),
+        '@prod-forge-todolist-frontend/styles-web': path.resolve(dirname, '../../packages/styles-web/src'),
         '@prod-forge-todolist-frontend/ui-web': path.resolve(dirname, '../../packages/ui-web/src/index.ts'),
       },
     },

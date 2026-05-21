@@ -1,0 +1,4 @@
+{
+  "container-max": { "$value": "1024px", "$type": "dimension" },
+  "header-height": { "$value": "64px", "$type": "dimension" }
+}

@@ -16,6 +16,10 @@
       "entry": [],
       "project": []
     },
+    "packages/styles-web": {
+      "entry": [],
+      "project": []
+    },
     "packages/ui-web": {
       "entry": [
         "src/**/*.test.{ts,tsx}",

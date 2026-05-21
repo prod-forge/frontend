@@ -65,6 +65,7 @@ const ignores = [
   'grafana/**',
   'ecs/**',
   '**/.last-run.json',
+  'packages/design-tokens/js',
 ];
 
 const jsFiles = ['**/*.{js,jsx,mjs,cjs}'];
