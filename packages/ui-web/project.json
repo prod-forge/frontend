@@ -1,0 +1,79 @@
+{
+  "name": "ui-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/ui-web/src",
+  "tags": ["scope:ui"],
+  "targets": {
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run format",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run lint",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run storybook",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "build-storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build:storybook",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "test:cov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:cov",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "test:a11y": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:a11y",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "test:visual": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:visual",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "test:visual:update": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:visual:update",
+        "cwd": "packages/ui-web"
+      }
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:watch",
+        "cwd": "packages/ui-web"
+      }
+    }
+  }
+}

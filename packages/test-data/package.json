@@ -1,0 +1,17 @@
+{
+  "name": "@prod-forge-todolist-frontend/test-data",
+  "version": "1.0.0",
+  "description": "Shared seed data and test utilities for the prod-forge-todolist-frontend monorepo",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint:ts": "tsc --noEmit"
+  }
+}

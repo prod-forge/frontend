@@ -1,0 +1,10 @@
+{
+  "shadow": {
+    "light": {
+      "xs": { "$value": "0 1px 2px rgb(0 0 0 / 0.04)" },
+      "sm": { "$value": "0 1px 3px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04)" },
+      "md": { "$value": "0 4px 8px rgb(0 0 0 / 0.07), 0 2px 4px rgb(0 0 0 / 0.04)" },
+      "lg": { "$value": "0 12px 24px rgb(0 0 0 / 0.09), 0 4px 8px rgb(0 0 0 / 0.04)" }
+    }
+  }
+}

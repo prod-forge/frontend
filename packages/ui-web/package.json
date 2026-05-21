@@ -1,0 +1,48 @@
+{
+  "name": "@prod-forge-todolist-frontend/ui-web",
+  "version": "1.0.0",
+  "description": "UI components, widgets, and Storybook for prod-forge-todolist-frontend",
+  "license": "MIT",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build:storybook": "storybook build",
+    "test": "vitest run",
+    "test:cov": "vitest run --project unit --coverage",
+    "test:a11y": "playwright test --config=playwright.a11y.config.ts",
+    "test:visual": "playwright test --config=playwright.visual.config.ts",
+    "test:visual:update": "playwright test --config=playwright.visual.config.ts --update-snapshots",
+    "test:watch": "vitest",
+    "format": "npm run format:prettier && npm run format:code",
+    "format:code": "eslint . --fix",
+    "format:prettier": "prettier --write \"src/**/*.{ts,json}\"",
+    "lint": "npm run lint:ts && npm run lint:code",
+    "lint:code": "eslint .",
+    "lint:commit": "commitlint --config .commitlintrc.cjs --edit",
+    "lint:ts": "tsc --noEmit"
+  },
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "5.2.2",
+    "@prod-forge-todolist-frontend/core": "*",
+    "classnames": "2.5.1",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-hook-form": "7.75.0",
+    "react-router-dom": "7.15.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.3",
+    "@chromatic-com/storybook": "5.2.1",
+    "@prod-forge-todolist-frontend/design-tokens": "*",
+    "@prod-forge-todolist-frontend/styles-web": "*",
+    "@storybook/addon-a11y": "10.4.0",
+    "@storybook/addon-docs": "10.4.0",
+    "@storybook/addon-vitest": "10.4.0",
+    "@storybook/react-vite": "10.4.0",
+    "storybook": "10.4.0"
+  }
+}

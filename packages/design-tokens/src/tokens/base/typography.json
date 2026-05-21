@@ -1,0 +1,26 @@
+{
+  "font-family": {
+    "$value": "-apple-system, blinkmacsystemfont, 'Inter', 'Segoe UI', roboto, sans-serif",
+    "$type": "fontFamily"
+  },
+  "font-size": {
+    "xs": { "$value": "11px", "$type": "dimension" },
+    "sm": { "$value": "13px", "$type": "dimension" },
+    "md": { "$value": "15px", "$type": "dimension" },
+    "lg": { "$value": "17px", "$type": "dimension" },
+    "xl": { "$value": "20px", "$type": "dimension" },
+    "2xl": { "$value": "24px", "$type": "dimension" },
+    "3xl": { "$value": "30px", "$type": "dimension" }
+  },
+  "font-weight": {
+    "normal": { "$value": 400, "$type": "number" },
+    "medium": { "$value": 500, "$type": "number" },
+    "semibold": { "$value": 600, "$type": "number" },
+    "bold": { "$value": 700, "$type": "number" }
+  },
+  "line-height": {
+    "tight": { "$value": 1.25, "$type": "number" },
+    "base": { "$value": 1.5, "$type": "number" },
+    "relaxed": { "$value": 1.75, "$type": "number" }
+  }
+}

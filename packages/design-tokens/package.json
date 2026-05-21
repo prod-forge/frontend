@@ -1,0 +1,20 @@
+{
+  "name": "@prod-forge-todolist-frontend/design-tokens",
+  "version": "1.0.0",
+  "description": "Platform-agnostic design tokens for prod-forge-todolist-frontend",
+  "license": "MIT",
+  "scripts": {
+    "build": "node style-dictionary.config.mjs",
+    "lint:commit": "commitlint --config .commitlintrc.cjs --edit"
+  },
+  "exports": {
+    "./tokens.css": "./tokens.css",
+    "./js": {
+      "import": "./js/index.mjs",
+      "types": "./js/index.d.ts"
+    }
+  },
+  "devDependencies": {
+    "style-dictionary": "4.4.0"
+  }
+}

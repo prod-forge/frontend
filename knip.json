@@ -1,0 +1,34 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "ignore": [],
+  "workspaces": {
+    ".": {
+      "project": ["*.{mjs,cjs}"]
+    },
+    "apps/web-client": {
+      "entry": ["src/**/*.test.{ts,tsx}"]
+    },
+    "packages/core": {
+      "entry": ["src/**/*.test.{ts,tsx}"]
+    },
+    "packages/design-tokens": {
+      "entry": [],
+      "project": []
+    },
+    "packages/styles-web": {
+      "entry": [],
+      "project": []
+    },
+    "packages/ui-web": {
+      "entry": [
+        "src/**/*.test.{ts,tsx}",
+        "src/**/*.a11y-spec.ts",
+        "src/**/*.visual-spec.ts",
+        "a11y-tests/**/*.ts",
+        "visual-tests/**/*.ts",
+        "vitest.shims.d.ts"
+      ]
+    }
+  }
+}

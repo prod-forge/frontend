@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["vite/client", "vitest/globals"]
+  },
+  "include": [".storybook/**/*", "src/**/*", "a11y-tests/**/*", "visual-tests/**/*", "vitest.setup.ts"]
+}

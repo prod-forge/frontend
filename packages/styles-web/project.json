@@ -1,0 +1,23 @@
+{
+  "name": "@prod-forge-todolist-frontend/styles-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/styles-web/src",
+  "tags": ["scope:design"],
+  "targets": {
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run format",
+        "cwd": "packages/styles-web"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run lint",
+        "cwd": "packages/styles-web"
+      }
+    }
+  }
+}

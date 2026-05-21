@@ -1,0 +1,19 @@
+{
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "src/**/*.test.{ts,tsx}",
+    "src/**/*.stories.{ts,tsx}",
+    "src/**/*.a11y-spec.ts",
+    "src/**/*.visual-spec.ts",
+    "src/**/*.d.ts",
+    "src/test/**",
+    "src/main.tsx"
+  ],
+  "reporter": ["text", "html", "lcov"],
+  "report-dir": "coverage-e2e",
+  "temp-dir": ".nyc_output",
+  "branches": 80,
+  "functions": 80,
+  "lines": 80,
+  "statements": 80
+}

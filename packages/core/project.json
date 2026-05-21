@@ -1,0 +1,44 @@
+{
+  "name": "core",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/core/src",
+  "tags": ["scope:core"],
+  "targets": {
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run format",
+        "cwd": "packages/core"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run lint",
+        "cwd": "packages/core"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test",
+        "cwd": "packages/core"
+      }
+    },
+    "test:cov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:cov",
+        "cwd": "packages/core"
+      }
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:watch",
+        "cwd": "packages/core"
+      }
+    }
+  }
+}
