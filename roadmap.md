@@ -1,10 +1,10 @@
-- [ ] CI
-  - [ ] Linting
-  - [ ] Unit tests
-  - [ ] E2E
-  - [ ] Visual tests
-  - [ ] A11y
-  - [ ] Build artifact
+- [✅] CI
+  - [✅] Linting
+  - [✅] Unit tests
+  - [✅] E2E
+  - [✅] Visual tests
+  - [✅] A11y
+  - [✅] Build artifact
 - [ ] CD
   - [ ] Linting
   - [ ] Unit tests
