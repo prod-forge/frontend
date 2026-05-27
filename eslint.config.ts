@@ -1,3 +1,7 @@
+/// <reference types="node" />
+import './eslint-plugin.d';
+import type { Linter } from 'eslint';
+
 import reactPlugin from '@eslint-react/eslint-plugin';
 import js from '@eslint/js';
 import json from '@eslint/json';
@@ -27,14 +31,15 @@ const ignores = [
   'logs',
   '*.log',
   'lib-cov/',
-  'coverage/',
-  'coverage-e2e/',
   'NO_COMMIT/',
-  'test-reports/**',
-  'docs/*',
-  'build/*',
-  'lib/*',
-  'dist/*',
+  '**/coverage/**',
+  '**/coverage-e2e/**',
+  '**/test-reports/**',
+  '**/docs/*',
+  '**/build/**',
+  '**/lib/**',
+  '**/dist/**',
+  '**/public/**',
   '*.css',
   '*.scss',
   '*.less',
@@ -55,15 +60,7 @@ const ignores = [
   '*.hbs',
   '*.jade',
   '*.html',
-  'docs/',
-  'public/',
-  'locales/',
-  'src/locales/',
   'seo_report',
-  'database-manager/generated',
-  'database-manager/migrations',
-  'grafana/**',
-  'ecs/**',
   '**/.last-run.json',
   'packages/design-tokens/js',
 ];
@@ -90,6 +87,7 @@ const customTypescriptConfig = {
     parser: tsParser,
     parserOptions: {
       project: [
+        './tsconfig.eslint.json',
         './apps/*/tsconfig.json',
         './apps/*/tsconfig.node.json',
         './packages/*/tsconfig.json',
@@ -228,14 +226,11 @@ const recommendedTypeScriptConfigs = [
   })),
 ];
 
-const jsonCustomConfig = {
+const jsonCustomConfig: Linter.Config = {
+  ...json.configs.recommended,
   files: ['**/*.json'],
   ignores: ['**/*-lock.json', 'package.json'],
   language: 'json/json',
-  plugins: {
-    json,
-  },
-  ...json.configs.recommended,
 };
 
 const customPackageJsonConfig = {
@@ -278,6 +273,7 @@ const disableDefaultExportBlockingForStorybook = {
     '**/.storybook/**',
     '**/vite.config.ts',
     '**/vitest.config.ts',
+    '**/eslint.config.ts',
   ],
   rules: {
     '@import-lite/no-default-export': 'off',
@@ -303,7 +299,7 @@ export default [
       },
     },
     ...reactHooksPlugin.configs.flat.recommended,
-    ...reactPlugin.configs['recommended-type-checked'],
+    ...reactPlugin.configs['recommended-typescript'],
     files: sourceFiles,
   },
   ...storybook.configs['flat/recommended'],
