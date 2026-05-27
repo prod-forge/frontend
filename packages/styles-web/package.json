@@ -12,7 +12,6 @@
     "lint:commit": "commitlint --config .commitlintrc.cjs --edit"
   },
   "exports": {
-    "./theme.css": "./src/theme.css",
-    "./global.css": "./src/global.css"
+    "./theme.css": "./src/theme.css"
   }
 }
