@@ -22,7 +22,7 @@ export default defineConfig({
   ],
   reporter: process.env.CI ? 'github' : 'list',
   retries: process.env.CI ? 2 : 0,
-  snapshotPathTemplate: 'visual-tests/snapshots/{platform}/{testFileDir}/{arg}{ext}',
+  snapshotPathTemplate: 'visual-tests/snapshots/darwin/{testFileDir}/{arg}{ext}',
   testDir: './src',
   testMatch: '**/*.visual-spec.{ts,tsx}',
   use: {
