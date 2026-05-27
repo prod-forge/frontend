@@ -152,6 +152,7 @@ test.describe('Todo detail page', () => {
       .locator('a')
       .first();
     await completedTodoLink.click();
+    await page.waitForURL(/\/todo\//);
 
     await expect(page.getByText('Done')).toBeVisible();
   });

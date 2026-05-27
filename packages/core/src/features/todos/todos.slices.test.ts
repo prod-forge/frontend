@@ -36,6 +36,7 @@ const todoB: Todo = { completed: true, description: 'desc-b', id: 'b', title: 'B
 
 const defaultFilters: TodoFilters = { limit: 10, offset: 0, order: 'asc', query: '', sortBy: 'title' };
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const makeTodosStore = (preloadedItems: Todo[] = [], total = 0) =>
   configureStore({
     preloadedState: {

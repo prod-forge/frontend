@@ -13,9 +13,9 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -38,8 +38,24 @@ jobs:
       - name: E2E tests
         run: npm run test:e2e
 
+      - name: Upload E2E test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: apps/web-client/test-results/
+          retention-days: 7
+
       - name: Visual tests
         run: npm run test:visual
+
+      - name: Upload visual test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-test-results
+          path: packages/ui-web/test-results/
+          retention-days: 7
 
       - name: Accessibility tests
         run: npm run test:a11y
@@ -48,9 +64,9 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
