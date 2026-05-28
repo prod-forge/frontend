@@ -1,0 +1,28 @@
+name: Show Web Client Versions
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-central-1
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  show-versions:
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.USER_ID }}:role/github-actions-ecs-ecr-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: List available versions
+        run: |
+          echo "Available versions for rollback:"
+          aws s3 ls s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/ | awk '/PRE/ {print $2}' | sort -Vr

@@ -74,9 +74,8 @@ jobs:
 
       - name: Cleanup old versions
         run: |
-          VERSIONS=$(aws s3 ls s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/ \
-            --delimiter / | awk '{print $2}' | sort -V)
-          COUNT=$(echo "$VERSIONS" | wc -l | tr -d ' ')
+          VERSIONS=$(aws s3 ls s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/ | awk '/PRE/ {print $2}' | sort -V)
+          COUNT=$(echo "$VERSIONS" | grep -c . || true)
           if [ "$COUNT" -gt ${{ env.KEEP }} ]; then
             echo "$VERSIONS" | head -n $(($COUNT - ${{ env.KEEP }})) | while read v; do
               aws s3 rm s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/$v --recursive
