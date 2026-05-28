@@ -8,11 +8,10 @@ on:
 
 env:
   NODE_VERSION: 24.11.0
-  CI_ENABLED: 'false'
 
 jobs:
   verify:
-    if: ${{ env.CI_ENABLED == 'true' }}
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
