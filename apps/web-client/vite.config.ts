@@ -70,6 +70,7 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
 
   return {
     build: {
+      assetsDir: 'static',
       sourcemap: 'hidden' as const,
     },
     define: {
