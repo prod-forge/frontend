@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import checkbox from '@inquirer/checkbox';
 import { input } from '@inquirer/prompts';
 
