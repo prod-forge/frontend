@@ -4,9 +4,11 @@ import type { RenderResult } from '@testing-library/react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { TodoItem } from './todo-item';
+
+const TEST_ASSETS_URL = 'http://test-assets';
 
 const baseTodo: Todo = {
   completed: false,
@@ -28,6 +30,14 @@ const renderItem = (
   );
 
 describe('TodoItem', () => {
+  beforeAll(() => {
+    vi.stubEnv('VITE_ASSETS_BASE_URL', TEST_ASSETS_URL);
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
+  });
+
   it('renders the title', () => {
     renderItem(baseTodo);
 
@@ -61,5 +71,19 @@ describe('TodoItem', () => {
     await user.click(screen.getByRole('button', { name: /mark as done/i }));
 
     expect(onToggle).toHaveBeenCalledWith('abc-123');
+  });
+
+  it('shows the todo icon for an incomplete todo', () => {
+    renderItem(baseTodo);
+
+    const icon = screen.getByRole('img', { name: 'Todo' });
+    expect(icon).toHaveAttribute('src', `${TEST_ASSETS_URL}/todo.svg`);
+  });
+
+  it('shows the completed icon for a completed todo', () => {
+    renderItem({ ...baseTodo, completed: true });
+
+    const icon = screen.getByRole('img', { name: 'Completed' });
+    expect(icon).toHaveAttribute('src', `${TEST_ASSETS_URL}/completed.svg`);
   });
 });

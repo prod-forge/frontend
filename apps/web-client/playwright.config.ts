@@ -24,6 +24,7 @@ export default defineConfig({
     command: 'npm run start',
     env: {
       VITE_API_BASE_URL: '/api/v1/',
+      VITE_ASSETS_BASE_URL: '',
     },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
