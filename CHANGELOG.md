@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.2.0](https://github.com/prod-forge/frontend/compare/v1.1.0...v1.2.0) (2026-05-28)
+
+### Features
+
+- add assets management ([b7ad803](https://github.com/prod-forge/frontend/commit/b7ad8032b590bc3b109ad70920f29f1aa0de5b90))
+- add cd ([9315e43](https://github.com/prod-forge/frontend/commit/9315e4332bc7ddc6312815428e3fdbe9eafb3751))
+
 # 1.1.0 (2026-05-28)
 
 ### Bug Fixes
