@@ -1,6 +1,6 @@
 {
   "name": "prod-forge-todolist-frontend",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "An experiment in creating a project from scratch using Claude Code",
   "homepage": "https://github.com/AlexSergey/todolist-ai#readme",
   "bugs": {

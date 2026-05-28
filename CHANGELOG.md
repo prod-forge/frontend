@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/prod-forge/frontend/compare/v1.2.0...v1.2.1) (2026-05-28)
+
+### Bug Fixes
+
+- bumping versions ([a27f296](https://github.com/prod-forge/frontend/commit/a27f2967d89b3b73f312310cd016bd5e39484069))
+- static folder ([ba746ba](https://github.com/prod-forge/frontend/commit/ba746ba6450ba94068460a391a038d9d68b4fda4))
+
 # [1.2.0](https://github.com/prod-forge/frontend/compare/v1.1.0...v1.2.0) (2026-05-28)
 
 ### Features
