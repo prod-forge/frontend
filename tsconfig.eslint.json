@@ -4,5 +4,5 @@
     "noEmit": true,
     "declaration": false
   },
-  "include": ["eslint.config.ts"]
+  "include": ["eslint.config.ts", "release/**/*.ts"]
 }

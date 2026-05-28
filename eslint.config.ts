@@ -26,6 +26,7 @@ const ignores = [
   '.idea',
   '**/*.d.ts',
   '*.d.ts',
+  '**/*-lock.json',
   '.nyc_output',
   'node_modules',
   'logs',
