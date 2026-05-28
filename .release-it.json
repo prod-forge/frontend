@@ -18,6 +18,9 @@
     "after:bump": "npm run build"
   },
   "plugins": {
+    "@release-it/bumper": {
+      "out": ["apps/*/package.json"]
+    },
     "@release-it/conventional-changelog": {
       "preset": "angular",
       "infile": "CHANGELOG.md"
