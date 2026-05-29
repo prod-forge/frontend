@@ -239,7 +239,7 @@ const disableDefaultExportBlockingForStorybook = {
 
 export default [
   gitignore({
-    files: [`${import.meta.dirname}/.eslintignore`],
+    files: [`${import.meta.dirname}/.eslintflatignore`],
   }),
   ...recommendedTypeScriptConfigs,
   prettierRecommended,
