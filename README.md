@@ -6,6 +6,13 @@
 
 An NX-managed monorepo for the TodoAI frontend application.
 
+# Table of contents
+
+- [1. Repository Strategy](docs/repository-strategy.md)
+  - [Why Frontend Projects Use a Monorepo](docs/repository-strategy.md#why-frontend-projects-use-a-monorepo)
+  - [What Gets Shared Across Clients](docs/repository-strategy.md#what-gets-shared-across-clients)
+  - [What Belongs in a Frontend Monorepo](docs/repository-strategy.md#what-belongs-in-a-frontend-monorepo)
+
 ## Structure
 
 ```
@@ -36,6 +43,7 @@ The main entry point of the application. Wires up routing, Redux Provider, Sentr
 All business logic that is framework-independent in principle but Redux/TypeScript-based in practice.
 
 Contains:
+
 - Redux store (`configureStore`, `RootState`, `AppDispatch`)
 - RTK slices and selectors: `auth`, `todos`, `errors`
 - API clients: `todosApi`, `logsApi`
@@ -53,6 +61,7 @@ Contains:
 All presentational components and widgets. Has no direct Redux dependency — it receives data and callbacks through props.
 
 Contains:
+
 - Primitive components: `Button`, `Input`, `Select`, `Modal`, `Pagination`, `Header`, …
 - Domain widgets: `LoginForm`, `RegisterForm`, `AddTodoForm`
 - `useTheme` hook
@@ -67,6 +76,7 @@ Contains:
 Framework-agnostic CSS custom properties for the design system.
 
 Exports:
+
 - `@prod-forge-todolist-frontend/design-tokens/tokens.css` — raw CSS variables (light/dark themes)
 - `@prod-forge-todolist-frontend/design-tokens/global.css` — Tailwind base + token mapping
 
@@ -93,18 +103,18 @@ npm run build
 
 ## Available scripts (root)
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start web-client dev server |
-| `npm run build` | Build all packages with NX |
-| `npm run test` | Run all unit tests with NX |
-| `npm run lint` | Lint all packages with NX |
-| `npm run storybook` | Start Storybook for ui-web |
-| `npm run storybook:build` | Build static Storybook |
-| `npm run test:a11y` | Run Playwright a11y tests for ui-web |
-| `npm run test:visual` | Run Playwright visual regression tests for ui-web |
-| `npm run test:e2e` | Run Playwright e2e tests for web-client |
-| `npm run format` | Format all files with Prettier |
+| Script                    | Description                                       |
+| ------------------------- | ------------------------------------------------- |
+| `npm run dev`             | Start web-client dev server                       |
+| `npm run build`           | Build all packages with NX                        |
+| `npm run test`            | Run all unit tests with NX                        |
+| `npm run lint`            | Lint all packages with NX                         |
+| `npm run storybook`       | Start Storybook for ui-web                        |
+| `npm run storybook:build` | Build static Storybook                            |
+| `npm run test:a11y`       | Run Playwright a11y tests for ui-web              |
+| `npm run test:visual`     | Run Playwright visual regression tests for ui-web |
+| `npm run test:e2e`        | Run Playwright e2e tests for web-client           |
+| `npm run format`          | Format all files with Prettier                    |
 
 ## Package scope
 
