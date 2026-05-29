@@ -223,6 +223,14 @@ const regexpConfig = {
   ...regexpPlugin.configs['flat/recommended'],
 };
 
+const dtsOverrides: Linter.Config = {
+  files: ['**/*.d.ts'],
+  rules: {
+    '@import-lite/no-default-export': 'off',
+    '@typescript-eslint/naming-convention': 'off',
+  },
+};
+
 const disableDefaultExportBlockingForStorybook = {
   files: [
     '**/*.stories.@(js|jsx|ts|tsx|mdx)',
@@ -263,4 +271,5 @@ export default [
   },
   ...storybook.configs['flat/recommended'],
   disableDefaultExportBlockingForStorybook,
+  dtsOverrides,
 ];
