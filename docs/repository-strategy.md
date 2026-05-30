@@ -36,3 +36,30 @@ One important point: a monorepo does not mean putting everything in one place.
 The recommendation here is to keep a monorepo focused on a single concern. A frontend monorepo should contain frontend applications and shared frontend packages only. It should not include backend services, infrastructure configuration, or anything unrelated to the frontend.
 
 Mixing different kinds of systems in one repository brings organizational complexity that outweighs any convenience. Keeping the scope narrow is what makes a monorepo manageable.
+
+## Structure
+
+```
+prod-forge-todolist-frontend/
+├── apps/
+│   └── web-client/         # Main React application
+├── packages/
+│   ├── core/               # Business logic, store, API layer
+│   ├── design-tokens/      # CSS custom properties
+│   └── ui-web/             # UI components, Storybook
+├── tsconfig.base.json
+├── nx.json
+└── package.json
+```
+
+Dependency graph:
+
+```
+web-client
+  ├── core
+  ├── ui-web
+  │     └── core
+  └── design-tokens
+```
+
+`core` has no dependency on `ui-web` — data only flows one way.

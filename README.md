@@ -12,75 +12,21 @@ An NX-managed monorepo for the TodoAI frontend application.
   - [Why Frontend Projects Use a Monorepo](docs/repository-strategy.md#why-frontend-projects-use-a-monorepo)
   - [What Gets Shared Across Clients](docs/repository-strategy.md#what-gets-shared-across-clients)
   - [What Belongs in a Frontend Monorepo](docs/repository-strategy.md#what-belongs-in-a-frontend-monorepo)
+  - [Structure](docs/repository-strategy.md#structure)
 
-## Structure
+<!-- -->
 
-```
-prod-forge-todolist-frontend/
-├── apps/
-│   └── web-client/             # Main React application (Vite)
-├── packages/
-│   ├── core/                   # Business logic, Redux store, API layer, services
-│   ├── design-tokens/          # CSS custom properties (theme tokens)
-│   └── ui-web/                 # UI components, widgets, Storybook
-├── tsconfig.base.json          # Shared TypeScript config with path aliases
-├── nx.json                     # NX workspace configuration
-└── package.json                # Workspace root (npm workspaces)
-```
+- [2. Architecture Decisions](docs/architecture-decisions.md)
+  - [Feature Sliced Design](docs/architecture-decisions.md#feature-sliced-design)
+  - [Feature-based Approach](docs/architecture-decisions.md#feature-based-approach)
 
-## Packages
+<!-- -->
 
-### `@prod-forge-todolist-frontend/web-client` — `apps/web-client`
-
-The main entry point of the application. Wires up routing, Redux Provider, Sentry, and the logger. Contains app-specific components (`Layout`, `ErrorNotifier`) and all page components.
-
-**Key tools:** Vite, React, React Router, Vitest, Playwright
-
----
-
-### `@prod-forge-todolist-frontend/core` — `packages/core`
-
-All business logic that is framework-independent in principle but Redux/TypeScript-based in practice.
-
-Contains:
-
-- Redux store (`configureStore`, `RootState`, `AppDispatch`)
-- RTK slices and selectors: `auth`, `todos`, `errors`
-- API clients: `todosApi`, `logsApi`
-- Zod schemas: `loginSchema`, `registerSchema`, `titleSchema`, `descriptionSchema`
-- Services: Sentry integration, logger utilities
-- Shared types: `Todo`, `SelectOption`, `AppError`, …
-- Test seed data (`todos`)
-
-**Key tools:** Redux Toolkit, Zod, Sentry, Vitest (jsdom)
-
----
-
-### `@prod-forge-todolist-frontend/ui-web` — `packages/ui-web`
-
-All presentational components and widgets. Has no direct Redux dependency — it receives data and callbacks through props.
-
-Contains:
-
-- Primitive components: `Button`, `Input`, `Select`, `Modal`, `Pagination`, `Header`, …
-- Domain widgets: `LoginForm`, `RegisterForm`, `AddTodoForm`
-- `useTheme` hook
-- Storybook stories, a11y specs (Playwright + axe-core), visual regression specs
-
-**Key tools:** React, Tailwind CSS, Storybook, Playwright, Vitest (jsdom + browser/playwright)
-
----
-
-### `@prod-forge-todolist-frontend/design-tokens` — `packages/design-tokens`
-
-Framework-agnostic CSS custom properties for the design system.
-
-Exports:
-
-- `@prod-forge-todolist-frontend/design-tokens/tokens.css` — raw CSS variables (light/dark themes)
-- `@prod-forge-todolist-frontend/design-tokens/global.css` — Tailwind base + token mapping
-
----
+- [3. Styles Management](docs/styles-management.md)
+  - [Design Tokens](docs/styles-management.md#design-tokens)
+  - [Storybook](docs/styles-management.md#storybook)
+  - [Tailwind CSS](docs/styles-management.md#tailwind-css)
+  - [Accessibility](docs/styles-management.md#accessibility)
 
 ## Getting started
 
@@ -124,18 +70,6 @@ All packages use the `@prod-forge-todolist-frontend/` scope:
 - `@prod-forge-todolist-frontend/ui-web`
 - `@prod-forge-todolist-frontend/design-tokens`
 - `@prod-forge-todolist-frontend/web-client` (private, not published)
-
-## Dependency graph
-
-```
-web-client
-  ├── @prod-forge-todolist-frontend/core
-  ├── @prod-forge-todolist-frontend/ui-web
-  │     └── @prod-forge-todolist-frontend/core
-  └── @prod-forge-todolist-frontend/design-tokens
-```
-
-`core` has no dependency on `ui-web` — the dependency only flows one way.
 
 ## NX
 
