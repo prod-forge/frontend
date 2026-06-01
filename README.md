@@ -1,10 +1,41 @@
 <p align="center">
-  <img alt="Logo" src="https://github.com/prod-forge/backend/blob/main/assets/prod-forge-logo.png" width="264px" height="243px">
+  <img alt="Logo" src="https://github.com/prod-forge/backend/blob/main/docs/assets/prod-forge-logo.png" width="264px" height="243px">
 </p>
 
-# prod-forge-todolist-frontend
+_AI made writing the code easy. Running it in production is still hard._
 
-An NX-managed monorepo for the TodoAI frontend application.
+**Prod Forge** is an open-source reference that shows how to build and operate a production-ready system: AI-assisted
+development, quality gates, CI/CD, infrastructure, observability, migrations, and rollback.
+
+The implementation is based on a simple Todo API, but the architecture follows patterns used in real production systems
+at scale.
+
+Every major technical decision is documented and explained.
+
+---
+
+## Project structure
+
+| Repository                                                | Description                                     |
+| --------------------------------------------------------- | ----------------------------------------------- |
+| [Frontend](https://github.com/prod-forge/frontend)        | React Web and React Mobile apps + Design System |
+| [Backend](https://github.com/prod-forge/backend)          | NestJS API - the main guide                     |
+| [Infrastructure](https://github.com/prod-forge/terraform) | Terraform on AWS                                |
+
+## Stack
+
+<p align="center">
+  <img alt="Architecture" src="https://github.com/prod-forge/backend/blob/main/docs/assets/architecture_diagram.png">
+</p>
+
+| Layer          | Tools                                            |
+| -------------- | ------------------------------------------------ |
+| Web Client     | React · Vite · Redux Toolkit · Tailwind CSS · NX |
+| Deploy         | AWS S3 · CloudFront · ECR · ECS                  |
+| Backend        | NestJS · Prisma · PostgreSQL · Redis · Docker    |
+| Infrastructure | AWS · RDS · ElasticCache                         |
+| Observability  | Prometheus · Grafana · Loki · Promtail           |
+| Quality        | ESLint · Prettier · Husky · Commitlint · CI/CD   |
 
 # Table of contents
 
