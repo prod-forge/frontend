@@ -48,8 +48,10 @@ Every major technical decision is documented and explained.
 <!-- -->
 
 - [2. Architecture Decisions](docs/architecture-decisions.md)
-  - [Feature Sliced Design](docs/architecture-decisions.md#feature-sliced-design)
-  - [Feature-based Approach](docs/architecture-decisions.md#feature-based-approach)
+  - [Choosing the Right Architecture](docs/architecture-decisions.md#choosing-the-right-architecture)
+  - [Frontend Architecture](docs/architecture-decisions.md#frontend-architecture)
+    - [Feature Sliced Design](docs/architecture-decisions.md#feature-sliced-design)
+    - [Feature-based Approach](docs/architecture-decisions.md#feature-based-approach)
 
 <!-- -->
 
@@ -59,24 +61,13 @@ Every major technical decision is documented and explained.
   - [Tailwind CSS](docs/styles-management.md#tailwind-css)
   - [Accessibility](docs/styles-management.md#accessibility)
 
-## Getting started
+<!-- -->
 
-```bash
-# Install all workspace dependencies
-npm install
-
-# Start the dev server
-npm run dev
-
-# Run all tests
-npm run test
-
-# Run Storybook
-npm run storybook
-
-# Build all packages
-npm run build
-```
+- [4. Assets Management](docs/assets-management.md)
+  - [When this Matters](docs/assets-management.md#when-this-matters)
+  - [How it Works](docs/assets-management.md#how-it-works)
+  - [Local Development](docs/assets-management.md#local-development)
+  - [What Belongs in Assets](docs/assets-management.md#what-belongs-in-assets)
 
 ## Available scripts (root)
 
