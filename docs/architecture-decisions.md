@@ -1,5 +1,9 @@
 # Architecture Decisions
 
+<p align="center">
+  <img alt="Architecture Decisions" src="assets/architecture-decisions.png" width="701px" height="561px">
+</p>
+
 ## Choosing the Right Architecture
 
 Architectural decisions are rarely purely technical. In practice, they are shaped by client requirements, regulatory constraints, legacy systems, security policies, team expertise, and long-term maintainability.

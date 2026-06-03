@@ -55,7 +55,58 @@ Every major technical decision is documented and explained.
 
 <!-- -->
 
-- [3. Styles Management](docs/styles-management.md)
+- [3. Development Workflow](docs/development-workflow.md)
+  - [Task Management](docs/development-workflow.md#task-management)
+  - [Git Flow](docs/development-workflow.md#git-flow)
+    - [Branch Naming Convention](docs/development-workflow.md#branch-naming-convention)
+    - [Commit Conventions](docs/development-workflow.md#commit-conventions)
+  - [Feature Workflow](docs/development-workflow.md#feature-workflow)
+  - [Bug Fixing Workflow](docs/development-workflow.md#bug-fixing-workflow)
+  - [Code Review](docs/development-workflow.md#code-review)
+  - [Squash Merge Strategy](docs/development-workflow.md#squash-merge-strategy)
+  - [Squash Merge Workflow](docs/development-workflow.md#squash-merge-workflow)
+  - [Why This Matters](docs/development-workflow.md#why-this-matters)
+
+<!-- -->
+
+- [4. AI-Assisted Development](docs/ai-development.md)
+  - [Quality Gates First](docs/ai-development.md#quality-gates-first)
+  - [Architecture Before Generation](docs/ai-development.md#architecture-before-generation)
+  - [Workflow](docs/ai-development.md#workflow)
+    - [Input Modes](docs/ai-development.md#input-modes)
+    - [Plan, Then Implement](docs/ai-development.md#plan-then-implement)
+    - [Save Your Prompts](docs/ai-development.md#save-your-prompts)
+  - [Project Knowledge Files](docs/ai-development.md#project-knowledge-files)
+    - [MEMORY.md](docs/ai-development.md#memorymd)
+    - [REVIEW.md](docs/ai-development.md#reviewmd)
+    - [docs/](docs/ai-development.md#docs)
+    - [Skills](docs/ai-development.md#skills)
+  - [Pre-Hooks](docs/ai-development.md#pre-hooks)
+    - [Protected files (Edit|Write)](docs/ai-development.md#protected-files-editwrite)
+    - [Blocked commands (Bash)](docs/ai-development.md#blocked-commands-bash)
+  - [Task Decomposition](docs/ai-development.md#task-decomposition)
+  - [Common AI Problems](docs/ai-development.md#common-ai-problems)
+  - [Cost Optimization](docs/ai-development.md#cost-optimization)
+  - [Quality Control](docs/ai-development.md#quality-control)
+    - [Commit Frequently](docs/ai-development.md#commit-frequently)
+    - [Validate Edge Cases](docs/ai-development.md#validate-edge-cases)
+    - [Mandatory Code Review](docs/ai-development.md#mandatory-code-review)
+    - [Never Trust AI Blindly](docs/ai-development.md#never-trust-ai-blindly)
+  - [Recommended Workflow](docs/ai-development.md#recommended-workflow)
+
+<!-- -->
+
+- [5. Code Quality](docs/code-quality.md)
+  - [Layer 1. Code Formatting And Consistency](docs/code-quality.md#layer-1-code-formatting-and-consistency)
+  - [Layer 2. Static Analysis With ESLint](docs/code-quality.md#layer-2-static-analysis-with-eslint)
+  - [Layer 3. Pre-commit Protection](docs/code-quality.md#layer-3-pre-commit-protection)
+  - [Layer 4. Commitlint Configuration](docs/code-quality.md#layer-4-commitlint-configuration)
+  - [Layer 5. Continuous Integration Checks](docs/code-quality.md#layer-5-continuous-integration-checks)
+  - [Layer 6. Dependency Locking](docs/code-quality.md#layer-6-dependency-locking)
+
+<!-- -->
+
+- [6. Styles Management](docs/styles-management.md)
   - [Design Tokens](docs/styles-management.md#design-tokens)
   - [Storybook](docs/styles-management.md#storybook)
   - [Tailwind CSS](docs/styles-management.md#tailwind-css)
@@ -63,26 +114,13 @@ Every major technical decision is documented and explained.
 
 <!-- -->
 
-- [4. Assets Management](docs/assets-management.md)
+- [7. Assets Management](docs/assets-management.md)
   - [When this Matters](docs/assets-management.md#when-this-matters)
   - [How it Works](docs/assets-management.md#how-it-works)
   - [Local Development](docs/assets-management.md#local-development)
   - [What Belongs in Assets](docs/assets-management.md#what-belongs-in-assets)
 
-## Available scripts (root)
-
-| Script                    | Description                                       |
-| ------------------------- | ------------------------------------------------- |
-| `npm run dev`             | Start web-client dev server                       |
-| `npm run build`           | Build all packages with NX                        |
-| `npm run test`            | Run all unit tests with NX                        |
-| `npm run lint`            | Lint all packages with NX                         |
-| `npm run storybook`       | Start Storybook for ui-web                        |
-| `npm run storybook:build` | Build static Storybook                            |
-| `npm run test:a11y`       | Run Playwright a11y tests for ui-web              |
-| `npm run test:visual`     | Run Playwright visual regression tests for ui-web |
-| `npm run test:e2e`        | Run Playwright e2e tests for web-client           |
-| `npm run format`          | Format all files with Prettier                    |
+<!-- -->
 
 ## Package scope
 
@@ -126,8 +164,8 @@ Vite configs in each package add matching `resolve.alias` entries so Vite resolv
 
 We welcome any kind of contribution, please read the guidelines:
 
-[CONTRIBUTING](https://github.com/prod-forge/backend/blob/main/CONTRIBUTING.md)
+[CONTRIBUTING](CONTRIBUTING.md)
 
 # The MIT License
 
-[LICENSE](https://github.com/prod-forge/backend/blob/main/LICENSE.md)
+[LICENSE](LICENSE.md)
