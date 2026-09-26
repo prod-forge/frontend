@@ -117,11 +117,13 @@ test.describe('Home page', () => {
   });
 
   test('header shows the user name when the authenticated user has a name', async ({ page }) => {
-    await page.addInitScript(() => {
-      const FAKE_TOKEN = 'ZWViZWNiNTktZjMwMS00ODY5LTg3ZWQtNmFmNTY2NDEyNjY2';
-      localStorage.setItem('auth-token', FAKE_TOKEN);
-      localStorage.setItem('auth-user', JSON.stringify({ email: 'tester@example.com', name: 'Alice' }));
-    });
+    await page.addInitScript(
+      ([token]) => {
+        localStorage.setItem('auth-token', token);
+        localStorage.setItem('auth-user', JSON.stringify({ email: 'tester@example.com', name: 'Alice' }));
+      },
+      [FAKE_TOKEN],
+    );
     await page.goto('/');
 
     await expect(page.getByTestId('header-user')).toHaveText('Alice');

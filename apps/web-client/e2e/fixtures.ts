@@ -33,7 +33,7 @@ export const test = base.extend<Fixtures>({
 
   mockApi: [
     async ({ page }, use): Promise<void> => {
-      let items: Todo[] = JSON.parse(JSON.stringify(seedData.data)) as Todo[];
+      let items: Todo[] = structuredClone(seedData.data);
 
       await page.route(/\/api\/v1\/todos/, async (route) => {
         const request = route.request();
