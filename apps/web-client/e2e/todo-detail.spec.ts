@@ -151,10 +151,12 @@ test.describe('Todo detail page', () => {
       .first()
       .locator('a')
       .first();
+    const title = (await completedTodoLink.innerText()).trim();
     await completedTodoLink.click();
-    await page.waitForURL(/\/todo\//);
 
-    await expect(page.getByText('Done')).toBeVisible();
+    // The list stays mounted for a moment after the URL changes, and its toggles read "Done" too.
+    await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
+    await expect(page.getByText('Done', { exact: true })).toBeVisible();
   });
 
   test('Escape key cancels description editing without saving', async ({ page }) => {

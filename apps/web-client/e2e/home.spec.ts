@@ -128,6 +128,8 @@ test.describe('Home page', () => {
   });
 
   test('toggling a todo status updates the summary and the toggle label', async ({ page }) => {
+    // The summary reads "0 of 0 completed" until the list is loaded.
+    await expect(page.getByRole('article')).toHaveCount(10);
     const summary = page.getByText(/^\d+ of \d+ completed$/);
     const initialSummary = (await summary.innerText()).trim();
     const [doneStr, , totalStr] = initialSummary.split(' ');
