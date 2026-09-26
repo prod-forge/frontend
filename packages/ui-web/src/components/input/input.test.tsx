@@ -67,13 +67,13 @@ describe('Input', () => {
   it('applies error-styled classes when an error is present', () => {
     render(<Input error="Bad" id="t" />);
 
-    expect(screen.getByRole('textbox').className).toContain('border-err');
+    expect(screen.getByRole('textbox')).toHaveClass('border-err');
   });
 
   it('applies default classes when no error', () => {
     render(<Input id="t" />);
 
-    expect(screen.getByRole('textbox').className).toContain('border-line');
+    expect(screen.getByRole('textbox')).toHaveClass('border-line');
   });
 
   it('passes through arbitrary HTML attributes (placeholder, name, type)', () => {

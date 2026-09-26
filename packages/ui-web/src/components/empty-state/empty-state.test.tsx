@@ -5,10 +5,10 @@ import { EmptyState } from './empty-state';
 
 describe('EmptyState', () => {
   describe('negative cases', () => {
-    it('does not render when message is an empty string', () => {
-      const { container } = render(<EmptyState message="" />);
+    it('renders an empty paragraph when message is an empty string', () => {
+      render(<EmptyState message="" />);
 
-      expect(container.firstChild).toBeEmptyDOMElement();
+      expect(screen.getByRole('paragraph')).toBeEmptyDOMElement();
     });
   });
 

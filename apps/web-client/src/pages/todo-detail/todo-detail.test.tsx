@@ -34,7 +34,7 @@ const renderAt = (path: string, options: { authenticated?: boolean } = {}): { st
     store.dispatch(login({ email: 'a@b.com' }));
   }
 
-  const result = render(
+  const view = render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[path]}>
         <Routes>
@@ -45,7 +45,7 @@ const renderAt = (path: string, options: { authenticated?: boolean } = {}): { st
     </Provider>,
   );
 
-  return { store, ...result };
+  return { store, ...view };
 };
 
 beforeEach(() => {

@@ -10,6 +10,7 @@ import gitignore from 'eslint-config-flat-gitignore';
 import checkFile from 'eslint-plugin-check-file';
 import importLite from 'eslint-plugin-import-lite';
 import jestPlugin from 'eslint-plugin-jest';
+import jestDomPlugin from 'eslint-plugin-jest-dom';
 import noOnlyTests from 'eslint-plugin-no-only-tests';
 import packageJsonConfig from 'eslint-plugin-package-json';
 import perfectionist from 'eslint-plugin-perfectionist';
@@ -18,6 +19,7 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import regexpPlugin from 'eslint-plugin-regexp';
 import sonar from 'eslint-plugin-sonarjs';
 import storybook from 'eslint-plugin-storybook';
+import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -317,6 +319,23 @@ const testOverrides: Linter.Config = {
   },
 };
 
+const reactTestFiles = ['**/*.{spec,test}.{ts,tsx}'];
+
+// Testing Library and jest-dom rules for the component tests of React projects.
+const reactTestConfigs: Linter.Config[] = [
+  {
+    ...testingLibraryPlugin.configs['flat/react'],
+    files: reactTestFiles,
+    // Only report in files that import Testing Library: Playwright specs share the getBy* names.
+    settings: {
+      'testing-library/custom-queries': 'off',
+      'testing-library/custom-renders': 'off',
+      'testing-library/utils-module': 'off',
+    },
+  },
+  { ...jestDomPlugin.configs['flat/recommended'], files: reactTestFiles },
+];
+
 const fixturesOverrides: Linter.Config = {
   files: ['**/__fixtures__/**'],
   rules: {
@@ -344,5 +363,6 @@ export default [
   dtsOverrides,
   testOverrides,
   fixturesOverrides,
+  ...reactTestConfigs,
   ...projectOverrides,
 ];

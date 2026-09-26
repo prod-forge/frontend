@@ -23,9 +23,12 @@ describe('TodoList', () => {
       </TodoList>,
     );
 
+    // The grid is a layout container without an accessible role.
+    // eslint-disable-next-line testing-library/no-node-access
     const grid = container.firstElementChild;
     expect(grid).not.toBeNull();
     expect(grid).toHaveClass('grid');
+    // eslint-disable-next-line testing-library/no-node-access
     expect(grid?.children).toHaveLength(3);
   });
 });

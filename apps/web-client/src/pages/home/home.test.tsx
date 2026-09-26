@@ -37,7 +37,7 @@ const renderHome = async (options: { authenticated?: boolean } = {}): Promise<Re
     store.dispatch(login({ email: 'a@b.com' }));
   }
 
-  const result = render(
+  const view = render(
     <Provider store={store}>
       <MemoryRouter>
         <Home />
@@ -49,7 +49,7 @@ const renderHome = async (options: { authenticated?: boolean } = {}): Promise<Re
     await screen.findAllByRole('article');
   }
 
-  return result;
+  return view;
 };
 
 const firstPage = sortTodos(todos.data, 'title', 'asc').slice(0, 10);
@@ -216,7 +216,7 @@ describe('<Home /> page — authenticated', () => {
 
       screen.getAllByRole('article').forEach((card) => {
         const titleLink = within(card).getAllByRole('link')[0];
-        expect(titleLink.getAttribute('href')).toMatch(/^\/todo\/[\w-]+$/);
+        expect(titleLink).toHaveAttribute('href', expect.stringMatching(/^\/todo\/[\w-]+$/));
       });
     });
 

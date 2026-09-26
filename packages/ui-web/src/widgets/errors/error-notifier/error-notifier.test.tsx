@@ -65,6 +65,7 @@ describe('ErrorNotifier', () => {
     it('has an aria-live region for screen reader announcements', () => {
       setup([]);
 
+      // eslint-disable-next-line testing-library/no-node-access -- an aria-live region has no role to query by
       expect(document.querySelector('[aria-live="polite"]')).toBeInTheDocument();
     });
   });

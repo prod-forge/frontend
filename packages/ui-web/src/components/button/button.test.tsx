@@ -50,33 +50,33 @@ describe('Button', () => {
   it('applies the correct classes for the primary variant', () => {
     render(<Button variant="primary">P</Button>);
 
-    expect(screen.getByRole('button').className).toContain('bg-brand');
+    expect(screen.getByRole('button')).toHaveClass('bg-brand');
   });
 
   it('applies the correct classes for the secondary variant', () => {
     render(<Button variant="secondary">S</Button>);
 
-    expect(screen.getByRole('button').className).toContain('bg-card');
+    expect(screen.getByRole('button')).toHaveClass('bg-card');
   });
 
   it('applies the correct classes for the danger variant', () => {
     render(<Button variant="danger">D</Button>);
 
-    expect(screen.getByRole('button').className).toContain('bg-err');
+    expect(screen.getByRole('button')).toHaveClass('bg-err');
   });
 
   it('applies size-specific classes', () => {
     const { rerender } = render(<Button size="sm">Sm</Button>);
-    expect(screen.getByRole('button').className).toContain('min-h-8');
+    expect(screen.getByRole('button')).toHaveClass('min-h-8');
 
     rerender(<Button size="lg">Lg</Button>);
-    expect(screen.getByRole('button').className).toContain('min-h-11');
+    expect(screen.getByRole('button')).toHaveClass('min-h-11');
   });
 
   it('merges custom className with built-in classes', () => {
     render(<Button className="custom-class">X</Button>);
 
-    expect(screen.getByRole('button').className).toContain('custom-class');
+    expect(screen.getByRole('button')).toHaveClass('custom-class');
   });
 
   it('forwards refs to the underlying button element', () => {

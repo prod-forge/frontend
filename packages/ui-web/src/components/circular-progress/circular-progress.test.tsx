@@ -1,3 +1,5 @@
+/* eslint-disable testing-library/no-container, testing-library/no-node-access -- the specs check the geometry of a
+   decorative SVG and the size of its wrapper, which have no accessible role */
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -74,7 +76,7 @@ describe('CircularProgress', () => {
       const circles = container.querySelectorAll('circle');
 
       // circles[0] = track, circles[1] = progress arc
-      expect(circles[1].getAttribute('stroke-dashoffset')).toBe('0');
+      expect(circles[1]).toHaveAttribute('stroke-dashoffset', '0');
     });
 
     it('sets stroke-dashoffset equal to the full circumference when progress is 0 (empty circle)', () => {

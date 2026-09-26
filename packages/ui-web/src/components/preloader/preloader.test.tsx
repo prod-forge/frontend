@@ -15,6 +15,7 @@ describe('Preloader', () => {
       render(<Preloader />);
 
       const status = screen.getByRole('status');
+      // eslint-disable-next-line testing-library/no-node-access -- the decorative spinner has no accessible role
       expect(status.querySelector('svg')).toBeInTheDocument();
     });
   });

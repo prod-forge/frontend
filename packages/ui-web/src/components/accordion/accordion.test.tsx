@@ -62,6 +62,6 @@ describe('Accordion', () => {
     const button = screen.getByRole('button', { name: /section/i });
     const region = screen.getByRole('region', { hidden: true });
 
-    expect(button.getAttribute('aria-controls')).toBe(region.getAttribute('id'));
+    expect(button).toHaveAttribute('aria-controls', region.getAttribute('id'));
   });
 });
