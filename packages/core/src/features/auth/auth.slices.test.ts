@@ -37,7 +37,7 @@ describe('auth slice — login', () => {
     authReducer(init(), login({ email: 'a@b.com' }));
 
     expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBe(FAKE_TOKEN);
-    expect(JSON.parse(localStorage.getItem(USER_STORAGE_KEY)!)).toEqual({ email: 'a@b.com' });
+    expect(JSON.parse(localStorage.getItem(USER_STORAGE_KEY) as string)).toEqual({ email: 'a@b.com' });
   });
 });
 
@@ -73,7 +73,7 @@ describe('auth slice — register', () => {
     authReducer(init(), register({ email: 'a@b.com', name: 'Anna' }));
 
     expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBe(FAKE_TOKEN);
-    expect(JSON.parse(localStorage.getItem(USER_STORAGE_KEY)!)).toEqual({ email: 'a@b.com', name: 'Anna' });
+    expect(JSON.parse(localStorage.getItem(USER_STORAGE_KEY) as string)).toEqual({ email: 'a@b.com', name: 'Anna' });
   });
 });
 

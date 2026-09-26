@@ -2,12 +2,12 @@ import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 
 import cn from 'classnames';
 
-export interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+export type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
   children: ReactNode;
   ref?: Ref<HTMLButtonElement>;
   size?: ButtonSize;
   variant?: ButtonVariant;
-}
+};
 
 type ButtonSize = 'lg' | 'md' | 'sm';
 

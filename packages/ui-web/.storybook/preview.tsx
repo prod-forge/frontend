@@ -6,7 +6,7 @@ import '@prod-forge-todolist-frontend/design-tokens/tokens.css';
 import './styles.css';
 
 const withTheme: Decorator = (Story, context) => {
-  const theme = (context.globals['theme'] as string) ?? 'light';
+  const theme = (context.globals.theme as string | undefined) ?? 'light';
   document.documentElement.setAttribute('data-theme', theme);
 
   return <Story />;

@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
-export interface Props {
+export type Props = {
   readonly action?: ReactNode;
   readonly message: string;
-}
+};
 
 export const ErrorBlock = ({ action, message }: Props): ReactNode => (
   <div className="py-8 text-center">

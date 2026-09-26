@@ -27,7 +27,7 @@ export async function apiRequest<T>(path: string, options?: RequestInit): Promis
       Authorization: `Bearer ${FAKE_TOKEN}`,
       'Content-Type': 'application/json',
       'x-trace-id': traceId,
-      ...options?.headers,
+      ...Object.fromEntries(new Headers(options?.headers)),
     },
   }).catch(() => {
     throw new NetworkError();

@@ -2,12 +2,12 @@ import type { MouseEvent, ReactNode } from 'react';
 
 import { useEffect, useEffectEvent, useId, useRef } from 'react';
 
-export interface Props {
+export type Props = {
   children?: ReactNode;
   isOpen: boolean;
   onClose: () => void;
   title: string;
-}
+};
 
 export const Modal = ({ children, isOpen, onClose, title }: Props): ReactNode => {
   const titleId = useId();

@@ -2,12 +2,12 @@ import type { ReactNode } from 'react';
 
 import cn from 'classnames';
 
-export interface Props {
+export type Props = {
   limit: number;
   offset: number;
   onOffsetChange: (offset: number) => void;
   total: number;
-}
+};
 
 const SIBLING_COUNT = 1;
 

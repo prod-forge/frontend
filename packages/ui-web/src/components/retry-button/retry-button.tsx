@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
-export interface Props {
+export type Props = {
   readonly onClick: () => void;
-}
+};
 
 export const RetryButton = ({ onClick }: Props): ReactNode => (
   <button

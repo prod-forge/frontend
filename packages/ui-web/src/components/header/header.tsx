@@ -4,18 +4,18 @@ import { Link } from 'react-router-dom';
 
 import { Button } from '../button/button';
 
-export interface Props {
+export type Props = {
   isAuthenticated?: boolean;
   onLogout?: () => void;
   onToggle: () => void;
   theme: 'dark' | 'light';
   user?: AuthUserSummary | null;
-}
+};
 
-interface AuthUserSummary {
+type AuthUserSummary = {
   email: string;
   name?: string;
-}
+};
 
 export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, user }: Props): ReactNode => (
   <header className="sticky top-0 right-0 left-0 z-100 h-[var(--header-height)] border-b border-line bg-card-alpha backdrop-blur-md">

@@ -5,16 +5,16 @@ import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export interface Props {
+export type Props = {
   maxLength?: number;
   onSubmit: (value: string) => void;
   schema: z.ZodType<string, string>;
   value: string;
-}
+};
 
-interface FormValues {
+type FormValues = {
   value: string;
-}
+};
 
 export const EditableDescription = ({ maxLength, onSubmit, schema, value }: Props): ReactNode => {
   const [isEditing, setIsEditing] = useState(false);
@@ -91,7 +91,7 @@ export const EditableDescription = ({ maxLength, onSubmit, schema, value }: Prop
         rows={4}
         {...textareaProps}
         onBlur={(event) => {
-          void textareaProps.onBlur?.(event);
+          void textareaProps.onBlur(event);
           void submit();
         }}
         onKeyDown={handleKeyDown}

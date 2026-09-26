@@ -6,10 +6,10 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { ErrorNotifier } from './error-notifier';
 
-interface ErrorItem {
+type ErrorItem = {
   id: string;
   message: string;
-}
+};
 
 const makeError = (id: string, message: string): ErrorItem => ({ id, message });
 

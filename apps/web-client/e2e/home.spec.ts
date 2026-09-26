@@ -72,7 +72,7 @@ test.describe('Home page', () => {
 
     await firstTitleLink.click();
 
-    await expect(page).toHaveURL(new RegExp(`${href!}$`));
+    await expect(page).toHaveURL(new RegExp(`${href as string}$`));
     await expect(page.getByRole('link', { name: /back to home/i })).toBeVisible();
   });
 

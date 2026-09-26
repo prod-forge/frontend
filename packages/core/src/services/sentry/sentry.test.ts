@@ -64,7 +64,7 @@ describe('initSentry', () => {
 // Extracts the scope callback passed to Sentry.withScope mock and invokes it with a mock scope
 function invokeScopeCallback(mockScope: Scope): void {
   const cb = vi.mocked(Sentry.withScope).mock.lastCall?.[0] as unknown as (scope: Scope) => void;
-  cb?.(mockScope);
+  cb(mockScope);
 }
 
 describe('captureException', () => {

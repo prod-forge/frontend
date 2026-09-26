@@ -1,14 +1,14 @@
 import type { SelectOption } from '@prod-forge-todolist-frontend/core';
 import type { ReactNode } from 'react';
 
-export interface Props<T extends string = string> {
+export type Props<T extends string = string> = {
   'aria-label'?: string;
   id: string;
   label?: string;
   onChange: (value: T) => void;
   options: SelectOption<T>[];
   value: T;
-}
+};
 
 export const Select = <T extends string>({
   'aria-label': ariaLabel,

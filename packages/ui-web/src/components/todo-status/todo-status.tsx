@@ -2,9 +2,9 @@ import type { ReactNode } from 'react';
 
 import cn from 'classnames';
 
-export interface Props {
+export type Props = {
   completed: boolean;
-}
+};
 
 export const TodoStatus = ({ completed }: Props): ReactNode => (
   <span

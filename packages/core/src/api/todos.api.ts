@@ -10,7 +10,7 @@ export const todosApi = {
   create: (data: CreatePayload): Promise<Todo> =>
     apiRequest<{ data: Todo }>('todos', { body: JSON.stringify(data), method: 'POST' }).then((r) => r.data),
 
-  delete: (id: string): Promise<void> => apiRequest<void>(`todos/${id}`, { method: 'DELETE' }),
+  delete: (id: string): Promise<void> => apiRequest<undefined>(`todos/${id}`, { method: 'DELETE' }),
 
   getAll: (filters: TodoFilters): Promise<TodosResponse> => {
     const params = new URLSearchParams({

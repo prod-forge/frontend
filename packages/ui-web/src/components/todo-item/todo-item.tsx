@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom';
 
 import { TodoStatusToggle } from '../todo-status-toggle/todo-status-toggle';
 
-export interface Props {
+export type Props = {
   onToggle: (id: string) => void;
   todo: Todo;
-}
+};
 
 export const TodoItem = ({ onToggle, todo }: Props): ReactNode => {
   const assetsBaseUrl = import.meta.env.VITE_ASSETS_BASE_URL;

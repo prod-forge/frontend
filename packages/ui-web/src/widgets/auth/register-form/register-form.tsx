@@ -8,15 +8,15 @@ import { useForm } from 'react-hook-form';
 import { Button } from '../../../components/button/button';
 import { Input } from '../../../components/input/input';
 
-export interface Props {
+export type Props = {
   onSubmit: (values: RegisterSubmitValues) => void;
-}
+};
 
-interface RegisterSubmitValues {
+type RegisterSubmitValues = {
   email: string;
   name?: string;
   password: string;
-}
+};
 
 const defaults: RegisterValues = { email: '', name: '', password: '' };
 

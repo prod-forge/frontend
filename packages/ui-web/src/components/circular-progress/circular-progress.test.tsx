@@ -74,7 +74,7 @@ describe('CircularProgress', () => {
       const circles = container.querySelectorAll('circle');
 
       // circles[0] = track, circles[1] = progress arc
-      expect(circles[1]?.getAttribute('stroke-dashoffset')).toBe('0');
+      expect(circles[1].getAttribute('stroke-dashoffset')).toBe('0');
     });
 
     it('sets stroke-dashoffset equal to the full circumference when progress is 0 (empty circle)', () => {
@@ -82,8 +82,8 @@ describe('CircularProgress', () => {
       const circles = container.querySelectorAll('circle');
       const arc = circles[1];
 
-      const dasharray = Number(arc?.getAttribute('stroke-dasharray'));
-      const dashoffset = Number(arc?.getAttribute('stroke-dashoffset'));
+      const dasharray = Number(arc.getAttribute('stroke-dasharray'));
+      const dashoffset = Number(arc.getAttribute('stroke-dashoffset'));
 
       expect(dashoffset).toBeCloseTo(dasharray, 5);
     });

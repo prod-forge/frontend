@@ -3,11 +3,11 @@ import type { ReactNode } from 'react';
 import cn from 'classnames';
 import { useId, useState } from 'react';
 
-export interface Props {
+export type Props = {
   children: ReactNode;
   defaultOpen?: boolean;
   title: string;
-}
+};
 
 export const Accordion = ({ children, defaultOpen = false, title }: Props): ReactNode => {
   const [isOpen, setIsOpen] = useState(defaultOpen);

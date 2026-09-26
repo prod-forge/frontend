@@ -104,7 +104,7 @@ describe('apiRequest', () => {
       await apiRequest('todos');
 
       const [, init] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
-      expect((init.headers as Record<string, string>)['Authorization']).toMatch(/^Bearer /);
+      expect((init.headers as Record<string, string>).Authorization).toMatch(/^Bearer /);
     });
 
     it('sends Content-Type application/json header', async () => {

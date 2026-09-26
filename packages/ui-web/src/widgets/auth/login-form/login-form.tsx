@@ -10,10 +10,10 @@ import { Accordion } from '../../../components/accordion/accordion';
 import { Button } from '../../../components/button/button';
 import { Input } from '../../../components/input/input';
 
-export interface Props {
+export type Props = {
   onForgotPassword?: (values: ForgotPasswordValues) => void;
   onSubmit: (values: LoginValues) => void;
-}
+};
 
 const loginDefaults: LoginValues = { email: '', password: '' };
 

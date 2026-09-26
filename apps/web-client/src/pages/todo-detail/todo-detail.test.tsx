@@ -1,4 +1,4 @@
-import type { Store } from '@prod-forge-todolist-frontend/core';
+import type { Store, Todo } from '@prod-forge-todolist-frontend/core';
 
 import {
   authReducer,
@@ -20,8 +20,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TodoDetail } from './todo-detail';
 
-const openTodo = todos.data.find((t) => !t.completed)!;
-const completedTodo = todos.data.find((t) => t.completed)!;
+const openTodo = todos.data.find((t) => !t.completed) as Todo;
+const completedTodo = todos.data.find((t) => t.completed) as Todo;
 
 const renderAt = (path: string, options: { authenticated?: boolean } = {}): { store: Store } => {
   const { authenticated = true } = options;
@@ -295,7 +295,7 @@ describe('<TodoDetail /> page', () => {
       await user.click(screen.getByRole('button', { name: /retry/i }));
 
       const dispatchedTypes = dispatchSpy.mock.calls.flatMap(([action]) =>
-        typeof action === 'object' && action !== null && 'type' in action ? [String(action.type)] : [],
+        typeof action === 'object' && 'type' in action ? [action.type] : [],
       );
 
       expect(dispatchedTypes).toContain('errors/clearErrors');

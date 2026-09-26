@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
-export interface Props {
+export type Props = {
   readonly message: string;
   readonly trailing?: ReactNode;
-}
+};
 
 export const ErrorBanner = ({ message, trailing }: Props): ReactNode => (
   <div

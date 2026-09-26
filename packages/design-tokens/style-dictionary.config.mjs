@@ -1,5 +1,5 @@
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import StyleDictionary from 'style-dictionary';
-import { writeFileSync, readFileSync, mkdirSync, rmSync } from 'node:fs';
 
 const TMP = '.tmp';
 const CSS_TRANSFORMS = ['attribute/cti', 'name/kebab'];
@@ -8,7 +8,6 @@ const CSS_TRANSFORMS = ['attribute/cti', 'name/kebab'];
 
 function registerCssFormat(name, filterFn, selector) {
   StyleDictionary.registerFormat({
-    name,
     format: ({ dictionary }) => {
       const tokens = dictionary.allTokens.filter(filterFn);
       if (tokens.length === 0) return '';
@@ -23,30 +22,18 @@ function registerCssFormat(name, filterFn, selector) {
 
       return `${selector} {\n${vars}\n}\n`;
     },
+    name,
   });
 }
 
-registerCssFormat(
-  'css/base',
-  (t) => !t.path.includes('light') && !t.path.includes('dark'),
-  ':root',
-);
+registerCssFormat('css/base', (t) => !t.path.includes('light') && !t.path.includes('dark'), ':root');
 
-registerCssFormat(
-  'css/light',
-  (t) => t.path.includes('light'),
-  ':root',
-);
+registerCssFormat('css/light', (t) => t.path.includes('light'), ':root');
 
-registerCssFormat(
-  'css/dark',
-  (t) => t.path.includes('dark'),
-  "[data-theme='dark']",
-);
+registerCssFormat('css/dark', (t) => t.path.includes('dark'), "[data-theme='dark']");
 
 // JS format: nested camelCase exports with mobile-friendly values
 StyleDictionary.registerFormat({
-  name: 'js/nested',
   format: ({ dictionary }) => {
     const toCamel = (s) => s.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
 
@@ -74,6 +61,7 @@ StyleDictionary.registerFormat({
     }
     return lines.join('\n') + '\n';
   },
+  name: 'js/nested',
 });
 
 // ── Build ─────────────────────────────────────────────────
@@ -82,6 +70,28 @@ mkdirSync(TMP, { recursive: true });
 mkdirSync('js', { recursive: true });
 
 const sd = new StyleDictionary({
+  platforms: {
+    'css-base': {
+      buildPath: `${TMP}/`,
+      files: [{ destination: 'base.css', format: 'css/base' }],
+      transforms: CSS_TRANSFORMS,
+    },
+    'css-dark': {
+      buildPath: `${TMP}/`,
+      files: [{ destination: 'dark.css', format: 'css/dark' }],
+      transforms: CSS_TRANSFORMS,
+    },
+    'css-light': {
+      buildPath: `${TMP}/`,
+      files: [{ destination: 'light.css', format: 'css/light' }],
+      transforms: CSS_TRANSFORMS,
+    },
+    js: {
+      buildPath: 'js/',
+      files: [{ destination: 'index.mjs', format: 'js/nested' }],
+      transforms: ['attribute/cti', 'name/kebab'],
+    },
+  },
   source: [
     'src/tokens/base/**/*.json',
     'src/tokens/color/light.json',
@@ -89,28 +99,6 @@ const sd = new StyleDictionary({
     'src/tokens/shadow/light.json',
     'src/tokens/shadow/dark.json',
   ],
-  platforms: {
-    'css-base': {
-      transforms: CSS_TRANSFORMS,
-      buildPath: `${TMP}/`,
-      files: [{ destination: 'base.css', format: 'css/base' }],
-    },
-    'css-light': {
-      transforms: CSS_TRANSFORMS,
-      buildPath: `${TMP}/`,
-      files: [{ destination: 'light.css', format: 'css/light' }],
-    },
-    'css-dark': {
-      transforms: CSS_TRANSFORMS,
-      buildPath: `${TMP}/`,
-      files: [{ destination: 'dark.css', format: 'css/dark' }],
-    },
-    js: {
-      transforms: ['attribute/cti', 'name/kebab'],
-      buildPath: 'js/',
-      files: [{ destination: 'index.mjs', format: 'js/nested' }],
-    },
-  },
 });
 
 await sd.buildAllPlatforms();
@@ -178,7 +166,6 @@ let m;
 while ((m = exportRegex.exec(jsSource + '\n')) !== null) {
   const [, name, rawValue] = m;
   try {
-    // eslint-disable-next-line no-new-func
     const value = new Function(`return ${rawValue.trimEnd().replace(/;$/, '')}`)();
     dtsLines.push(`export declare const ${name}: ${inferTsType(value)};`);
   } catch {
@@ -191,4 +178,4 @@ writeFileSync('js/index.d.ts', dtsLines.join('\n'));
 
 // ── Cleanup ───────────────────────────────────────────────
 
-rmSync(TMP, { recursive: true, force: true });
+rmSync(TMP, { force: true, recursive: true });

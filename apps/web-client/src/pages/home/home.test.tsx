@@ -226,7 +226,7 @@ describe('<Home /> page — authenticated', () => {
 
       const openCard = screen
         .getAllByRole('article')
-        .find((card) => within(card).queryByRole('button', { name: /mark as done/i }))!;
+        .find((card) => within(card).queryByRole('button', { name: /mark as done/i })) as HTMLElement;
 
       await user.click(within(openCard).getByRole('button', { name: /mark as done/i }));
 
@@ -240,7 +240,7 @@ describe('<Home /> page — authenticated', () => {
 
       const openCard = screen
         .getAllByRole('article')
-        .find((card) => within(card).queryByRole('button', { name: /mark as done/i }))!;
+        .find((card) => within(card).queryByRole('button', { name: /mark as done/i })) as HTMLElement;
 
       await user.click(within(openCard).getByRole('button', { name: /mark as done/i }));
       await user.click(within(openCard).getByRole('button', { name: /mark as to do/i }));
@@ -346,7 +346,7 @@ describe('<Home /> page — authenticated', () => {
       await user.click(screen.getByRole('button', { name: /retry/i }));
 
       const dispatchedTypes = dispatchSpy.mock.calls.flatMap(([action]) =>
-        typeof action === 'object' && action !== null && 'type' in action ? [(action as { type: string }).type] : [],
+        typeof action === 'object' && 'type' in action ? [(action as { type: string }).type] : [],
       );
 
       expect(dispatchedTypes).toContain('errors/clearErrors');

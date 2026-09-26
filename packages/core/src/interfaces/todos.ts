@@ -1,17 +1,17 @@
-export interface Todo {
+export type Todo = {
   completed: boolean;
   description: string;
   id: string;
   title: string;
-}
+};
 
-export interface TodosResponse {
+export type TodosResponse = {
   data: Todo[];
   meta: TodosMeta;
-}
+};
 
-interface TodosMeta {
+type TodosMeta = {
   limit: number;
   offset: number;
   total: number;
-}
+};

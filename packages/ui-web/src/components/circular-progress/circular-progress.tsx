@@ -1,15 +1,15 @@
 import type { ReactNode } from 'react';
 
-export interface Props {
+export type Props = {
   readonly children?: ReactNode;
   readonly progress: number;
   readonly size?: Size;
-}
+};
 
-interface Config {
+type Config = {
   px: number;
   stroke: number;
-}
+};
 
 type Size = 'lg' | 'md' | 'sm';
 

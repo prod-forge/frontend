@@ -2,11 +2,11 @@ import type { InputHTMLAttributes, ReactNode, Ref } from 'react';
 
 import cn from 'classnames';
 
-export interface Props extends InputHTMLAttributes<HTMLInputElement> {
+export type Props = InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
   label?: string;
   ref?: Ref<HTMLInputElement>;
-}
+};
 
 export const Input = ({ className, error, id, label, name, ref, ...rest }: Props): ReactNode => {
   const errorId = error ? `${id ?? name ?? 'input'}-error` : undefined;

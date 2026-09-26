@@ -2,10 +2,10 @@ import type { ReactNode } from 'react';
 
 import cn from 'classnames';
 
-export interface Props {
+export type Props = {
   completed: boolean;
   onToggle: () => void;
-}
+};
 
 export const TodoStatusToggle = ({ completed, onToggle }: Props): ReactNode => (
   <button

@@ -5,11 +5,11 @@ import { Outlet } from 'react-router-dom';
 import { useTheme } from '../../hooks/theme/use-theme';
 import { Header } from '../header/header';
 
-export interface Props {
+export type Props = {
   isAuthenticated?: boolean;
   onLogout?: () => void;
   user?: null | { email: string; name?: string };
-}
+};
 
 export const Layout = ({ isAuthenticated, onLogout, user }: Props): ReactNode => {
   const { theme, toggle } = useTheme();

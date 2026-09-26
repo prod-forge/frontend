@@ -2,7 +2,7 @@ import { LoggerLevels, type Stdout } from 'logrock';
 
 export const consoleLogger: Stdout = (level, message, ctx) => {
   const label = ctx ? `[${ctx}]` : '';
-  const text = `${label} ${String(message)}`.trim();
+  const text = `${label} ${message}`.trim();
 
   if (level === LoggerLevels.error) {
     // eslint-disable-next-line no-console

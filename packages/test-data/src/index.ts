@@ -1,17 +1,17 @@
 export type Order = 'asc' | 'desc';
 export type SortBy = 'completed' | 'title';
 
-export interface Todo {
+export type Todo = {
   completed: boolean;
   description: string;
   id: string;
   title: string;
-}
+};
 
-export interface TodosResponse {
+export type TodosResponse = {
   data: Todo[];
   meta: { limit: number; offset: number; total: number };
-}
+};
 
 export const todos: TodosResponse = {
   data: [

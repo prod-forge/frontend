@@ -9,31 +9,31 @@ const TIMER_DURATION_MS = 4000;
 const TICK_COUNT = 100;
 const TICK_MS = TIMER_DURATION_MS / TICK_COUNT;
 
-export interface Props {
+export type Props = {
   errors?: ErrorItem[];
   onDismiss: (id: string) => void;
-}
+};
 
-interface ErrorItem {
+type ErrorItem = {
   id: string;
   message: string;
-}
+};
 
-interface State {
+type State = {
   paused: boolean;
   timer: null | TimerState;
   trackedId: string | undefined;
-}
+};
 
-interface TimerState {
+type TimerState = {
   id: string;
   progress: number;
-}
+};
 
 const INITIAL_STATE: State = { paused: false, timer: null, trackedId: undefined };
 
 export const ErrorNotifier = ({ errors = [], onDismiss }: Props): ReactNode => {
-  const activeError = errors[0];
+  const activeError = errors.at(0);
   const activeErrorId = activeError?.id;
 
   const [state, setState] = useState<State>(INITIAL_STATE);
@@ -41,7 +41,6 @@ export const ErrorNotifier = ({ errors = [], onDismiss }: Props): ReactNode => {
   // Derived-state-during-render: reset timer atomically when the active error changes.
   // React re-renders immediately from this setState without committing to the DOM.
   if (state.trackedId !== activeErrorId) {
-    // eslint-disable-next-line @eslint-react/set-state-in-effect
     setState({
       paused: false,
       timer: activeErrorId ? { id: activeErrorId, progress: 100 } : null,

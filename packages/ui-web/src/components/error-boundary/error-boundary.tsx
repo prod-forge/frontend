@@ -2,14 +2,14 @@ import type { ErrorInfo, ReactNode } from 'react';
 
 import { Component } from 'react';
 
-interface Props {
+type Props = {
   readonly children: ReactNode;
   readonly onError?: (error: Error, info: ErrorInfo) => void;
-}
+};
 
-interface State {
+type State = {
   readonly hasError: boolean;
-}
+};
 
 export class ErrorBoundary extends Component<Props, State> {
   static displayName = 'ErrorBoundary';

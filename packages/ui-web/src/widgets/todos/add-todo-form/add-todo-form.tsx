@@ -18,9 +18,9 @@ const formSchema = z.object({
   title: titleSchema,
 });
 
-export interface Props {
+export type Props = {
   onSubmit: (values: TodoFormValues) => void;
-}
+};
 
 export type TodoFormValues = z.infer<typeof formSchema>;
 

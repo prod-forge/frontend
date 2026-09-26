@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 
-export interface Props {
+export type Props = {
   id: string;
   onChange: (value: string) => void;
   placeholder?: string;
   value: string;
-}
+};
 
 export const SearchField = ({ id, onChange, placeholder, value }: Props): ReactNode => (
   <div className="group flex min-h-10 w-full items-center gap-2 rounded-md border border-line bg-card px-3 transition duration-[120ms] hover:border-fg-muted focus-within:border-brand focus-within:shadow-[0_0_0_3px_var(--color-brand-soft)] motion-reduce:transition-none">

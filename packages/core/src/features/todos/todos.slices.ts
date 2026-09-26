@@ -164,12 +164,13 @@ const todosSlice = createSlice({
 
         if (idx !== -1) {
           const optimistic = state.items[idx];
+          // API may omit fields on creation; keep optimistic values as fallback
+          const created: Partial<Todo> = action.payload;
           state.items[idx] = {
             ...optimistic,
             ...action.payload,
-            // API may omit fields on creation; keep optimistic values as fallback
-            description: action.payload.description ?? optimistic.description,
-            title: action.payload.title || optimistic.title,
+            description: created.description ?? optimistic.description,
+            title: created.title || optimistic.title,
           };
         }
       })

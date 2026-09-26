@@ -96,7 +96,7 @@ describe('ErrorBoundary', () => {
 
     it('calls window.location.reload when the reload button is clicked', async () => {
       const reload = vi.fn();
-      vi.stubGlobal('location', { ...window.location, reload });
+      vi.stubGlobal('location', { href: window.location.href, reload });
       const user = userEvent.setup();
 
       render(

@@ -6,15 +6,15 @@ import { filterTodos, todos as seedData, sortTodos } from '@prod-forge-todolist-
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-interface Fixtures {
-  coverage: void;
-  mockApi: void;
-}
+type Fixtures = {
+  coverage: undefined;
+  mockApi: undefined;
+};
 
 export const test = base.extend<Fixtures>({
   coverage: [
     async ({ page }, use, testInfo): Promise<void> => {
-      await use();
+      await use(undefined);
 
       const coverage = await page.evaluate(() => (window as unknown as { __coverage__?: unknown }).__coverage__);
       // window.__coverage__ is only populated when vite-plugin-istanbul is active.
@@ -107,7 +107,7 @@ export const test = base.extend<Fixtures>({
         });
       });
 
-      await use();
+      await use(undefined);
     },
     { auto: true },
   ],

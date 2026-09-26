@@ -10,13 +10,13 @@ type BackendErrorCode =
   | 'USER_IS_NOT_AUTHORIZED'
   | 'USER_NOT_FOUND';
 
-interface BackendErrorResponse {
+type BackendErrorResponse = {
   readonly code: string;
   readonly details: Record<string, unknown>;
   readonly message: string;
   readonly status: number;
   readonly traceId: string;
-}
+};
 
 const ERROR_MESSAGES: Record<BackendErrorCode, string> = {
   DATABASE_ERROR: 'A storage error occurred. Please try again later.',
@@ -39,7 +39,7 @@ export class BackendError extends Error {
   readonly traceId: string;
 
   constructor(response: BackendErrorResponse) {
-    super(ERROR_MESSAGES[response.code as BackendErrorCode] ?? FALLBACK_MESSAGE);
+    super((ERROR_MESSAGES as Partial<Record<string, string>>)[response.code] ?? FALLBACK_MESSAGE);
     this.name = 'BackendError';
     this.code = response.code;
     this.status = response.status;

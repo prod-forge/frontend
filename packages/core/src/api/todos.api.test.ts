@@ -86,9 +86,7 @@ describe('todosApi.delete', () => {
     it('returns undefined', async () => {
       vi.mocked(apiRequest).mockResolvedValueOnce(undefined);
 
-      const result = await todosApi.delete(todo.id);
-
-      expect(result).toBeUndefined();
+      await expect(todosApi.delete(todo.id)).resolves.toBeUndefined();
     });
   });
 });
