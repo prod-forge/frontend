@@ -40,6 +40,7 @@ const jsFiles = ['**/*.{js,jsx,mjs,cjs}'];
 const tsFiles = ['**/*.{ts,tsx,mts,cts}'];
 
 const sourceFiles = ['**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'];
+const testFiles = ['**/*.{spec,test}.{js,jsx,ts,tsx}'];
 
 const languageOptions: Linter.Config['languageOptions'] = {
   ecmaVersion: 2024,
@@ -92,7 +93,6 @@ const typescriptConfig: Linter.Config = {
     '@sonar': sonar,
     '@typescript-eslint': tseslint.plugin,
     '@unicorn': unicorn,
-    'import/parsers': tsParser,
   },
   rules: {
     '@check-file/filename-naming-convention': [
@@ -251,16 +251,19 @@ const customJsConfig: Linter.Config = {
   ...js.configs.recommended,
 };
 
-const reactConfig: Linter.Config = {
-  settings: {
-    react: {
-      version: 'detect',
+// Separate blocks: spreading both presets into one object kept only the plugins and rules of the last one.
+const reactConfigs: Linter.Config[] = [
+  {
+    ...reactPlugin.configs['recommended-typescript'],
+    files: sourceFiles,
+    rules: {
+      ...reactPlugin.configs['recommended-typescript'].rules,
+      // react-hooks/rules-of-hooks reports the same problems.
+      '@eslint-react/rules-of-hooks': 'off',
     },
   },
-  ...reactHooksPlugin.configs.flat.recommended,
-  ...reactPlugin.configs['recommended-typescript'],
-  files: sourceFiles,
-};
+  { ...reactHooksPlugin.configs.flat.recommended, files: sourceFiles },
+];
 
 const disableDefaultExportBlockingForStorybook: Linter.Config = {
   files: [
@@ -287,7 +290,7 @@ const dtsOverrides: Linter.Config = {
 };
 
 const testOverrides: Linter.Config = {
-  files: ['**/*.spec.{ts,tsx}', '**/__fixtures__/**'],
+  files: [...testFiles, '**/__fixtures__/**'],
   languageOptions: {
     globals: {
       ...globals.jest,
@@ -319,13 +322,11 @@ const testOverrides: Linter.Config = {
   },
 };
 
-const reactTestFiles = ['**/*.{spec,test}.{ts,tsx}'];
-
 // Testing Library and jest-dom rules for the component tests of React projects.
 const reactTestConfigs: Linter.Config[] = [
   {
     ...testingLibraryPlugin.configs['flat/react'],
-    files: reactTestFiles,
+    files: testFiles,
     // Only report in files that import Testing Library: Playwright specs share the getBy* names.
     settings: {
       'testing-library/custom-queries': 'off',
@@ -333,7 +334,7 @@ const reactTestConfigs: Linter.Config[] = [
       'testing-library/utils-module': 'off',
     },
   },
-  { ...jestDomPlugin.configs['flat/recommended'], files: reactTestFiles },
+  { ...jestDomPlugin.configs['flat/recommended'], files: testFiles },
 ];
 
 const fixturesOverrides: Linter.Config = {
@@ -358,7 +359,7 @@ export default [
   customPackageJsonConfig,
   packageJsonConfig.configs.stylistic,
   customJsConfig,
-  reactConfig,
+  ...reactConfigs,
   disableDefaultExportBlockingForStorybook,
   dtsOverrides,
   testOverrides,
