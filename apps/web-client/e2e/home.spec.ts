@@ -101,7 +101,7 @@ test.describe('Home page', () => {
     await page.route(/\/api\/v1\/todos/, async (route) => {
       if (route.request().method() === 'POST') {
         return route.fulfill({
-          body: JSON.stringify({ completed: false, description: '', id: 'new-id', title: '' }),
+          body: JSON.stringify({ data: { completed: false, description: '', id: 'new-id', title: '' } }),
           contentType: 'application/json',
           status: 201,
         });

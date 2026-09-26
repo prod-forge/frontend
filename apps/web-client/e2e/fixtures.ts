@@ -54,7 +54,7 @@ export const test = base.extend<Fixtures>({
             items[idx] = { ...items[idx], ...body };
 
             return route.fulfill({
-              body: JSON.stringify(items[idx]),
+              body: JSON.stringify({ data: items[idx] }),
               contentType: 'application/json',
               status: 200,
             });
@@ -84,7 +84,11 @@ export const test = base.extend<Fixtures>({
           };
           items = [newTodo, ...items];
 
-          return route.fulfill({ body: JSON.stringify(newTodo), contentType: 'application/json', status: 201 });
+          return route.fulfill({
+            body: JSON.stringify({ data: newTodo }),
+            contentType: 'application/json',
+            status: 201,
+          });
         }
 
         const query = url.searchParams.get('query') ?? '';
