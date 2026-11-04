@@ -5,7 +5,7 @@
     <!--
       Local-dev fallback. CloudFront serves the same policy as a response header (the enforced source of truth);
       frame-ancestors is honored only there. style-src 'unsafe-inline' stays because Sentry Replay and runtime
-      style attributes need it; there is no 'unsafe-eval'. docs/security.md has the details.
+      style attributes may need it (unverified); there is no 'unsafe-eval'. docs/security.md has the details.
     -->
     <meta
       http-equiv="Content-Security-Policy"
