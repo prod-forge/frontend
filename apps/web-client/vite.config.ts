@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-import { assertBuildEnv, stripUnsetHtmlEnv } from './vite.build-env';
+import { buildEnvGuard, stripUnsetHtmlEnv } from './vite.build-env';
 
 const require = createRequire(import.meta.url);
 const { version } = require('./package.json') as { version: string };
@@ -30,11 +30,11 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
   }
 
   const isBuild = command === 'build';
-  assertBuildEnv(process.env, isBuild);
   const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
   const isAnalyze = process.env.ANALYZE === 'true';
 
   const plugins: PluginOption[] = [
+    buildEnvGuard(process.env),
     react(),
     tailwindcss(),
     ...extraPlugins,

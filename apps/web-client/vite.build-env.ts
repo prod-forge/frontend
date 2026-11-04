@@ -1,3 +1,5 @@
+import type { Plugin } from 'vite';
+
 export function assertBuildEnv(env: Record<string, string | undefined>, isBuild: boolean): void {
   if (!isBuild) {
     return;
@@ -12,6 +14,17 @@ export function assertBuildEnv(env: Record<string, string | undefined>, isBuild:
   if (!apiBaseUrl.endsWith('/')) {
     throw new Error('VITE_API_BASE_URL must end with a trailing slash');
   }
+}
+
+// Runs the guard only when `vite build` resolves its config; tools that merely load vite.config.ts (knip) are unaffected.
+export function buildEnvGuard(env: Record<string, string | undefined>): Plugin {
+  return {
+    apply: 'build',
+    configResolved(): void {
+      assertBuildEnv(env, true);
+    },
+    name: 'build-env-guard',
+  };
 }
 
 // Vite substitutes %VITE_*% in index.html but leaves the token as-is when the variable is unset

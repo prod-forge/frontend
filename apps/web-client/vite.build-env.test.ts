@@ -1,4 +1,4 @@
-import { assertBuildEnv, stripUnsetHtmlEnv } from './vite.build-env';
+import { assertBuildEnv, buildEnvGuard, stripUnsetHtmlEnv } from './vite.build-env';
 
 describe('assertBuildEnv', () => {
   describe('negative cases', () => {
@@ -48,6 +48,33 @@ describe('stripUnsetHtmlEnv', () => {
       expect(stripUnsetHtmlEnv(html)).toBe(
         `<meta content="connect-src 'self' https://api.example.com/v1/ https://*.sentry.io">`,
       );
+    });
+  });
+});
+
+describe('buildEnvGuard', () => {
+  const runConfigResolved = (env: Record<string, string | undefined>): void => {
+    const hook = buildEnvGuard(env).configResolved as () => void;
+    hook();
+  };
+
+  describe('negative cases', () => {
+    it('does not check the env while the config is only being evaluated (dev server, knip)', () => {
+      expect(() => buildEnvGuard({})).not.toThrow();
+    });
+
+    it('throws from configResolved when VITE_API_BASE_URL is missing', () => {
+      expect(() => runConfigResolved({})).toThrow('VITE_API_BASE_URL is required');
+    });
+  });
+
+  describe('positive cases', () => {
+    it('applies only to vite build', () => {
+      expect(buildEnvGuard({}).apply).toBe('build');
+    });
+
+    it('accepts a valid VITE_API_BASE_URL in configResolved', () => {
+      expect(() => runConfigResolved({ VITE_API_BASE_URL: 'https://api.example.com/v1/' })).not.toThrow();
     });
   });
 });

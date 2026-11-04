@@ -209,8 +209,10 @@ The `Suspense` boundary sits in a pathless route inside `LayoutContainer`, not a
 ```
 default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;
 connect-src 'self' %VITE_API_BASE_URL% %VITE_ASSETS_BASE_URL% https://*.sentry.io; font-src 'self' data:;
-object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 ```
+
+`worker-src 'self' blob:` is there for Sentry Replay: it compresses recordings in a Web Worker created from a `blob:` URL. Without it the worker falls back to `default-src 'self'`, is blocked, and Replay sends uncompressed payloads.
 
 `script-src 'self'` forbids inline scripts, so the theme bootstrap that used to be inline in `index.html` now lives in `src/theme-init.ts`, loaded as a module before `main.tsx`. Vite bundles both module scripts into one entry and evaluates `theme-init.ts` first, so `data-theme` is set before React renders and dark mode does not flash light (covered by `e2e/theme.spec.ts`). The alternative, a per-response nonce, needs a server that rewrites HTML, which a static S3/CloudFront site does not have. `style-src` keeps `'unsafe-inline'` so that `style` attributes set at runtime (by React or third-party code) are not blocked.
 
@@ -295,6 +297,8 @@ dist/
 ├── icons.svg
 └── static/             # Hashed JS, CSS, assets; one JS chunk per lazy route
 ```
+
+A build without a valid `VITE_API_BASE_URL` (missing, or without a trailing `/`) fails with a clear message instead of producing a bundle that calls `undefinedtodos`. The check is `assertBuildEnv` in `vite.build-env.ts`, run by the `buildEnvGuard` plugin (`apply: 'build'`, `configResolved` hook). It runs only during `vite build`, not when the config file is merely evaluated, so the dev server and tools that load `vite.config.ts` (knip) work without the variable.
 
 Sentry source maps are uploaded automatically when `SENTRY_AUTH_TOKEN` is set. Bundle analysis via `stats.html` when `ANALYZE=true`.
 
