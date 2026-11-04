@@ -31,10 +31,11 @@ Every major technical decision is documented and explained.
 | Layer          | Tools                                            |
 | -------------- | ------------------------------------------------ |
 | Web Client     | React · Vite · Redux Toolkit · Tailwind CSS · NX |
+| Mobile Client  | Expo · React Native · Redux Toolkit              |
 | Deploy         | AWS S3 · CloudFront · ECR · ECS                  |
 | Backend        | NestJS · Prisma · PostgreSQL · Redis · Docker    |
-| Infrastructure | AWS · RDS · ElasticCache                         |
-| Observability  | Prometheus · Grafana · Loki · Promtail           |
+| Infrastructure | AWS · RDS · ElastiCache                          |
+| Observability  | Prometheus · Grafana · Loki · Promtail · Tempo   |
 | Quality        | ESLint · Prettier · Husky · Commitlint · CI/CD   |
 
 # Table of contents
@@ -228,7 +229,7 @@ All packages use the `@prod-forge-todolist-frontend/` scope: `core`, `ui-web`, `
 
 ### Why the scope is not `@prod-forge`
 
-The scope was chosen for the first version of the repository, and it reads as the name of the project, not as a brand. A shorter `@prod-forge` scope would be tidier, but renaming touches every import in every package, the path aliases in `tsconfig.base.json`, the Vite and Jest mappings and the lockfile, and it adds no value to the reader: the packages are private and never published to a registry. So the name stays as it is.
+The scope was chosen for the first version of the repository, and it reads as the name of the project, not as a brand. A shorter `@prod-forge` scope would be tidier, but renaming touches every import in every package, the path aliases in `tsconfig.base.json`, the Vite, Vitest and Jest mappings and the lockfile, and it adds no value to the reader: the packages are never published to a registry. So the name stays as it is.
 
 ## NX
 
@@ -250,12 +251,13 @@ npx nx run-many -t test
 
 ```json
 {
-  "@prod-forge-todolist-frontend/core": ["packages/core/src/index.ts"],
-  "@prod-forge-todolist-frontend/ui-web": ["packages/ui-web/src/index.ts"]
+  "@prod-forge-todolist-frontend/core": ["./packages/core/src/index.ts"],
+  "@prod-forge-todolist-frontend/test-data": ["./packages/test-data/src/index.ts"],
+  "@prod-forge-todolist-frontend/ui-web": ["./packages/ui-web/src/index.ts"]
 }
 ```
 
-Vite configs in each package add matching `resolve.alias` entries so Vite resolves the same paths during dev and test.
+The Vite configs of `web-client` and `ui-web` add matching `resolve.alias` entries, and the mobile client maps the same packages in `moduleNameMapper` of its Jest config, so dev and tests resolve the same sources.
 
 ---
 

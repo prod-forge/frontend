@@ -61,9 +61,9 @@ Source maps are built as `hidden`: the bundle has no `sourceMappingURL` comment,
 
 ## Assets CDN
 
-Images, icons and JSON configuration are not bundled. They live in the `assets/` folder, are synced to a separate S3 bucket and are served through the same CloudFront distribution under `/assets`. The application reads the base URL at build time from `VITE_ASSETS_BASE_URL`. Why this is done, and what it gives to designers, is in [Assets Management](assets-management.md).
+Media is not bundled. It lives in the `assets/` folder (today two status icons), is synced to a separate S3 bucket and is served through the same CloudFront distribution under `/assets`. The application reads the base URL at build time from `VITE_ASSETS_BASE_URL`. Why this is done, and what it gives to designers, is in [Assets Management](assets-management.md).
 
-For performance this has two effects. The bundle does not grow when an image is added, and a changed image is deployed without rebuilding the application. The cost is one more origin to connect to, which is why `VITE_ASSETS_BASE_URL` is also listed in `connect-src` of the Content Security Policy (see [Security](security.md)).
+For performance this has two effects. The bundle does not grow when an image is added, and a changed image is deployed without rebuilding the application. In production the assets share the origin of the application, so there is no extra connection. In development they come from `localhost:4000`, which is why `VITE_ASSETS_BASE_URL` is also listed in `connect-src` of the Content Security Policy in `index.html` (see [Security](security.md)).
 
 ## Performance Budget
 
@@ -73,7 +73,7 @@ A proposal that fits this repository:
 
 - Add `size-limit` with `@size-limit/file` to `apps/web-client`, pointing at `dist/static/*.js`.
 - Start with the numbers measured on the current build plus a margin of about 10%, and set them per chunk: the entry chunk strictest, route chunks looser.
-- Run it as `npm run size` after `npm run build:web-client` in the `build` job of `ci.yml`, so a pull request that adds a heavy dependency fails with a message that names the file and the limit.
+- Run it as `npm run size` after `npm run build:web-client` as a step of the `verify` job in `ci.yml`, so a pull request that adds a heavy dependency fails with a message that names the file and the limit.
 - Review the budget when the limit is hit. Raising it is a legitimate answer, but it becomes a visible, reviewed decision instead of a silent one.
 
 It is not done here because the application is small and `ci.yml` is disabled (see [Testing Strategy](testing-strategy.md)). A budget in a pipeline that does not run would only look like a guarantee.

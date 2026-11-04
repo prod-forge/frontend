@@ -58,7 +58,7 @@ For small fixes (typos, broken links), you can submit a pull request directly.
 ### 2. Fork the repository
 
 ```shell
-git clone git@github.com:prod-forge/frontend.git
+git clone git@github.com:<your-user>/frontend.git
 cd frontend
 ```
 

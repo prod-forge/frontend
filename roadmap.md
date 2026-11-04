@@ -9,7 +9,10 @@ Open work only. Everything else is shipped, except that CI is disabled on purpos
   - Enable CI (disabled on purpose for now)
   - Feature flags
   - Pin GitHub Actions to commit SHAs
+  - Deploy Storybook
 - Testing
   - A/B testing
+  - Linux visual snapshots
+  - Performance budget with `size-limit`
 - Architecture Decisions
   - Cost analysis

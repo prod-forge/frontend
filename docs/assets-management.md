@@ -16,17 +16,17 @@ The same principle extends beyond images. A JSON config file on S3 can hold feat
 
 ## How it works
 
-Assets live in a dedicated `assets/` directory at the root of the monorepo. During CI/CD, this directory is synced to S3 independently of the application build. The application references assets by their S3 URL rather than bundling them as imports.
+Assets live in a dedicated `assets/` directory at the root of the monorepo. On a release, the `Deploy assets` step of `.github/workflows/cd.yml` syncs this directory to the assets bucket, separately from the application build. The application references assets by their S3 URL rather than bundling them as imports.
 
 ```
 assets/
-  icons/
-  images/
-  config/
-    feature-flags.json
+  completed.svg
+  todo.svg
 ```
 
-In production, the application fetches assets from S3 via CloudFront. Updating an asset is a single `aws s3 cp` command in the CI pipeline — or a manual upload for non-engineers.
+Today it holds the two status icons of a todo item. `todo-item` builds the URL from the base URL and the status (`${VITE_ASSETS_BASE_URL}/todo.svg`). Folders such as `images/` or a `config/` JSON file would follow the same rule; they are examples, not part of this repository.
+
+In production, the application fetches assets from S3 via CloudFront. The release workflow runs `aws s3 sync ./assets` with an immutable `Cache-Control` header; a manual upload to the bucket works for non-engineers, but a changed file under a cached name needs a new name or a CloudFront invalidation.
 
 ## Local development
 
@@ -36,7 +36,7 @@ In local development, a lightweight static server replicates the S3 behavior:
 npm run dev:assets   # serves assets/ at http://localhost:4000
 ```
 
-The application reads a base URL from an environment variable. In development this points to `localhost:4000`. In production it points to the CloudFront distribution. No code changes are needed between environments.
+The application reads the base URL from `VITE_ASSETS_BASE_URL` at build time. In development `.env.example` points it to `http://localhost:4000`. In the release build `cd.yml` sets it to `<CLOUDFRONT_URL>/assets`, the CloudFront distribution. Storybook serves the same folder from its own origin and sets the variable to an empty string. No code changes are needed between environments.
 
 ## What belongs in assets
 
@@ -44,4 +44,4 @@ Not everything should be externalized. The rule is straightforward: if an asset 
 
 Good candidates for S3: marketing images, banners, illustrations, icons that a designer might update, localization files, remote configuration, feature flags.
 
-Poor candidates: component-level SVG icons used in code, loading spinners, error state illustrations tied to specific error codes.
+Poor candidates: component-level SVG icons used in code, loading spinners, error state illustrations tied to specific error codes. The status icons above are on S3 on purpose, as the example of an asset a designer can replace without a release.

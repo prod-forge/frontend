@@ -16,7 +16,7 @@ design-tokens  ->  ui-web components  ->  ui-web widgets  ->  apps
 - **Tokens** are the values: colors, spacing, radii, typography, shadows, transitions. They live in `packages/design-tokens`.
 - **Components** are small stateless UI pieces such as `button`, `input`, `todo-item`. They live in `packages/ui-web/src/components`.
 - **Widgets** are larger pieces assembled from components, such as `login-form` or `add-todo-form`. They live in `packages/ui-web/src/widgets`.
-- **Apps** wire widgets to state and routing. `apps/web-client` uses `ui-web` and the CSS tokens. `apps/mobile-client` is a React Native app: it cannot use web components, so it shares only the tokens.
+- **Apps** wire widgets to state and routing. `apps/web-client` uses `ui-web` and the CSS tokens. `apps/mobile-client` is a React Native app: it cannot use web components, so from the design system it shares only the tokens (the store and API layer come from `core`).
 
 The rule that holds the chain together: a layer never imports from a layer above it. Tokens know nothing about components, and `ui-web` knows nothing about the apps.
 

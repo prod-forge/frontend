@@ -25,7 +25,7 @@ endOfLine: lf
 - Avoid `any`. Use `unknown` when the type is genuinely unknown and narrow it explicitly.
 - Prefer `type` over `interface`.
 - Prefer `readonly` where mutation is not needed.
-- Explicit return types are required for exported functions (ESLint errors on missing ones).
+- Explicit return types are required on functions (`@typescript-eslint/explicit-function-return-type`).
 - Avoid unnecessary generics. Only parameterize when the type parameter is actually useful.
 
 ```ts
@@ -102,7 +102,7 @@ export const Input = ({ label, disabled = false }: Props): ReactNode => (
 Input.displayName = 'Input';
 ```
 
-When a component extends an HTML element, use `extends`:
+When a component wraps an HTML element, intersect its attributes with the own props:
 
 ```tsx
 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
@@ -124,12 +124,12 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 ```ts
 type UseThemeReturn = {
-  theme: 'light' | 'dark';
+  theme: Theme;
   toggle: () => void;
 };
 
 export function useTheme(): UseThemeReturn {
-  const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme);
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
   ...
   return { theme, toggle };
 }
@@ -147,9 +147,19 @@ export function useTheme(): UseThemeReturn {
 - Optimistic updates are applied in `pending` and rolled back in `rejected`.
 
 ```ts
-export const deleteTodo = createAsyncThunk<string, string>('todos/delete', (id) => {
-  return todosApi.delete(id).then(() => id);
-});
+export const deleteTodo = createAsyncThunk<string, string, { rejectValue: { silent: boolean } }>(
+  'todos/delete',
+  async (id, { rejectWithValue }) => {
+    if (id.startsWith(TEMP_ID_PREFIX)) {
+      return rejectWithValue({ silent: true });
+    }
+
+    await todosApi.delete(id);
+
+    return id;
+  },
+  { serializeError: serializeApiError },
+);
 ```
 
 **Selectors** — each feature has its own selectors file (`{name}.selectors.ts`):
@@ -221,21 +231,19 @@ const variantClasses: Record<ButtonVariant, string> = {
 
 Enforced by `eslint-plugin-perfectionist`. Order within a file:
 
-1. `type` imports from external packages
-2. Value imports from external packages
-3. `type` imports from internal packages (`@prod-forge-todolist-frontend/*`)
-4. Value imports from internal packages
-5. Relative imports
+1. `type` imports from packages (external and `@prod-forge-todolist-frontend/*`), sorted naturally by path
+2. Value imports from packages (external and `@prod-forge-todolist-frontend/*`), sorted naturally by path
+3. Relative imports
+
+The workspace scope is treated like any other package, so `@prod-forge-todolist-frontend/core` sorts among the externals.
 
 ```ts
+import type { LoginValues } from '@prod-forge-todolist-frontend/core';
 import type { ReactNode } from 'react';
 
+import { loginSchema } from '@prod-forge-todolist-frontend/core';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-
-import type { LoginValues } from '@prod-forge-todolist-frontend/core';
-
-import { loginSchema } from '@prod-forge-todolist-frontend/core';
 
 import { Button } from '../button/button';
 import { Input } from '../input/input';
@@ -270,7 +278,7 @@ describe('useTheme', () => {
 **Setup:**
 
 - Shared mocks (Sentry, logger) are configured in `vitest.setup.ts` — do not repeat them in individual test files.
-- `beforeEach` resets state (localStorage, mocks). `afterEach` calls `cleanup()` and `vi.restoreAllMocks()`.
+- `vitest.setup.ts` also calls `cleanup()` and `vi.clearAllMocks()` after each test; a test file resets its own state (localStorage, spies) in `beforeEach` / `afterEach`.
 - Render helpers are defined per test file as a typed function (e.g., `renderHome(options)`).
 - Use `userEvent.setup()` for simulating user interactions, not `fireEvent`.
 
@@ -284,8 +292,9 @@ describe('useTheme', () => {
 
 ## Reviewer Checklist
 
-Use this when reviewing a pull request. Items marked with ⚙️ are enforced by CI — flag them only if CI is not yet
-passing.
+Use this when reviewing a pull request. Items marked with ⚙️ are enforced by lint and the git hooks (CI is disabled, see
+[Code Quality](docs/code-quality.md#layer-5-continuous-integration)) — flag them only if `npm run lint` is not
+clean.
 
 ### General
 
@@ -340,8 +349,7 @@ passing.
 
 ### Imports
 
-- [ ] Import order follows the convention: external types → external values → internal types → internal values →
-      relative ⚙️
+- [ ] Import order follows the convention: package types → package values → relative ⚙️
 - [ ] No unused imports ⚙️
 
 ### Tests
