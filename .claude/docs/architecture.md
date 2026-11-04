@@ -301,7 +301,7 @@ dist/
 └── static/             # Hashed JS, CSS, assets; one JS chunk per lazy route
 ```
 
-A build without a valid `VITE_API_BASE_URL` (missing, or without a trailing `/`) fails with a clear message instead of producing a bundle that calls `undefinedtodos`. The check is `assertBuildEnv` in `vite.build-env.ts`, run by the `buildEnvGuard` plugin (`apply: 'build'`, `configResolved` hook). It runs only during `vite build`, not when the config file is merely evaluated, so the dev server and tools that load `vite.config.ts` (knip) work without the variable.
+A build without a valid `VITE_API_BASE_URL` (missing, or without a trailing `/`) fails with a clear message instead of producing a bundle whose requests go to a URL starting with `undefined`. The check is `assertBuildEnv` in `vite.build-env.ts`, run by the `buildEnvGuard` plugin (`apply: 'build'`, `configResolved` hook). It runs only during `vite build`, not when the config file is merely evaluated, so the dev server and tools that load `vite.config.ts` (knip) work without the variable.
 
 Sentry source maps are uploaded automatically when `SENTRY_AUTH_TOKEN` is set. Bundle analysis via `stats.html` when `ANALYZE=true`.
 
