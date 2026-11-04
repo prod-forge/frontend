@@ -48,6 +48,7 @@ export const makeTodosStore = (preloadedItems: Todo[] = [], total = 0) =>
         currentTodoStatus: 'idle',
         filters: { limit: 10, offset: 0, order: 'asc', query: '', sortBy: 'title' } as TodoFilters,
         items: preloadedItems,
+        nextOffset: preloadedItems.length,
         status: 'idle',
         total,
       } satisfies TodosState,
@@ -126,6 +127,18 @@ describe('todos slice — fetchTodos', () => {
       expect(state.total).toBe(2);
       expect(state.status).toBe('idle');
     });
+
+    it('sets nextOffset to the end of the loaded page', async () => {
+      vi.mocked(todosApi.getAll).mockResolvedValueOnce({
+        data: [todoA, todoB],
+        meta: { limit: 10, offset: 4, total: 9 },
+      });
+      const store = makeTodosStore();
+
+      await store.dispatch(fetchTodos({ ...defaultFilters, offset: 4 }));
+
+      expect(store.getState().todos.nextOffset).toBe(6);
+    });
   });
 });
 
@@ -169,6 +182,22 @@ describe('todos slice — fetchMoreTodos', () => {
       expect(state.items).toEqual([todoA, todoB, todoC]);
       expect(state.total).toBe(3);
       expect(state.status).toBe('idle');
+    });
+
+    it('advances nextOffset by the server page, not by optimistic inserts', async () => {
+      vi.mocked(todosApi.getAll).mockResolvedValueOnce(nextPage);
+      vi.mocked(todosApi.create).mockReturnValueOnce(
+        new Promise(() => {
+          return;
+        }),
+      );
+      const store = makeTodosStore([todoA], 3);
+      void store.dispatch(addTodo({ description: '', title: 'Optimistic' }));
+
+      await store.dispatch(fetchMoreTodos({ ...defaultFilters, offset: store.getState().todos.nextOffset }));
+
+      expect(todosApi.getAll).toHaveBeenCalledWith({ ...defaultFilters, offset: 1 });
+      expect(store.getState().todos.nextOffset).toBe(3);
     });
 
     it('requests the page with the given offset and leaves filters unchanged', async () => {
@@ -354,6 +383,7 @@ describe('todos slice — deleteTodo', () => {
       const state = store.getState().todos;
       expect(state.items).toEqual([todoA, todoB]);
       expect(state.total).toBe(2);
+      expect(state.nextOffset).toBe(2);
     });
 
     it('is a no-op when the id does not exist', async () => {
@@ -390,6 +420,15 @@ describe('todos slice — deleteTodo', () => {
       await store.dispatch(deleteTodo(todoA.id));
 
       expect(store.getState().todos._pendingDeletes).toEqual({});
+    });
+
+    it('decrements nextOffset once the server confirms the delete', async () => {
+      vi.mocked(todosApi.delete).mockResolvedValueOnce();
+      const store = makeTodosStore([todoA, todoB], 2);
+
+      await store.dispatch(deleteTodo(todoA.id));
+
+      expect(store.getState().todos.nextOffset).toBe(1);
     });
   });
 });
@@ -562,6 +601,7 @@ describe('todos slice — setLimit', () => {
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, offset: 30 },
             items: [],
+            nextOffset: 0,
             status: 'idle',
             total: 0,
           } satisfies TodosState,
@@ -595,6 +635,7 @@ describe('todos slice — setOffset', () => {
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, query: 'hi' },
             items: [],
+            nextOffset: 0,
             status: 'idle',
             total: 0,
           } satisfies TodosState,
@@ -628,6 +669,7 @@ describe('todos slice — setOrder', () => {
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, offset: 10 },
             items: [],
+            nextOffset: 0,
             status: 'idle',
             total: 0,
           } satisfies TodosState,
@@ -661,6 +703,7 @@ describe('todos slice — setSortBy', () => {
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, offset: 10 },
             items: [],
+            nextOffset: 0,
             status: 'idle',
             total: 0,
           } satisfies TodosState,
@@ -696,6 +739,7 @@ describe('todos slice — updateFilters', () => {
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, offset: 10 },
             items: [],
+            nextOffset: 0,
             status: 'idle',
             total: 0,
           } satisfies TodosState,

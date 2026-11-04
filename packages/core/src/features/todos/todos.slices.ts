@@ -24,6 +24,7 @@ const initialState: TodosState = {
     sortBy: 'title',
   },
   items: [],
+  nextOffset: 0,
   status: 'idle',
   total: 0,
 };
@@ -151,6 +152,7 @@ const todosSlice = createSlice({
       .addCase(fetchTodos.fulfilled, (state, action) => {
         state.status = 'idle';
         state.items = action.payload.data;
+        state.nextOffset = action.meta.arg.offset + action.payload.data.length;
         state.total = action.payload.meta.total;
       })
       .addCase(fetchTodos.rejected, (state) => {
@@ -165,6 +167,7 @@ const todosSlice = createSlice({
         state.status = 'idle';
         const loadedIds = new Set(state.items.map((t) => t.id));
         state.items.push(...action.payload.data.filter((t) => !loadedIds.has(t.id)));
+        state.nextOffset = action.meta.arg.offset + action.payload.data.length;
         state.total = action.payload.meta.total;
       })
       .addCase(fetchMoreTodos.rejected, (state) => {
@@ -233,6 +236,8 @@ const todosSlice = createSlice({
       })
       .addCase(deleteTodo.fulfilled, (state, action) => {
         delete state._pendingDeletes[action.meta.requestId];
+        // The server list shrank: re-reading one item (deduped) is safer than skipping one.
+        state.nextOffset = Math.max(0, state.nextOffset - 1);
       })
       .addCase(deleteTodo.rejected, (state, action) => {
         const snapshot = state._pendingDeletes[action.meta.requestId];

@@ -28,6 +28,8 @@ export type TodosState = {
   currentTodoStatus: CurrentTodoStatus;
   filters: TodoFilters;
   items: Todo[];
+  /** Server position after the last loaded page; optimistic inserts do not move it. */
+  nextOffset: number;
   status: TodosStatus;
   total: number;
 };

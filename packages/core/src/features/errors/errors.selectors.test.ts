@@ -25,6 +25,7 @@ const makeState = (errors: AppError[]): RootState => ({
     currentTodoStatus: 'idle',
     filters: { limit: 10, offset: 0, order: 'asc', query: '', sortBy: 'title' },
     items: [],
+    nextOffset: 0,
     status: 'idle',
     total: 0,
   },

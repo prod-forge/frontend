@@ -93,6 +93,7 @@ interface TodosState {
   items: Todo[]; // Current page of todos shown in the list.
   total: number; // Total count from last getAll response (for pagination).
   status: AsyncStatus; // 'idle' | 'loading' | 'error' — for the list fetch (fetchTodos and fetchMoreTodos).
+  nextOffset: number; // Server offset after the last loaded page (fetchTodos/fetchMoreTodos); optimistic adds do not move it, a confirmed delete lowers it by 1. Mobile "Load more" requests from here.
 
   currentTodo: Todo | null; // Todo being viewed on the detail page.
   currentTodoStatus: DetailStatus; // 'idle' | 'loading' | 'error' | 'not-found' — for detail fetch.

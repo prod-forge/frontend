@@ -154,7 +154,7 @@ Thunks are defined in `packages/core/src/features/todos/todos.slices.ts`. Each h
 | `toggleTodo`     | `string` (id)                                          | `Todo`          | Yes        |
 | `updateTodo`     | `{ id: string; title?: string; description?: string }` | `Todo`          | Yes        |
 
-`fetchTodos` replaces `items` (page-by-page navigation on web). `fetchMoreTodos` appends the page to `items`, skipping ids that are already loaded, and does not touch `filters` (the "Load more" list on mobile). Both share `status` (`loading` / `idle` / `error`) and update `total`.
+`fetchTodos` replaces `items` (page-by-page navigation on web). `fetchMoreTodos` appends the page to `items`, skipping ids that are already loaded, and does not touch `filters` (the "Load more" list on mobile). Both set `nextOffset` to `offset + data.length`; callers pass `nextOffset` (not `items.length`) as the next offset, because optimistic inserts are in `items` but not yet at a known server position. Both share `status` (`loading` / `idle` / `error`) and update `total`.
 
 **Optimistic pattern:**
 

@@ -29,6 +29,7 @@ const makeState = (overrides: { filters?: Partial<TodoFilters>; items?: Todo[]; 
       ...overrides.filters,
     },
     items: overrides.items ?? [],
+    nextOffset: 0,
     status: 'idle',
     total: overrides.total ?? 0,
   } satisfies TodosState,
