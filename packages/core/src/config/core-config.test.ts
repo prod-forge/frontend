@@ -33,12 +33,24 @@ describe('core config', () => {
   });
 
   describe('negative cases', () => {
+    it('throws a clear error when apiBaseUrl is missing', () => {
+      const config = makeConfig({ apiBaseUrl: undefined as unknown as string });
+
+      expect(() => coreConfig.configureCore(config)).toThrow('apiBaseUrl is required');
+    });
+
+    it('throws a clear error when apiBaseUrl is empty', () => {
+      expect(() => coreConfig.configureCore(makeConfig({ apiBaseUrl: '' }))).toThrow('apiBaseUrl is required');
+    });
+
     it('throws CoreNotConfiguredError when getCoreConfig is called before configureCore', () => {
       expect(() => coreConfig.getCoreConfig()).toThrow(coreConfig.CoreNotConfiguredError);
     });
 
     it('throws when apiBaseUrl does not end with a slash', () => {
-      expect(() => coreConfig.configureCore(makeConfig({ apiBaseUrl: 'https://api.test' }))).toThrow(Error);
+      expect(() => coreConfig.configureCore(makeConfig({ apiBaseUrl: 'https://api.test' }))).toThrow(
+        'apiBaseUrl must end with "/"',
+      );
     });
 
     it('stays unconfigured after a rejected configureCore call', () => {

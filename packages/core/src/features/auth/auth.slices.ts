@@ -17,6 +17,11 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(sessionRestored, (state, action) => {
+        // A login or register that finished while storage was being read is newer than the stored session.
+        if (state.token) {
+          return;
+        }
+
         state.token = action.payload.token;
         state.user = action.payload.user;
       })

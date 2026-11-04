@@ -43,8 +43,8 @@ export const hydrateAuth = createAsyncThunk<AuthUser | null, void, { state: Root
       dispatch(sessionRestored({ token, user }));
 
       return user;
-    } catch {
-      logger.warn('Failed to restore the auth session', 'auth/hydrate');
+    } catch (error) {
+      logger.error(error, 'auth/hydrate');
 
       return null;
     }

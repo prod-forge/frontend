@@ -21,6 +21,10 @@ export class CoreNotConfiguredError extends Error {
 let currentConfig: CoreConfig | null = null;
 
 export function configureCore(config: CoreConfig): void {
+  if (typeof config.apiBaseUrl !== 'string' || config.apiBaseUrl === '') {
+    throw new Error('configureCore: apiBaseUrl is required (on web, set VITE_API_BASE_URL).');
+  }
+
   if (!config.apiBaseUrl.endsWith('/')) {
     throw new Error(`configureCore: apiBaseUrl must end with "/", received "${config.apiBaseUrl}".`);
   }

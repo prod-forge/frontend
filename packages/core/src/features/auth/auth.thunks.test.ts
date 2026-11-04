@@ -6,7 +6,7 @@ import { errorsReducer } from '../errors/errors.slice';
 import { todosReducer } from '../todos/todos.slices';
 import { FAKE_TOKEN, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from './auth.constants';
 import { selectIsAuthenticated } from './auth.selectors';
-import { authReducer } from './auth.slices';
+import { authReducer, login } from './auth.slices';
 import { hydrateAuth } from './auth.thunks';
 
 const reducer = { auth: authReducer, errors: errorsReducer, todos: todosReducer };
@@ -65,16 +65,31 @@ describe('hydrateAuth', () => {
       expect(isAuthenticated(store)).toBe(false);
     });
 
-    it('finishes hydration unauthenticated and logs a warning when storage fails', async () => {
+    it('finishes hydration unauthenticated and logs the storage error when storage fails', async () => {
       const { logger, storage } = getCoreConfig();
-      vi.mocked(storage.getItem).mockRejectedValueOnce(new Error('storage unavailable'));
+      const storageError = new Error('storage unavailable');
+      vi.mocked(storage.getItem).mockRejectedValueOnce(storageError);
       const store = makeStore();
 
       await store.dispatch(hydrateAuth());
 
       expect(isAuthenticated(store)).toBe(false);
       expect(store.getState().auth.hydration).toBe('done');
-      expect(logger.warn).toHaveBeenCalledWith('Failed to restore the auth session', 'auth/hydrate');
+      expect(logger.error).toHaveBeenCalledWith(storageError, 'auth/hydrate');
+    });
+
+    it('does not overwrite a session from a login that finished during hydration', async () => {
+      await seedStorage({
+        [TOKEN_STORAGE_KEY]: 'stale-token',
+        [USER_STORAGE_KEY]: JSON.stringify({ email: 'old@b.com' }),
+      });
+      const store = makeStore();
+
+      const hydration = store.dispatch(hydrateAuth());
+      store.dispatch(login({ email: 'new@b.com' }));
+      await hydration;
+
+      expect(store.getState().auth).toEqual({ hydration: 'done', token: FAKE_TOKEN, user: { email: 'new@b.com' } });
     });
   });
 
