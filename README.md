@@ -108,9 +108,8 @@ Every major technical decision is documented and explained.
 
 - [6. Styles Management](docs/styles-management.md)
   - [Design Tokens](docs/styles-management.md#design-tokens)
-  - [Storybook](docs/styles-management.md#storybook)
   - [Tailwind CSS](docs/styles-management.md#tailwind-css)
-  - [Accessibility](docs/styles-management.md#accessibility)
+  - [Why Accessibility Is in the Pipeline](docs/styles-management.md#why-accessibility-is-in-the-pipeline)
 
 <!-- -->
 
@@ -119,6 +118,18 @@ Every major technical decision is documented and explained.
   - [How it Works](docs/assets-management.md#how-it-works)
   - [Local Development](docs/assets-management.md#local-development)
   - [What Belongs in Assets](docs/assets-management.md#what-belongs-in-assets)
+
+<!-- -->
+
+- [8. Design System](docs/design-system.md)
+  - [What a Design System Is Here](docs/design-system.md#what-a-design-system-is-here)
+  - [Token Pipeline](docs/design-system.md#token-pipeline)
+  - [Theming](docs/design-system.md#theming)
+  - [Component Anatomy](docs/design-system.md#component-anatomy)
+  - [Storybook as the Contract](docs/design-system.md#storybook-as-the-contract)
+  - [Visual Regression](docs/design-system.md#visual-regression)
+  - [Accessibility Testing](docs/design-system.md#accessibility-testing)
+  - [Designer Workflow](docs/design-system.md#designer-workflow)
 
 <!-- -->
 
