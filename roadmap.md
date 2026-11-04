@@ -14,5 +14,5 @@
   - [ ] Build artifact
   - [ ] Deploy artifact
 - [ ] CD Terraform
-- [ ] Docs
+- [✅] Docs
 - [✅] Mobile client

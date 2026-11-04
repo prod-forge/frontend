@@ -144,6 +144,8 @@ Worth recording, for example:
 
 ### REVIEW.md
 
+This repository's file is [REVIEW.md](../REVIEW.md).
+
 A code-style reference Claude fills out accurately when the project already has solid lint/Prettier rules and enough
 existing code to learn patterns from.
 
@@ -158,6 +160,8 @@ by hand for files nobody should review:
 ```
 
 ### docs/
+
+This repository keeps them in [.claude/docs/](../.claude/docs/).
 
 Keep at least basic docs (`architecture.md`, `api.md`, `data-schema.md`, `developers-guide.md`) — they help both Claude
 and developers. Then tell Claude to keep them current via `CLAUDE.md`:

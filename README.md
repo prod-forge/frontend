@@ -56,16 +56,11 @@ Every major technical decision is documented and explained.
 <!-- -->
 
 - [3. Development Workflow](docs/development-workflow.md)
-  - [Task Management](docs/development-workflow.md#task-management)
-  - [Git Flow](docs/development-workflow.md#git-flow)
-    - [Branch Naming Convention](docs/development-workflow.md#branch-naming-convention)
-    - [Commit Conventions](docs/development-workflow.md#commit-conventions)
-  - [Feature Workflow](docs/development-workflow.md#feature-workflow)
-  - [Bug Fixing Workflow](docs/development-workflow.md#bug-fixing-workflow)
-  - [Code Review](docs/development-workflow.md#code-review)
-  - [Squash Merge Strategy](docs/development-workflow.md#squash-merge-strategy)
-  - [Squash Merge Workflow](docs/development-workflow.md#squash-merge-workflow)
-  - [Why This Matters](docs/development-workflow.md#why-this-matters)
+  - [NX-Aware Development](docs/development-workflow.md#nx-aware-development)
+  - [Visual Snapshots in a Pull Request](docs/development-workflow.md#visual-snapshots-in-a-pull-request)
+  - [Storybook in Review](docs/development-workflow.md#storybook-in-review)
+  - [Checks Before You Push](docs/development-workflow.md#checks-before-you-push)
+  - [Documentation Is Part of the Change](docs/development-workflow.md#documentation-is-part-of-the-change)
 
 <!-- -->
 
@@ -97,11 +92,11 @@ Every major technical decision is documented and explained.
 <!-- -->
 
 - [5. Code Quality](docs/code-quality.md)
-  - [Layer 1. Code Formatting And Consistency](docs/code-quality.md#layer-1-code-formatting-and-consistency)
-  - [Layer 2. Static Analysis With ESLint](docs/code-quality.md#layer-2-static-analysis-with-eslint)
-  - [Layer 3. Pre-commit Protection](docs/code-quality.md#layer-3-pre-commit-protection)
-  - [Layer 4. Commitlint Configuration](docs/code-quality.md#layer-4-commitlint-configuration)
-  - [Layer 5. Continuous Integration Checks](docs/code-quality.md#layer-5-continuous-integration-checks)
+  - [Layer 1. Formatting](docs/code-quality.md#layer-1-formatting)
+  - [Layer 2. Static Analysis](docs/code-quality.md#layer-2-static-analysis)
+  - [Layer 3. Pre-commit and Pre-push](docs/code-quality.md#layer-3-pre-commit-and-pre-push)
+  - [Layer 4. Commitlint](docs/code-quality.md#layer-4-commitlint)
+  - [Layer 5. Continuous Integration](docs/code-quality.md#layer-5-continuous-integration)
   - [Layer 6. Dependency Locking](docs/code-quality.md#layer-6-dependency-locking)
 
 <!-- -->
@@ -133,14 +128,109 @@ Every major technical decision is documented and explained.
 
 <!-- -->
 
+<!-- -->
+
+- [9. State Management](docs/state-management.md)
+  - [Why Redux Toolkit Here](docs/state-management.md#why-redux-toolkit-here)
+  - [Slices and Thunks](docs/state-management.md#slices-and-thunks)
+  - [Optimistic Updates and Rollback](docs/state-management.md#optimistic-updates-and-rollback)
+  - [Selectors and Memoization](docs/state-management.md#selectors-and-memoization)
+  - [Error Middleware](docs/state-management.md#error-middleware)
+  - [Normalization or Not](docs/state-management.md#normalization-or-not)
+  - [Sharing the Store With Mobile](docs/state-management.md#sharing-the-store-with-mobile)
+
+<!-- -->
+
+- [10. API Client and Errors](docs/api-client-and-errors.md)
+  - [The Client Contract](docs/api-client-and-errors.md#the-client-contract)
+  - [apiRequest](docs/api-client-and-errors.md#apirequest)
+  - [Error Taxonomy on the Client](docs/api-client-and-errors.md#error-taxonomy-on-the-client)
+  - [Mapping Codes to Messages](docs/api-client-and-errors.md#mapping-codes-to-messages)
+  - [Toasts, Retry, Error Boundary](docs/api-client-and-errors.md#toasts-retry-error-boundary)
+  - [Validation on Both Sides](docs/api-client-and-errors.md#validation-on-both-sides)
+
+<!-- -->
+
+- [11. Client Observability](docs/client-observability.md)
+  - [Why Observability Starts in the Browser](docs/client-observability.md#why-observability-starts-in-the-browser)
+  - [Trace ID End-to-End](docs/client-observability.md#trace-id-end-to-end)
+  - [Sentry](docs/client-observability.md#sentry)
+  - [Web Vitals](docs/client-observability.md#web-vitals)
+  - [Client Logs Endpoint](docs/client-observability.md#client-logs-endpoint)
+  - [What We Do Not Collect](docs/client-observability.md#what-we-do-not-collect)
+
+<!-- -->
+
+- [12. Testing Strategy](docs/testing-strategy.md)
+  - [The Pyramid for a Frontend](docs/testing-strategy.md#the-pyramid-for-a-frontend)
+  - [Why E2E Mocks the API](docs/testing-strategy.md#why-e2e-mocks-the-api)
+  - [Unit Tests With a Real Store](docs/testing-strategy.md#unit-tests-with-a-real-store)
+  - [Coverage Thresholds](docs/testing-strategy.md#coverage-thresholds)
+  - [Running Locally vs CI](docs/testing-strategy.md#running-locally-vs-ci)
+  - [Mobile Tests](docs/testing-strategy.md#mobile-tests)
+
+<!-- -->
+
+- [13. Configuration](docs/configuration.md)
+  - [Build-Time Configuration](docs/configuration.md#build-time-configuration)
+  - [.env.example](docs/configuration.md#envexample)
+  - [assertBuildEnv](docs/configuration.md#assertbuildenv)
+  - [GitHub Variables and Secrets](docs/configuration.md#github-variables-and-secrets)
+  - [Mobile](docs/configuration.md#mobile)
+  - [What Never Goes Into the Client](docs/configuration.md#what-never-goes-into-the-client)
+
+<!-- -->
+
+- [14. Performance](docs/performance.md)
+  - [Bundle Analysis](docs/performance.md#bundle-analysis)
+  - [Code Splitting by Route](docs/performance.md#code-splitting-by-route)
+  - [Caching Strategy](docs/performance.md#caching-strategy)
+  - [Assets CDN](docs/performance.md#assets-cdn)
+  - [Performance Budget](docs/performance.md#performance-budget)
+  - [Rendering Performance](docs/performance.md#rendering-performance)
+  - [Summary](docs/performance.md#summary)
+
+<!-- -->
+
+- [15. Security](docs/security.md)
+  - [Threat Model for an SPA](docs/security.md#threat-model-for-an-spa)
+  - [Content Security Policy](docs/security.md#content-security-policy)
+  - [Token Storage](docs/security.md#token-storage)
+  - [Authentication Is a Stub](docs/security.md#authentication-is-a-stub)
+  - [XSS Surface](docs/security.md#xss-surface)
+  - [Dependency Hygiene](docs/security.md#dependency-hygiene)
+  - [Headers Set by CloudFront](docs/security.md#headers-set-by-cloudfront)
+
+<!-- -->
+
+- [16. Release and Deployment](docs/release-and-deployment.md)
+  - [Release Flow](docs/release-and-deployment.md#release-flow)
+  - [What CD Does](docs/release-and-deployment.md#what-cd-does)
+  - [Rollback](docs/release-and-deployment.md#rollback)
+  - [Why Not Deploy on Every Merge](docs/release-and-deployment.md#why-not-deploy-on-every-merge)
+  - [Storybook Deployment](docs/release-and-deployment.md#storybook-deployment)
+
+<!-- -->
+
+- [17. Mobile Client](docs/mobile-client.md)
+  - [Why Expo](docs/mobile-client.md#why-expo)
+  - [What Is Shared and What Is Not](docs/mobile-client.md#what-is-shared-and-what-is-not)
+  - [Project Layout](docs/mobile-client.md#project-layout)
+  - [Metro in a Monorepo](docs/mobile-client.md#metro-in-a-monorepo)
+  - [Platform Adapters](docs/mobile-client.md#platform-adapters)
+  - [Theming From Tokens](docs/mobile-client.md#theming-from-tokens)
+  - [Testing](docs/mobile-client.md#testing)
+  - [Not Covered](docs/mobile-client.md#not-covered)
+
+<!-- -->
+
 ## Package scope
 
-All packages use the `@prod-forge-todolist-frontend/` scope:
+All packages use the `@prod-forge-todolist-frontend/` scope: `core`, `ui-web`, `design-tokens`, `styles-web`, `test-data`, and the private `web-client` and `mobile-client` applications.
 
-- `@prod-forge-todolist-frontend/core`
-- `@prod-forge-todolist-frontend/ui-web`
-- `@prod-forge-todolist-frontend/design-tokens`
-- `@prod-forge-todolist-frontend/web-client` (private, not published)
+### Why the scope is not `@prod-forge`
+
+The scope was chosen for the first version of the repository, and it reads as the name of the project, not as a brand. A shorter `@prod-forge` scope would be tidier, but renaming touches every import in every package, the path aliases in `tsconfig.base.json`, the Vite and Jest mappings and the lockfile, and it adds no value to the reader: the packages are private and never published to a registry. So the name stays as it is.
 
 ## NX
 
