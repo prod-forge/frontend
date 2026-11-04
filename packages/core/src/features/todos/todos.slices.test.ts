@@ -31,6 +31,7 @@ vi.mock('../../api/todos.api', () => ({
 }));
 
 import { todosApi } from '../../api/todos.api';
+import { logout } from '../auth/auth.slices';
 
 const todoA: Todo = { completed: false, description: 'desc-a', id: 'a', title: 'Apple' };
 const todoB: Todo = { completed: true, description: 'desc-b', id: 'b', title: 'Banana' };
@@ -750,6 +751,25 @@ describe('todos slice — updateFilters', () => {
       store.dispatch(updateFilters({ query: 'hi' }));
 
       expect(store.getState().todos.filters.offset).toBe(0);
+    });
+  });
+});
+
+describe('todos slice — logout', () => {
+  describe('positive cases', () => {
+    it("logout clears the previous session's todos", () => {
+      const store = makeTodosStore([todoA, todoB], 2);
+      store.dispatch(updateFilters({ offset: 20, query: 'milk' }));
+
+      store.dispatch(logout());
+
+      const state = store.getState().todos;
+      expect(state.items).toEqual([]);
+      expect(state.total).toBe(0);
+      expect(state.nextOffset).toBe(0);
+      expect(state.currentTodo).toBeNull();
+      expect(state.currentTodoStatus).toBe('idle');
+      expect(state.filters).toEqual(defaultFilters);
     });
   });
 });

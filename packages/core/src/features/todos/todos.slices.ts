@@ -8,6 +8,7 @@ import type { LimitValue, Order, SortBy, Todo, TodoFilters, TodosState } from '.
 import { todosApi } from '../../api/todos.api';
 import { getCoreConfig } from '../../config/core-config';
 import { serializeApiError } from '../../errors/serialize-api-error';
+import { logout } from '../auth/auth.slices';
 
 const TEMP_ID_PREFIX = 'optimistic-';
 
@@ -154,6 +155,9 @@ const resetPagination = (state: TodosState): void => {
 const todosSlice = createSlice({
   extraReducers: (builder) => {
     builder
+      // a new session must not see the previous user's list
+      .addCase(logout, () => initialState)
+
       // fetchTodos
       .addCase(fetchTodos.pending, (state) => {
         state.status = 'loading';
