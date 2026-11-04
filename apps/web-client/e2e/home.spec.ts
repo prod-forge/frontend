@@ -53,7 +53,7 @@ test.describe('Home page', () => {
     await page.getByLabel('Per page').selectOption('50');
 
     await expect(page.getByRole('navigation', { name: /pagination/i })).toHaveCount(0);
-    await expect(page.getByRole('article')).toHaveCount(15);
+    await expect(page.getByRole('article')).toHaveCount(16);
   });
 
   test('reorders todos when changing sort order', async ({ page }) => {

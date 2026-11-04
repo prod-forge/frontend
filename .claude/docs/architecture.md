@@ -12,7 +12,7 @@ Supporting packages:
 
 - **`packages/design-tokens`** — JSON design tokens compiled by Style Dictionary into CSS custom properties and a JS module.
 - **`packages/styles-web`** — Web-specific Tailwind v4 theme (`theme.css`).
-- **`packages/test-data`** — Shared mock data for tests.
+- **`packages/test-data`** — Single source of test data: `todos` (16 records), `users`, and `applyTodosQuery` (server emulator: filter, sort, pagination). Used by web-client unit tests and Playwright fixtures. Imports `Todo`/`TodosResponse` from core with `import type` only.
 
 ---
 
@@ -98,7 +98,9 @@ packages/
 │   └── src/theme.css                # @theme inline for Tailwind
 │
 └── test-data/
-    └── src/index.ts                 # Mock Todo[] for tests
+    └── src/
+        ├── index.ts                 # todos, users, re-export of applyTodosQuery
+        └── apply-todos-query.ts     # Backend-like filter + sort + pagination
 ```
 
 ---

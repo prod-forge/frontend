@@ -4,9 +4,13 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "..",
     "declaration": true,
-    "noEmit": false
+    "noEmit": false,
+    "paths": {
+      "@prod-forge-todolist-frontend/core": ["../core/src/interfaces/todos.ts"]
+    }
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.ts"]
 }

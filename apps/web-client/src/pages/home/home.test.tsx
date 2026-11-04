@@ -1,14 +1,7 @@
 import type { TodoFilters, TodosResponse } from '@prod-forge-todolist-frontend/core';
 
-import {
-  authReducer,
-  filterTodos,
-  login,
-  sortTodos,
-  todos,
-  todosApi,
-  todosReducer,
-} from '@prod-forge-todolist-frontend/core';
+import { authReducer, login, todosApi, todosReducer } from '@prod-forge-todolist-frontend/core';
+import { applyTodosQuery, todos } from '@prod-forge-todolist-frontend/test-data';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -19,14 +12,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Home } from './home';
 
 const applyFilters = (filters: TodoFilters): Promise<TodosResponse> => {
-  const filtered = filterTodos(todos.data, filters.query);
-  const sorted = sortTodos(filtered, filters.sortBy, filters.order);
-  const page = sorted.slice(filters.offset, filters.offset + filters.limit);
-
-  return Promise.resolve({
-    data: page,
-    meta: { limit: filters.limit, offset: filters.offset, total: sorted.length },
-  });
+  return Promise.resolve(
+    applyTodosQuery(todos, {
+      limit: filters.limit,
+      offset: filters.offset,
+      order: filters.order,
+      search: filters.query,
+      sortBy: filters.sortBy,
+    }),
+  );
 };
 
 const renderHome = async (options: { authenticated?: boolean } = {}): Promise<ReturnType<typeof render>> => {
@@ -52,9 +46,9 @@ const renderHome = async (options: { authenticated?: boolean } = {}): Promise<Re
   return view;
 };
 
-const firstPage = sortTodos(todos.data, 'title', 'asc').slice(0, 10);
+const firstPage = applyTodosQuery(todos, { sortBy: 'title' }).data;
 const completedCount = firstPage.filter((t) => t.completed).length;
-const totalCount = todos.data.length;
+const totalCount = todos.length;
 
 beforeEach(() => {
   vi.spyOn(todosApi, 'getAll').mockImplementation(applyFilters);
@@ -192,7 +186,7 @@ describe('<Home /> page — authenticated', () => {
       await user.click(screen.getByRole('button', { name: /filters/i }));
       await user.selectOptions(screen.getByLabelText('Order'), 'desc');
 
-      const descFirstTitle = sortTodos(todos.data, 'title', 'desc')[0].title;
+      const descFirstTitle = applyTodosQuery(todos, { order: 'desc', sortBy: 'title' }).data[0].title;
       const cards = await screen.findAllByRole('article');
 
       expect(within(cards[0]).getByRole('link', { name: descFirstTitle })).toBeInTheDocument();

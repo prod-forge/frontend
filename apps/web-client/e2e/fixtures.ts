@@ -1,8 +1,8 @@
 /// <reference types="node" />
-import type { Order, SortBy, Todo } from '@prod-forge-todolist-frontend/test-data';
+import type { Todo } from '@prod-forge-todolist-frontend/core';
 
 import { test as base, expect } from '@playwright/test';
-import { filterTodos, todos as seedData, sortTodos } from '@prod-forge-todolist-frontend/test-data';
+import { applyTodosQuery, todos as seedData } from '@prod-forge-todolist-frontend/test-data';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -33,7 +33,7 @@ export const test = base.extend<Fixtures>({
 
   mockApi: [
     async ({ page }, use): Promise<void> => {
-      let items: Todo[] = structuredClone(seedData.data);
+      let items: Todo[] = structuredClone([...seedData]);
 
       await page.route(/\/api\/v1\/todos/, async (route) => {
         const request = route.request();
@@ -91,21 +91,19 @@ export const test = base.extend<Fixtures>({
           });
         }
 
-        const query = url.searchParams.get('query') ?? '';
-        const sortBy = (url.searchParams.get('sortBy') ?? 'title') as SortBy;
-        const order = (url.searchParams.get('order') ?? 'asc') as Order;
-        const limit = Number(url.searchParams.get('limit') ?? 10);
-        const offset = Number(url.searchParams.get('offset') ?? 0);
-
-        const filtered = filterTodos(items, query);
-        const sorted = sortTodos(filtered, sortBy, order);
-        const pageItems = sorted.slice(offset, offset + limit);
+        const sortBy = url.searchParams.get('sortBy') ?? 'title';
+        const order = url.searchParams.get('order') === 'desc' ? 'desc' : 'asc';
 
         return route.fulfill({
-          body: JSON.stringify({
-            data: pageItems,
-            meta: { limit, offset, total: sorted.length },
-          }),
+          body: JSON.stringify(
+            applyTodosQuery(items, {
+              limit: Number(url.searchParams.get('limit') ?? 10),
+              offset: Number(url.searchParams.get('offset') ?? 0),
+              order,
+              search: url.searchParams.get('query') ?? '',
+              sortBy,
+            }),
+          ),
           contentType: 'application/json',
           status: 200,
         });

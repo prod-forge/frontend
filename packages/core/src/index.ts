@@ -76,6 +76,3 @@ export { captureException, initSentry } from './services/sentry/sentry';
 // Store
 export { store } from './store';
 export type { AppDispatch, RootState, Store } from './store';
-
-// Test data (for use in tests only)
-export { todos } from './test/data/todos';

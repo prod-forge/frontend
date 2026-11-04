@@ -46,6 +46,7 @@ npm run dev:assets
 ```bash
 # Run a specific target in one project
 npx nx test core
+npx nx test test-data
 npx nx build web-client
 npx nx storybook ui-web
 
@@ -84,6 +85,8 @@ npm run test:a11y
 ```
 
 **Run only affected tests** when making isolated changes — do not run the full suite for a single file change.
+
+Test data lives only in `@prod-forge-todolist-frontend/test-data` (`todos`, `users`, `applyTodosQuery`). Core does not export fixtures; tests and e2e mocks import from test-data.
 
 ---
 

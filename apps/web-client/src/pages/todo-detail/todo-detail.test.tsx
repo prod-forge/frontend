@@ -7,10 +7,10 @@ import {
   FAKE_TOKEN,
   login,
   TITLE_MAX_LENGTH,
-  todos,
   todosApi,
   todosReducer,
 } from '@prod-forge-todolist-frontend/core';
+import { todos } from '@prod-forge-todolist-frontend/test-data';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -20,8 +20,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TodoDetail } from './todo-detail';
 
-const openTodo = todos.data.find((t) => !t.completed) as Todo;
-const completedTodo = todos.data.find((t) => t.completed) as Todo;
+const openTodo = todos.find((t) => !t.completed) as Todo;
+const completedTodo = todos.find((t) => t.completed) as Todo;
 
 const renderAt = (path: string, options: { authenticated?: boolean } = {}): { store: Store } => {
   const { authenticated = true } = options;
