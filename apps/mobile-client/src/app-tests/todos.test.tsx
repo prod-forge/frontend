@@ -9,9 +9,10 @@ import { prepareStore, renderWithStore } from '../test-utils/render-with-store';
 
 jest.mock('expo-router', () => jest.requireActual<Record<string, unknown>>('../test-utils/expo-router-mock'));
 
-const firstPage = applyTodosQuery(todos, { sortBy: 'title' }).data;
+const firstPage = applyTodosQuery(todos, { order: 'asc', sortBy: 'title' }).data;
 // First item of the second page: the one an offset that counts optimistic rows would skip.
-const firstPageBoundaryTitle = applyTodosQuery(todos, { offset: firstPage.length, sortBy: 'title' }).data[0].title;
+const firstPageBoundaryTitle = applyTodosQuery(todos, { offset: firstPage.length, order: 'asc', sortBy: 'title' })
+  .data[0].title;
 
 const renderSignedIn = async (): Promise<void> => {
   store.dispatch(login({ email: 'a@b.com' }));

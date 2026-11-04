@@ -14,7 +14,7 @@ const DEFAULT_LIMIT = 10;
 const matchesSearch = (todo: Todo, search: string): boolean => {
   const needle = search.trim().toLowerCase();
 
-  return !needle || todo.title.toLowerCase().includes(needle) || todo.description.toLowerCase().includes(needle);
+  return !needle || todo.title.toLowerCase().includes(needle);
 };
 
 const sortItems = (items: readonly Todo[], sortBy: string | undefined, order: 'asc' | 'desc'): readonly Todo[] => {
@@ -23,11 +23,12 @@ const sortItems = (items: readonly Todo[], sortBy: string | undefined, order: 'a
   if (sortBy === 'title') return items.toSorted((a, b) => a.title.localeCompare(b.title) * direction);
   if (sortBy === 'completed') return items.toSorted((a, b) => (Number(a.completed) - Number(b.completed)) * direction);
 
-  return items;
+  // createdAt (the backend default): items are stored in creation order
+  return order === 'asc' ? items : items.toReversed();
 };
 
 export const applyTodosQuery = (items: readonly Todo[], query: TodosQuery): TodosResponse => {
-  const { completed, limit = DEFAULT_LIMIT, offset = 0, order = 'asc', search = '', sortBy } = query;
+  const { completed, limit = DEFAULT_LIMIT, offset = 0, order = 'desc', search = '', sortBy } = query;
 
   const filtered = items.filter(
     (todo) => matchesSearch(todo, search) && (completed === undefined || todo.completed === completed),

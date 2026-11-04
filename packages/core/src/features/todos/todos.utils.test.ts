@@ -31,16 +31,12 @@ describe('filterTodos', () => {
     expect(filterTodos(items, 'WORK')).toEqual([items[2]]);
   });
 
-  it('filters by description (case-insensitive)', () => {
-    expect(filterTodos(items, 'redux')).toEqual([items[1]]);
-  });
-
-  it('matches against either title or description', () => {
-    expect(filterTodos(items, 'gym')).toEqual([items[2]]);
+  it('does not match on the description', () => {
+    expect(filterTodos(items, 'milk')).toEqual([]);
   });
 
   it('trims surrounding whitespace from the query', () => {
-    expect(filterTodos(items, '   gym   ')).toEqual([items[2]]);
+    expect(filterTodos(items, '   work   ')).toEqual([items[2]]);
   });
 
   it('returns an empty array when nothing matches', () => {

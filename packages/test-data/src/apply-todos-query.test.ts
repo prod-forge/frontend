@@ -14,10 +14,17 @@ const items: readonly Todo[] = [
 
 describe('applyTodosQuery', () => {
   describe('negative cases', () => {
-    it('ignores an unknown sortBy and keeps the original order', () => {
-      const result = applyTodosQuery(items, { sortBy: 'unknown' });
+    it('treats an unknown sortBy as createdAt and keeps the creation order for asc', () => {
+      const result = applyTodosQuery(items, { order: 'asc', sortBy: 'unknown' });
 
       expect(result.data.map((t) => t.id)).toEqual(['1', '2', '3', '4', '5']);
+    });
+
+    it('does not match a search term that only appears in the description', () => {
+      const result = applyTodosQuery(items, { search: 'second' });
+
+      expect(result.data).toEqual([]);
+      expect(result.meta.total).toBe(0);
     });
 
     it('returns an empty page with the full filtered total when offset is past the end', () => {
@@ -30,14 +37,14 @@ describe('applyTodosQuery', () => {
 
   describe('positive cases', () => {
     it('returns records 3 and 4 for limit=2 and offset=2', () => {
-      const result = applyTodosQuery(items, { limit: 2, offset: 2 });
+      const result = applyTodosQuery(items, { limit: 2, offset: 2, order: 'asc' });
 
       expect(result.data.map((t) => t.id)).toEqual(['3', '4']);
       expect(result.meta).toEqual({ limit: 2, offset: 2, total: 5 });
     });
 
     it('keeps only completed records for completed=true', () => {
-      const result = applyTodosQuery(items, { completed: true });
+      const result = applyTodosQuery(items, { completed: true, order: 'asc' });
 
       expect(result.data.map((t) => t.id)).toEqual(['2', '4']);
       expect(result.meta.total).toBe(2);
@@ -47,6 +54,12 @@ describe('applyTodosQuery', () => {
       const result = applyTodosQuery(items, { search: 'cHaRlIe' });
 
       expect(result.data.map((t) => t.id)).toEqual(['3']);
+    });
+
+    it('sorts newest first (createdAt desc) when no sortBy and order are given', () => {
+      const result = applyTodosQuery(items, {});
+
+      expect(result.data.map((t) => t.id)).toEqual(['5', '4', '3', '2', '1']);
     });
 
     it('sorts by title descending', () => {

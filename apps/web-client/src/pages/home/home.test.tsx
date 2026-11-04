@@ -68,7 +68,7 @@ const renderHome = async (options: { authenticated?: boolean } = {}): Promise<Re
   return view;
 };
 
-const firstPage = applyTodosQuery(todos, { sortBy: 'title' }).data;
+const firstPage = applyTodosQuery(todos, { order: 'asc', sortBy: 'title' }).data;
 const completedCount = firstPage.filter((t) => t.completed).length;
 const totalCount = todos.length;
 
@@ -143,15 +143,14 @@ describe('<Home /> page — authenticated', () => {
       expect(within(cards[0]).getByRole('link', { name: 'Storybook integration' })).toBeInTheDocument();
     });
 
-    it('also filters by todo description', async () => {
+    it('does not match a term that only appears in a todo description', async () => {
       const user = userEvent.setup();
       await renderHome();
 
       await user.type(screen.getByRole('searchbox'), 'zustand');
-      const cards = await screen.findAllByRole('article');
+      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
 
-      expect(cards).toHaveLength(1);
-      expect(within(cards[0]).getByRole('link', { name: 'State management' })).toBeInTheDocument();
+      expect(screen.getByText(/no tasks match your search/i)).toBeInTheDocument();
     });
 
     it('shows the empty state when no todos match the search', async () => {

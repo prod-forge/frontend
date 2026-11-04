@@ -43,7 +43,7 @@ await page.route(/\/api\/v1\/todos/, async (route) => {
 });
 ```
 
-The data comes from `packages/test-data`: a fixed set of todos (`todos`) and `applyTodosQuery`, which applies `limit`, `offset`, `order`, `search` and `sortBy` the same way the real API does. The same package is used by the web unit tests and the mobile tests, so there is one fixture set for both clients.
+The data comes from `packages/test-data`: a fixed set of todos (`todos`) and `applyTodosQuery`, which applies `limit`, `offset`, `order`, `search` (title only) and `sortBy` the same way the real API does (default order newest first, like the backend's `createdAt` descending). The same package is used by the web unit tests and the mobile tests, so there is one fixture set for both clients.
 
 Reasons for mocking:
 

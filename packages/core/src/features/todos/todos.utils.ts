@@ -7,9 +7,7 @@ export const filterTodos = (items: Todo[], query: string): Todo[] => {
     return items;
   }
 
-  return items.filter(
-    (todo) => todo.title.toLowerCase().includes(trimmed) || todo.description.toLowerCase().includes(trimmed),
-  );
+  return items.filter((todo) => todo.title.toLowerCase().includes(trimmed));
 };
 
 export const sortTodos = (items: Todo[], sortBy: SortBy, order: Order): Todo[] => {
