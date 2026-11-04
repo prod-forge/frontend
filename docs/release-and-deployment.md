@@ -29,7 +29,7 @@ The push of a tag that matches `v*` is what starts deployment. Nothing else does
 
 ## What CD Does
 
-`.github/workflows/cd.yml` is named "Release Frontend". It runs on `push` of tags `v*`, in the `prod` environment, on Node 24.21.0, and authenticates to AWS through OIDC (`id-token: write`, `role-to-assume`), so there are no long-lived AWS keys in GitHub. The steps in order:
+`.github/workflows/cd.yml` is named "Release Frontend". It runs on `push` of tags `v*`, in the `prod` environment, on Node 24.21.0, and authenticates to AWS through OIDC (`id-token: write`, `role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}`, the `<project>-prod-github-frontend-role` from Terraform), so there are no long-lived AWS keys in GitHub. It first fails when a deploy variable (role, buckets, distribution id, CloudFront URL) is empty; they are filled from `terraform output`, see [Configuration](configuration.md#github-variables-and-secrets). The steps in order:
 
 | Step                     | Command (short)                                             | Why it is in this place                                              |
 | ------------------------ | ----------------------------------------------------------- | -------------------------------------------------------------------- |

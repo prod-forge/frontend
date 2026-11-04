@@ -23,6 +23,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # Names and ids are terraform outputs, stored as GitHub variables (docs/configuration.md).
+      - name: Check deploy variables
+        env:
+          AWS_DEPLOY_ROLE_ARN: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          S3_WEB_CLIENT_BUCKET: ${{ vars.S3_WEB_CLIENT_BUCKET }}
+          S3_ASSETS_BUCKET: ${{ vars.S3_ASSETS_BUCKET }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+          CLOUDFRONT_URL: ${{ vars.CLOUDFRONT_URL }}
+        run: |
+          MISSING=""
+          for NAME in AWS_DEPLOY_ROLE_ARN S3_WEB_CLIENT_BUCKET S3_ASSETS_BUCKET CLOUDFRONT_DISTRIBUTION_ID CLOUDFRONT_URL; do
+            if [ -z "${!NAME}" ]; then
+              MISSING="$MISSING $NAME"
+            fi
+          done
+
+          if [ -n "$MISSING" ]; then
+            echo "Missing GitHub variables (set them from terraform output):$MISSING"
+            exit 1
+          fi
+
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
@@ -45,7 +66,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: arn:aws:iam::${{ vars.USER_ID }}:role/github-actions-ecs-ecr-role
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy assets
@@ -76,15 +97,17 @@ jobs:
       - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths "/*"
 
       - name: Cleanup old versions
+        env:
+          BUCKET: ${{ vars.S3_WEB_CLIENT_BUCKET }}
         run: |
-          VERSIONS=$(aws s3 ls s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/ | awk '/PRE/ {print $2}' | sort -V)
+          VERSIONS=$(aws s3 ls "s3://${BUCKET}/releases/" | awk '/PRE/ {print $2}' | sort -V)
           COUNT=$(echo "$VERSIONS" | grep -c . || true)
-          if [ "$COUNT" -gt ${{ env.KEEP }} ]; then
-            echo "$VERSIONS" | head -n $(($COUNT - ${{ env.KEEP }})) | while read v; do
-              aws s3 rm s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/$v --recursive
+          if [ "$COUNT" -gt "$KEEP" ]; then
+            echo "$VERSIONS" | head -n $((COUNT - KEEP)) | while read -r v; do
+              aws s3 rm "s3://${BUCKET}/releases/${v}" --recursive
             done
           fi

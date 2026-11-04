@@ -89,21 +89,21 @@ The same rule is checked at runtime by `configureCore`, which throws on an empty
 
 ## GitHub Variables and Secrets
 
-The CD workflow (`.github/workflows/cd.yml`) reads its configuration from the `prod` environment. The build step fails without `VITE_API_BASE_URL`, so a bundle never ships with an empty API URL.
+The CD workflow (`.github/workflows/cd.yml`) reads its configuration from the `prod` environment; `rollback.yml` and `show-web-client-versions.yml` use the deploy variables. The build step fails without `VITE_API_BASE_URL`, so a bundle never ships with an empty API URL, and a first step fails the job when a deploy variable is empty. The deploy variables and the API URL are Terraform outputs of the environment root (`terraform -chdir=infrastructure/environments/prod output`, see [Deploy workflow variables](https://github.com/prod-forge/terraform/blob/main/docs/workflow.md#deploy-workflow-variables)).
 
-| Name                         | Kind     | Consumer | Example                                                     |
-| ---------------------------- | -------- | -------- | ----------------------------------------------------------- |
-| `VITE_API_BASE_URL`          | variable | build    | `https://api.example.com/api/v1/` (trailing slash required) |
-| `CLOUDFRONT_URL`             | variable | build    | `https://d111111abcdef8.cloudfront.net`                     |
-| `VITE_SENTRY_DSN`            | variable | build    | `https://key@o0.ingest.sentry.io/0`                         |
-| `SENTRY_ORG`                 | variable | build    | `my-org`                                                    |
-| `SENTRY_PROJECT`             | variable | build    | `prod-forge-web`                                            |
-| `SENTRY_AUTH_TOKEN`          | secret   | build    | `sntrys_...`                                                |
-| `USER_ID`                    | variable | deploy   | `123456789012` (AWS account ID)                             |
-| `S3_WEB_CLIENT_BUCKET`       | variable | deploy   | `my-web-client-bucket`                                      |
-| `S3_ASSETS_BUCKET`           | variable | deploy   | `my-assets-bucket`                                          |
-| `CLOUDFRONT_DISTRIBUTION_ID` | secret   | deploy   | `E1ABCDEFGHIJKL`                                            |
-| `KEEP`                       | variable | deploy   | `10` (releases kept in S3, default 10)                      |
+| Name                         | Kind     | Consumer | Terraform output             | Example                                                                        |
+| ---------------------------- | -------- | -------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| `VITE_API_BASE_URL`          | variable | build    | `api_url` + `/api/v1/`       | `https://api.example.com/api/v1/` (trailing slash required)                    |
+| `CLOUDFRONT_URL`             | variable | build    | `cloudfront_url`             | `https://d111111abcdef8.cloudfront.net`                                        |
+| `VITE_SENTRY_DSN`            | variable | build    |                              | `https://key@o0.ingest.sentry.io/0`                                            |
+| `SENTRY_ORG`                 | variable | build    |                              | `my-org`                                                                       |
+| `SENTRY_PROJECT`             | variable | build    |                              | `prod-forge-web`                                                               |
+| `SENTRY_AUTH_TOKEN`          | secret   | build    |                              | `sntrys_...`                                                                   |
+| `AWS_DEPLOY_ROLE_ARN`        | variable | deploy   | `github_frontend_role_arn`   | `arn:aws:iam::123456789012:role/prod-forge-todolist-prod-github-frontend-role` |
+| `S3_WEB_CLIENT_BUCKET`       | variable | deploy   | `web_client_bucket_name`     | `prod-forge-todolist-prod-web-client`                                          |
+| `S3_ASSETS_BUCKET`           | variable | deploy   | `assets_bucket_name`         | `prod-forge-todolist-prod-assets`                                              |
+| `CLOUDFRONT_DISTRIBUTION_ID` | variable | deploy   | `cloudfront_distribution_id` | `E1ABCDEFGHIJKL`                                                               |
+| `KEEP`                       | variable | deploy   |                              | `10` (releases kept in S3, default 10)                                         |
 
 `VITE_ASSETS_BASE_URL` is not stored itself. The build step composes it from `CLOUDFRONT_URL`:
 
@@ -111,7 +111,7 @@ The CD workflow (`.github/workflows/cd.yml`) reads its configuration from the `p
 VITE_ASSETS_BASE_URL: ${{ vars.CLOUDFRONT_URL }}/assets
 ```
 
-Variables versus secrets: a variable is a value that ends up in the bundle anyway (API URL, DSN) or is not sensitive (a bucket name). A secret is something that must never appear in a log or in the bundle: `SENTRY_AUTH_TOKEN` and `CLOUDFRONT_DISTRIBUTION_ID`. The Sentry token is used only by `sentryVitePlugin` during the build, to upload source maps. When it is absent (local builds, forks), the plugin is not added and the build still succeeds.
+Variables versus secrets: a variable is a value that ends up in the bundle anyway (API URL, DSN) or is not sensitive (a bucket name). A secret is something that must never appear in a log or in the bundle: `SENTRY_AUTH_TOKEN`. The role ARN, the bucket names and the distribution id are identifiers, not credentials: the role trusts only jobs of this repository in the `prod` environment, so they are variables. The Sentry token is used only by `sentryVitePlugin` during the build, to upload source maps. When it is absent (local builds, forks), the plugin is not added and the build still succeeds.
 
 ## Mobile
 
