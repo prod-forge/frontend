@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import {
   addTodo,
   clearErrors,
+  deleteTodo,
   fetchTodos,
   LIMIT_OPTIONS,
   ORDER_OPTIONS,
@@ -26,8 +27,10 @@ import {
 import {
   Accordion,
   AddTodoForm,
+  Button,
   EmptyState,
   ErrorBlock,
+  Modal,
   Pagination,
   Preloader,
   RetryButton,
@@ -36,7 +39,7 @@ import {
   TodoItem,
   TodoList,
 } from '@prod-forge-todolist-frontend/ui-web';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux/redux';
@@ -51,6 +54,7 @@ export const Home = (): ReactNode => {
   const total = useAppSelector(selectTotalTodos);
   const completed = useAppSelector(selectCompletedTodos);
   const status = useAppSelector(selectStatus);
+  const [pendingDeleteId, setPendingDeleteId] = useState<null | string>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -83,6 +87,13 @@ export const Home = (): ReactNode => {
       </section>
     );
   }
+
+  const handleConfirmDelete = (): void => {
+    if (pendingDeleteId) {
+      void dispatch(deleteTodo(pendingDeleteId));
+    }
+    setPendingDeleteId(null);
+  };
 
   return (
     <div>
@@ -131,7 +142,12 @@ export const Home = (): ReactNode => {
       ) : (
         <TodoList>
           {todos.map((todo) => (
-            <TodoItem key={todo.id} onToggle={(id) => void dispatch(toggleTodo(id))} todo={todo} />
+            <TodoItem
+              key={todo.id}
+              onDelete={setPendingDeleteId}
+              onToggle={(id) => void dispatch(toggleTodo(id))}
+              todo={todo}
+            />
           ))}
         </TodoList>
       )}
@@ -172,6 +188,22 @@ export const Home = (): ReactNode => {
         onOffsetChange={(offset) => dispatch(setOffset(offset))}
         total={total}
       />
+
+      <Modal
+        isOpen={pendingDeleteId !== null}
+        onClose={() => setPendingDeleteId(null)}
+        title="Are you sure you want to delete?"
+      >
+        <p>This action cannot be undone.</p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button onClick={() => setPendingDeleteId(null)} variant="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} variant="danger">
+            Delete
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };

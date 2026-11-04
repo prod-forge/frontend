@@ -209,7 +209,7 @@ Core must stay platform-neutral: no `import.meta.env`, no `localStorage`, no bro
 
 1. Create `apps/web-client/src/pages/{name}/{name}.tsx`
 2. Add a `.test.tsx` alongside it
-3. Register the route in `apps/web-client/src/app.tsx`
+3. Register the route in `apps/web-client/src/app.tsx` as a lazy page inside the `Suspense` route: `const Name = lazy(() => import('./pages/{name}/{name}').then((module) => ({ default: module.Name })));`. Do not import the page statically, or it lands in the main bundle
 
 Pages are containers: they select state with `useAppSelector`, dispatch with `useAppDispatch`, and pass data down to `ui-web` components as props.
 

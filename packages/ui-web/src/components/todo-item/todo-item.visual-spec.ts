@@ -16,6 +16,10 @@ for (const theme of themes) {
       test('long-title', async ({ page }) => {
         await matchStorySnapshot(page, 'components-todoitem--long-title', 'long-title', theme);
       });
+
+      test('with-delete', async ({ page }) => {
+        await matchStorySnapshot(page, 'components-todoitem--with-delete', 'with-delete', theme);
+      });
     });
   });
 }

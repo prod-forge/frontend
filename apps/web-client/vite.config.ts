@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-import { assertBuildEnv } from './vite.build-env';
+import { assertBuildEnv, stripUnsetHtmlEnv } from './vite.build-env';
 
 const require = createRequire(import.meta.url);
 const { version } = require('./package.json') as { version: string };
@@ -38,6 +38,10 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
     react(),
     tailwindcss(),
     ...extraPlugins,
+    {
+      name: 'html-strip-unset-env',
+      transformIndexHtml: stripUnsetHtmlEnv,
+    },
     {
       name: 'html-version-comment',
       transformIndexHtml(html: string): string {

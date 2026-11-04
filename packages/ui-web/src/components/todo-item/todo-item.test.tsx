@@ -22,10 +22,11 @@ const renderItem = (
   onToggle: (id: string) => void = () => {
     /* empty */
   },
+  onDelete?: (id: string) => void,
 ): RenderResult =>
   render(
     <MemoryRouter>
-      <TodoItem onToggle={onToggle} todo={todo} />
+      <TodoItem onDelete={onDelete} onToggle={onToggle} todo={todo} />
     </MemoryRouter>,
   );
 
@@ -85,5 +86,43 @@ describe('TodoItem', () => {
 
     const icon = screen.getByRole('img', { name: 'Completed' });
     expect(icon).toHaveAttribute('src', `${TEST_ASSETS_URL}/completed.svg`);
+  });
+
+  describe('delete button', () => {
+    describe('negative cases', () => {
+      it('does not render the delete button when onDelete is not provided', () => {
+        renderItem(baseTodo);
+
+        expect(screen.queryByRole('button', { name: 'Delete todo' })).not.toBeInTheDocument();
+      });
+
+      it('does not call onToggle when the delete button is clicked', async () => {
+        const onToggle = vi.fn();
+        const user = userEvent.setup();
+        renderItem(baseTodo, onToggle, vi.fn());
+
+        await user.click(screen.getByRole('button', { name: 'Delete todo' }));
+
+        expect(onToggle).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('positive cases', () => {
+      it('renders the delete button when onDelete is provided', () => {
+        renderItem(baseTodo, undefined, vi.fn());
+
+        expect(screen.getByRole('button', { name: 'Delete todo' })).toBeInTheDocument();
+      });
+
+      it('calls onDelete with the todo id when the delete button is clicked', async () => {
+        const onDelete = vi.fn();
+        const user = userEvent.setup();
+        renderItem(baseTodo, undefined, onDelete);
+
+        await user.click(screen.getByRole('button', { name: 'Delete todo' }));
+
+        expect(onDelete).toHaveBeenCalledWith('abc-123');
+      });
+    });
   });
 });

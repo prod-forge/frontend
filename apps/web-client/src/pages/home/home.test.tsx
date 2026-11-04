@@ -420,3 +420,61 @@ describe('<Home /> page — authenticated', () => {
     });
   });
 });
+
+describe('<Home /> page — delete from the list', () => {
+  const firstTodo = firstPage[0];
+
+  const openDeleteConfirmation = async (user: ReturnType<typeof userEvent.setup>): Promise<HTMLElement> => {
+    const firstCard = screen.getAllByRole('article')[0];
+    await user.click(within(firstCard).getByRole('button', { name: 'Delete todo' }));
+
+    return screen.getByRole('dialog', { name: /are you sure you want to delete\?/i });
+  };
+
+  describe('negative cases', () => {
+    it('does not delete the todo when the confirmation is cancelled', async () => {
+      const user = userEvent.setup();
+      await renderHome();
+
+      const dialog = await openDeleteConfirmation(user);
+      await user.click(within(dialog).getByRole('button', { name: /cancel/i }));
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(todosApi.delete).not.toHaveBeenCalled();
+      expect(screen.getByRole('link', { name: firstTodo.title })).toBeInTheDocument();
+    });
+
+    it('does not delete the todo before the user confirms', async () => {
+      const user = userEvent.setup();
+      await renderHome();
+
+      await openDeleteConfirmation(user);
+
+      expect(todosApi.delete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('positive cases', () => {
+    it('opens the confirmation modal when a todo delete button is clicked', async () => {
+      const user = userEvent.setup();
+      await renderHome();
+
+      const dialog = await openDeleteConfirmation(user);
+
+      expect(within(dialog).getByText(/this action cannot be undone/i)).toBeInTheDocument();
+    });
+
+    it('deletes the todo and removes it from the list after confirming', async () => {
+      const user = userEvent.setup();
+      await renderHome();
+
+      const dialog = await openDeleteConfirmation(user);
+      await user.click(within(dialog).getByRole('button', { name: /^delete$/i }));
+
+      expect(todosApi.delete).toHaveBeenCalledWith(firstTodo.id);
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: firstTodo.title })).not.toBeInTheDocument();
+      expect(screen.getByText(new RegExp(`of ${totalCount - 1} completed`))).toBeInTheDocument();
+    });
+  });
+});

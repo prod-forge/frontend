@@ -8,8 +8,10 @@ vi.mock('@sentry/react', () => ({
   captureException: vi.fn(),
   getClient: vi.fn(),
   init: vi.fn(),
+  metrics: { distribution: vi.fn() },
   replayIntegration: vi.fn(() => ({})),
   setTag: vi.fn(),
+  setUser: vi.fn(),
   withScope: vi.fn(),
 }));
 

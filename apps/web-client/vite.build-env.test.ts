@@ -1,4 +1,4 @@
-import { assertBuildEnv } from './vite.build-env';
+import { assertBuildEnv, stripUnsetHtmlEnv } from './vite.build-env';
 
 describe('assertBuildEnv', () => {
   describe('negative cases', () => {
@@ -22,6 +22,32 @@ describe('assertBuildEnv', () => {
 
     it('accepts a valid URL with trailing slash', () => {
       expect(() => assertBuildEnv({ VITE_API_BASE_URL: 'https://api.example.com/v1/' }, true)).not.toThrow();
+    });
+  });
+});
+
+describe('stripUnsetHtmlEnv', () => {
+  describe('negative cases', () => {
+    it('leaves HTML without placeholders unchanged', () => {
+      const html = `<meta content="connect-src 'self' https://api.example.com/v1/">`;
+
+      expect(stripUnsetHtmlEnv(html)).toBe(html);
+    });
+
+    it('does not touch percent signs that are not VITE_ placeholders', () => {
+      const html = '<div style="width: 100%">%NOT_VITE%</div>';
+
+      expect(stripUnsetHtmlEnv(html)).toBe(html);
+    });
+  });
+
+  describe('positive cases', () => {
+    it('removes a placeholder Vite left because the variable is unset', () => {
+      const html = `<meta content="connect-src 'self' https://api.example.com/v1/ %VITE_ASSETS_BASE_URL% https://*.sentry.io">`;
+
+      expect(stripUnsetHtmlEnv(html)).toBe(
+        `<meta content="connect-src 'self' https://api.example.com/v1/ https://*.sentry.io">`,
+      );
     });
   });
 });

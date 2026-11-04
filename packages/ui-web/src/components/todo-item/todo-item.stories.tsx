@@ -51,3 +51,17 @@ export const LongTitle: Story = {
     },
   },
 };
+
+export const WithDelete: Story = {
+  args: {
+    onDelete: (): void => {
+      /* noop */
+    },
+    todo: {
+      completed: false,
+      description: 'Delete this task straight from the list.',
+      id: '5',
+      title: 'Task with a delete button',
+    },
+  },
+};

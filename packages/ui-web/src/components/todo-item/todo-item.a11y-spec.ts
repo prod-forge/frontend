@@ -14,4 +14,8 @@ test.describe('TodoItem a11y', () => {
   test('long-title', async ({ page }) => {
     await checkStoryA11y(page, 'components-todoitem--long-title');
   });
+
+  test('with-delete', async ({ page }) => {
+    await checkStoryA11y(page, 'components-todoitem--with-delete');
+  });
 });

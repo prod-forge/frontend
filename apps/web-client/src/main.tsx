@@ -4,10 +4,11 @@ import { createRoot } from 'react-dom/client';
 
 import { App } from './app';
 import { setupCore } from './services/core-setup';
-import { initSentry } from './services/sentry';
+import { bindSentryUser, initSentry } from './services/sentry';
 
 setupCore();
 initSentry();
+bindSentryUser(store);
 void store.dispatch(hydrateAuth());
 
 const el = document.getElementById('root') as HTMLDivElement;

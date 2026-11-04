@@ -118,6 +118,7 @@ test.describe('Todo detail page', () => {
     await page.goto('/');
     await page.locator('a[href^="/todo/"]').first().click();
     await expect(page).toHaveURL(/\/todo\//);
+    await expect(page.getByRole('button', { name: /delete task/i })).toBeVisible();
     const titleBeforeOpen = await page.getByRole('heading', { level: 1 }).innerText();
 
     await page.getByRole('button', { name: /delete task/i }).click();
@@ -132,6 +133,7 @@ test.describe('Todo detail page', () => {
     await page.goto('/');
     await page.locator('a[href^="/todo/"]').first().click();
     await expect(page).toHaveURL(/\/todo\//);
+    await expect(page.getByRole('button', { name: /delete task/i })).toBeVisible();
     const deletedTitle = await page.getByRole('heading', { level: 1 }).innerText();
 
     await page.getByRole('button', { name: /delete task/i }).click();

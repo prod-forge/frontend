@@ -1,11 +1,35 @@
+import type { Store } from '@prod-forge-todolist-frontend/core';
 import type { Scope } from '@sentry/react';
+import type { Metric } from 'web-vitals';
 
+import {
+  authReducer,
+  errorsReducer,
+  getCoreConfig,
+  hydrateAuth,
+  login,
+  logout,
+  todosReducer,
+  TOKEN_STORAGE_KEY,
+  USER_STORAGE_KEY,
+} from '@prod-forge-todolist-frontend/core';
+import { configureStore } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { onCLS, onINP, onLCP } from 'web-vitals';
 
-vi.mock('@prod-forge-todolist-frontend/core', () => ({ traceId: 'test-trace-id' }));
+vi.mock(import('@prod-forge-todolist-frontend/core'), async (importOriginal) => ({
+  ...(await importOriginal()),
+  traceId: 'test-trace-id',
+}));
 
-import { captureException, initSentry } from './sentry';
+vi.mock('web-vitals', () => ({
+  onCLS: vi.fn(),
+  onINP: vi.fn(),
+  onLCP: vi.fn(),
+}));
+
+import { bindSentryUser, captureException, initSentry } from './sentry';
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -57,6 +81,134 @@ describe('initSentry', () => {
       initSentry();
 
       expect(Sentry.setTag).toHaveBeenCalledWith('trace_id', 'test-trace-id');
+    });
+  });
+});
+
+// Extracts the callback registered with a mocked web-vitals subscriber and reports a metric through it
+function reportVital(subscriber: (onReport: (metric: Metric) => void) => void, metric: Partial<Metric>): void {
+  const cb = vi.mocked(subscriber).mock.lastCall?.[0] as (metric: Metric) => void;
+  cb(metric as Metric);
+}
+
+describe('initSentry web vitals', () => {
+  describe('negative cases', () => {
+    it('does not subscribe to web vitals when DSN is not set', () => {
+      vi.stubEnv('VITE_SENTRY_DSN', '');
+
+      initSentry();
+
+      expect(onCLS).not.toHaveBeenCalled();
+      expect(onINP).not.toHaveBeenCalled();
+      expect(onLCP).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('positive cases', () => {
+    beforeEach(() => {
+      vi.stubEnv('VITE_SENTRY_DSN', 'https://test@sentry.io/123');
+    });
+
+    it('subscribes to CLS, INP and LCP', () => {
+      initSentry();
+
+      expect(onCLS).toHaveBeenCalledTimes(1);
+      expect(onINP).toHaveBeenCalledTimes(1);
+      expect(onLCP).toHaveBeenCalledTimes(1);
+    });
+
+    it('sends LCP as a millisecond distribution with its rating', () => {
+      initSentry();
+      reportVital(onLCP, { name: 'LCP', rating: 'good', value: 1200 });
+
+      expect(Sentry.metrics.distribution).toHaveBeenCalledWith('web_vitals.lcp', 1200, {
+        attributes: { rating: 'good' },
+        unit: 'millisecond',
+      });
+    });
+
+    it('sends INP as a millisecond distribution with its rating', () => {
+      initSentry();
+      reportVital(onINP, { name: 'INP', rating: 'needs-improvement', value: 300 });
+
+      expect(Sentry.metrics.distribution).toHaveBeenCalledWith('web_vitals.inp', 300, {
+        attributes: { rating: 'needs-improvement' },
+        unit: 'millisecond',
+      });
+    });
+
+    it('sends CLS as a unitless distribution with its rating', () => {
+      initSentry();
+      reportVital(onCLS, { name: 'CLS', rating: 'poor', value: 0.3 });
+
+      expect(Sentry.metrics.distribution).toHaveBeenCalledWith('web_vitals.cls', 0.3, {
+        attributes: { rating: 'poor' },
+        unit: 'none',
+      });
+    });
+  });
+});
+
+const createAuthStore = (): Store =>
+  configureStore({ reducer: { auth: authReducer, errors: errorsReducer, todos: todosReducer } });
+
+describe('bindSentryUser', () => {
+  describe('negative cases', () => {
+    it('does not set the user when the Sentry client is not initialized', () => {
+      vi.mocked(Sentry.getClient).mockReturnValue(undefined);
+      const store = createAuthStore();
+
+      bindSentryUser(store);
+      store.dispatch(login({ email: 'a@b.com' }));
+
+      expect(Sentry.setUser).not.toHaveBeenCalled();
+    });
+
+    it('does not set the user again when an action leaves the user unchanged', async () => {
+      vi.mocked(Sentry.getClient).mockReturnValue({} as NonNullable<ReturnType<typeof Sentry.getClient>>);
+      const store = createAuthStore();
+
+      bindSentryUser(store);
+      await store.dispatch(hydrateAuth());
+
+      expect(Sentry.setUser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('positive cases', () => {
+    beforeEach(() => {
+      vi.mocked(Sentry.getClient).mockReturnValue({} as NonNullable<ReturnType<typeof Sentry.getClient>>);
+    });
+
+    it('sets the user email after hydrateAuth restores a session', async () => {
+      const { storage } = getCoreConfig();
+      await storage.setItem(TOKEN_STORAGE_KEY, 'token');
+      await storage.setItem(USER_STORAGE_KEY, JSON.stringify({ email: 'restored@b.com', name: 'Ann' }));
+      const store = createAuthStore();
+
+      bindSentryUser(store);
+      await store.dispatch(hydrateAuth());
+
+      expect(Sentry.setUser).toHaveBeenCalledWith({ email: 'restored@b.com' });
+    });
+
+    it('sets the user email after login', () => {
+      const store = createAuthStore();
+
+      bindSentryUser(store);
+      store.dispatch(login({ email: 'a@b.com' }));
+
+      expect(Sentry.setUser).toHaveBeenCalledWith({ email: 'a@b.com' });
+    });
+
+    it('clears the user after logout', () => {
+      const store = createAuthStore();
+
+      bindSentryUser(store);
+      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(logout());
+
+      expect(Sentry.setUser).toHaveBeenLastCalledWith(null);
     });
   });
 });
