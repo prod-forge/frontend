@@ -44,9 +44,9 @@ type TodoFilters = {
   query: string; // Free-text search, sent as the `search` param (max 100 chars). Only when non-empty.
   sortBy: SortBy; // Sort field: 'title' | 'completed'.
 };
+```
 
 Initial value in `todos.filters`: `{ limit: 10, offset: 0, order: 'asc', query: '', sortBy: 'title' }`.
-```
 
 ### `AuthUser`
 
