@@ -180,4 +180,4 @@ If the entry point forgets to call it, the first request throws `CoreNotConfigur
 
 Storage is asynchronous on purpose (`KeyValueStorage` returns promises), because SecureStore is. Auth persistence is therefore not done in reducers. It is a listener (`auth.listeners.ts`) that writes the token and user after `login` or `register`, and removes them after `logout`. On startup the `hydrateAuth` thunk reads the storage and `auth.hydration` moves `idle -> hydrating -> done`. On web, `AuthHydrationGate` renders nothing until hydration is done, so the UI does not flash a signed-out state for a user who is signed in.
 
-More about the mobile side is in the Mobile Client chapter.
+More about the mobile side is in the [Mobile Client](mobile-client.md) chapter.
