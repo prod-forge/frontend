@@ -120,7 +120,7 @@ document.documentElement.dataset.theme =
 
 It is a module file and not an inline script on purpose: the Content Security Policy allows only `'self'` scripts. After mount, the `useTheme` hook in `packages/ui-web/src/hooks/theme/use-theme.ts` takes over: it reads the same `localStorage` key, toggles the attribute, and persists the choice.
 
-Storybook uses the same mechanism. `packages/ui-web/.storybook/preview.ts` has a `theme` toolbar global and a decorator that sets `data-theme` on the document, so every story can be viewed in both themes.
+Storybook uses the same mechanism. `packages/ui-web/.storybook/preview.tsx` has a `theme` toolbar global and a decorator that sets `data-theme` on the document, so every story can be viewed in both themes.
 
 ### Mobile
 
@@ -177,7 +177,7 @@ A story is a specification of one state: `Todo`, `Done`, `LongTitle`, `WithDelet
 Storybook is configured in `packages/ui-web/.storybook/`:
 
 - `main.ts` registers the addons: `@storybook/addon-docs` (autodocs from `tags: ['autodocs']`), `@storybook/addon-a11y`, `@storybook/addon-vitest` and `@chromatic-com/storybook`.
-- `preview.ts` loads `tokens.css`, the theme decorator and a router decorator, and sets the axe rules.
+- `preview.tsx` loads `tokens.css`, the theme decorator and a router decorator, and sets the axe rules.
 
 Two things run on the stories inside Storybook tooling:
 
