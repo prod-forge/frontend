@@ -113,7 +113,7 @@ npm ci -> playwright install -> lint -> knip -> unit -> e2e -> visual -> a11y ->
 
 What enabling it would take, and why it costs more than it looks:
 
-- Remove `if: false`. Everything else is in place.
+- Remove `if: false`. Everything else is in place, including `VITE_API_BASE_URL` for the build step: the build guard fails without it, so the workflow sets a placeholder value (`http://localhost:3000/api/v1/`) for the `Build` step only.
 - **Playwright browser** is installed on every run with `npx playwright install chromium --with-deps`. Only Chromium is installed, which is all the configs use; `--with-deps` adds the system libraries and is the slowest setup step. Caching `~/.cache/ms-playwright` helps with the download, not with the system packages.
 - **Storybook is started twice** (visual and a11y each start `npm run storybook`), and the Vite dev server is started for e2e. They run sequentially in one job.
 - **Visual snapshots depend on the OS.** `snapshotPathTemplate` points at a `darwin` folder, so the stored images were produced on macOS. Rendering on Ubuntu differs in font rasterization; the tolerance is `maxDiffPixelRatio: 0.01`, which may or may not absorb it. The `update-visual-snapshots.yml` workflow regenerates them on Ubuntu, and the folder name would then be misleading. Decide on one OS for snapshots before turning the job on.

@@ -73,7 +73,7 @@ Sentry.init({
 
 What gets reported:
 
-- the **error middleware** reports rejected thunks that are not 4xx (see [State Management](state-management.md)), through the `reportError` function injected into core. Core does not import Sentry;
+- the **error middleware** reports rejected thunks that are not 4xx and not silent or not-found rejections (see [State Management](state-management.md)), through the `reportError` function injected into core. Core does not import Sentry;
 - the **error boundary** reports render exceptions with the component stack as context;
 - unhandled errors and rejections are captured by the Sentry SDK itself.
 
@@ -112,6 +112,8 @@ onError={(stack) => {
 `logsApi.send` (`packages/core/src/api/logs.api.ts`) is `POST client-logs/web`. The backend validates the payload (`WebLogDto`: `actions`, `env`, `metadata`, `timestamp`, `traceId`) and answers `204`.
 
 What the backend does with it today: **nothing**. `ClientLogsService.processWebLog` is an empty method with a `TODO: upload to S3`. The endpoint is a real, validated contract, and the client sends real data, but the data is discarded. Until the storage is added, the trace of "what the user did before the error" is available in Sentry replay and breadcrumbs, not in the backend.
+
+The client sends no `Authorization` header while the user is signed out, so logs from signed-out pages (login, registration) are rejected with `401` until the backend marks `POST client-logs/web` as public. Those logs end up in `console.error` like any other failed send.
 
 If the request that sends the log fails, the error goes to `console.error` and is dropped. Sending a log must never trigger another log, otherwise a backend outage turns into a request loop.
 
