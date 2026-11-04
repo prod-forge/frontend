@@ -47,6 +47,12 @@ describe('SearchField', () => {
     expect(onChange).toHaveBeenNthCalledWith(3, 'c');
   });
 
+  it('limits the input length when maxLength is provided', () => {
+    render(<SearchField id="search" maxLength={100} onChange={() => undefined} value="" />);
+
+    expect(screen.getByRole('searchbox')).toHaveAttribute('maxlength', '100');
+  });
+
   it('uses the provided id', () => {
     render(
       <SearchField

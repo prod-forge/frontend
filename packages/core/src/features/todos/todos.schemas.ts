@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
-export const TITLE_MAX_LENGTH = 50;
+export const TITLE_MAX_LENGTH = 200;
 
-export const DESCRIPTION_MAX_LENGTH = 200;
+export const SEARCH_MAX_LENGTH = 100;
+
+export const DESCRIPTION_MAX_LENGTH = 2000;
 
 export const titleSchema = z
   .string()

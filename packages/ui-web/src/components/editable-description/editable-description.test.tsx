@@ -105,7 +105,9 @@ describe('EditableDescription', () => {
 
     expect(onSubmit).not.toHaveBeenCalled();
     expect(screen.getByRole('textbox', { name: /description/i })).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveTextContent(/200 characters or fewer/i);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      new RegExp(`${DESCRIPTION_MAX_LENGTH} characters or fewer`, 'i'),
+    );
   });
 
   it('allows submitting an empty description', async () => {

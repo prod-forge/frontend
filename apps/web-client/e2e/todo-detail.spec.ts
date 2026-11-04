@@ -96,10 +96,10 @@ test.describe('Todo detail page', () => {
     await page.getByRole('button', { name: /edit title/i }).click();
 
     const titleInput = page.getByRole('textbox', { name: /title/i });
-    await titleInput.fill('a'.repeat(51));
+    await titleInput.fill('a'.repeat(201));
     await titleInput.press('Enter');
 
-    await expect(page.getByRole('alert')).toContainText(/50 characters or fewer/i);
+    await expect(page.getByRole('alert')).toContainText(/200 characters or fewer/i);
     await expect(page.getByRole('textbox', { name: /title/i })).toBeVisible();
   });
 

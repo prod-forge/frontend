@@ -33,7 +33,7 @@ export const WithValue: Story = {
 export const WithError: Story = {
   args: {
     defaultValue: 'a'.repeat(60),
-    error: 'Title must be 50 characters or fewer',
+    error: 'Title must be 200 characters or fewer',
     id: 'with-error',
     label: 'Title',
   },

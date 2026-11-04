@@ -111,9 +111,9 @@ onError={(stack) => {
 
 `logsApi.send` (`packages/core/src/api/logs.api.ts`) is `POST client-logs/web`. The backend validates the payload (`WebLogDto`: `actions`, `env`, `metadata`, `timestamp`, `traceId`) and answers `204`.
 
-What the backend does with it today: **nothing**. `ClientLogsService.processWebLog` is an empty method with a `TODO: upload to S3`. The endpoint is a real, validated contract, and the client sends real data, but the data is discarded. Until the storage is added, the trace of "what the user did before the error" is available in Sentry replay and breadcrumbs, not in the backend.
+What the backend does with it today: `ClientLogsService.processWebLog` writes the payload to the backend log at warn level; it is not stored anywhere else yet. Until the storage is added, the trace of "what the user did before the error" is available in Sentry replay and breadcrumbs, not in the backend.
 
-The client sends no `Authorization` header while the user is signed out, so logs from signed-out pages (login, registration) are rejected with `401` until the backend marks `POST client-logs/web` as public. Those logs end up in `console.error` like any other failed send.
+`POST client-logs/web` is public, so logs from signed-out pages (login, registration) are accepted without a token. It is throttled to 20 requests per 60 seconds; a throttled send fails with `429 TOO_MANY_REQUESTS` and ends up in `console.error` like any other failed send. `metadata` is required, `actions` holds at most 100 entries, an action `stack` at most 10000 characters, and the payload must not contain PII.
 
 If the request that sends the log fails, the error goes to `console.error` and is dropped. Sending a log must never trigger another log, otherwise a backend outage turns into a request loop.
 

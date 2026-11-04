@@ -26,7 +26,7 @@ const listTodos = (db: readonly Todo[], { searchParams }: URL): Response =>
       limit: Number(searchParams.get('limit')),
       offset: Number(searchParams.get('offset')),
       order: searchParams.get('order') === 'desc' ? 'desc' : 'asc',
-      search: searchParams.get('query') ?? '',
+      search: searchParams.get('search') ?? '',
       sortBy: searchParams.get('sortBy') ?? undefined,
     }),
   );

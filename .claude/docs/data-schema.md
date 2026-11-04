@@ -11,8 +11,8 @@ This document describes the frontend domain model: types, Redux state shape, and
 ```ts
 interface Todo {
   id: string; // Server-assigned UUID. Optimistic items use "optimistic-{requestId}" prefix.
-  title: string; // Short label. Max 50 chars. Required.
-  description: string; // Extended details. Max 200 chars. Can be empty.
+  title: string; // Short label. Max 200 chars. Required.
+  description: string; // Extended details. Max 2000 chars. Can be empty.
   completed: boolean; // Completion status. Toggled optimistically.
 }
 ```
@@ -27,7 +27,7 @@ interface TodosResponse {
 
 interface TodosMeta {
   limit: number; // Page size used for this response.
-  offset: number; // Number of items skipped.
+  offset: number; // 0-based row offset: number of items skipped.
   total: number; // Total matching items in the backend (used to compute page count).
 }
 ```
@@ -37,9 +37,9 @@ interface TodosMeta {
 ```ts
 interface TodoFilters {
   limit: LimitValue; // Items per page. One of: 10 | 20 | 50.
-  offset: number; // Current page offset (limit * pageIndex).
+  offset: number; // 0-based row offset, (page - 1) * limit; the first page is 0.
   order: Order; // Sort direction: 'asc' | 'desc'.
-  query: string; // Free-text search. Sent only when non-empty.
+  query: string; // Free-text search, sent as the `search` param (max 100 chars). Only when non-empty.
   sortBy: SortBy; // Sort field: 'title' | 'completed'.
 }
 ```
@@ -150,10 +150,11 @@ interface AppError {
 
 ### Todos
 
-| Field       | Rule                                                                 |
-| ----------- | -------------------------------------------------------------------- |
-| title       | Required (min 1 char after trim). Max 50 chars (`TITLE_MAX_LENGTH`). |
-| description | Optional. Max 200 chars (`DESCRIPTION_MAX_LENGTH`).                  |
+| Field       | Rule                                                                             |
+| ----------- | -------------------------------------------------------------------------------- |
+| title       | Required (min 1 char after trim). Max 200 chars (`TITLE_MAX_LENGTH`).            |
+| description | Optional. Max 2000 chars (`DESCRIPTION_MAX_LENGTH`).                             |
+| search      | Optional. Max 100 chars (`SEARCH_MAX_LENGTH`), enforced by the web search input. |
 
 ---
 

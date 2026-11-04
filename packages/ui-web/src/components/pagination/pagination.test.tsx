@@ -94,6 +94,16 @@ describe('Pagination', () => {
     expect(onOffsetChange).toHaveBeenCalledWith(10);
   });
 
+  it('requests offset 0 for the first page', async () => {
+    const onOffsetChange = vi.fn();
+    const user = userEvent.setup();
+    render(<Pagination limit={10} offset={20} onOffsetChange={onOffsetChange} total={50} />);
+
+    await user.click(screen.getByRole('button', { name: 'Page 1' }));
+
+    expect(onOffsetChange).toHaveBeenCalledWith(0);
+  });
+
   it('moves to the next page when Next is clicked', async () => {
     const onOffsetChange = vi.fn();
     const user = userEvent.setup();

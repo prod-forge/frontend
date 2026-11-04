@@ -36,6 +36,7 @@ export { LIMIT_OPTIONS, ORDER_OPTIONS, SORT_BY_OPTIONS } from './features/todos/
 export {
   DESCRIPTION_MAX_LENGTH,
   descriptionSchema,
+  SEARCH_MAX_LENGTH,
   TITLE_MAX_LENGTH,
   titleSchema,
 } from './features/todos/todos.schemas';

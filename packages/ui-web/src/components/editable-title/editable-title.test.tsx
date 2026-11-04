@@ -84,7 +84,7 @@ describe('EditableTitle', () => {
 
     expect(onSubmit).not.toHaveBeenCalled();
     expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveTextContent(/50 characters or fewer/i);
+    expect(screen.getByRole('alert')).toHaveTextContent(new RegExp(`${TITLE_MAX_LENGTH} characters or fewer`, 'i'));
   });
 
   it('shows an error and stays in edit mode for an empty title', async () => {

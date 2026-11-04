@@ -9,6 +9,7 @@ import {
   fetchTodos,
   LIMIT_OPTIONS,
   ORDER_OPTIONS,
+  SEARCH_MAX_LENGTH,
   selectAuthUser,
   selectCompletedTodos,
   selectFilters,
@@ -133,6 +134,7 @@ export const Home = (): ReactNode => {
       <div className="mb-3">
         <SearchField
           id="search"
+          maxLength={SEARCH_MAX_LENGTH}
           onChange={(value) => dispatch(updateFilters({ query: value }))}
           placeholder="Search tasks…"
           value={filters.query}

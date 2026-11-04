@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { EditableDescription } from './editable-description';
 
-const demoSchema = z.string().max(200, 'Description must be 200 characters or fewer');
+const demoSchema = z.string().max(2000, 'Description must be 2000 characters or fewer');
 
 const meta = {
   component: EditableDescription,

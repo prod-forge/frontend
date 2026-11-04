@@ -100,7 +100,7 @@ export const test = base.extend<Fixtures>({
               limit: Number(url.searchParams.get('limit') ?? 10),
               offset: Number(url.searchParams.get('offset') ?? 0),
               order,
-              search: url.searchParams.get('query') ?? '',
+              search: url.searchParams.get('search') ?? '',
               sortBy,
             }),
           ),

@@ -121,22 +121,22 @@ describe('todosApi.getAll', () => {
       expect(url).toContain('offset=20');
     });
 
-    it('includes query param when query is non-empty', async () => {
+    it('sends the query as the search param when non-empty', async () => {
       vi.mocked(apiRequest).mockResolvedValueOnce(response);
 
       await todosApi.getAll({ ...filters, query: '  hello  ' });
 
       const [url] = vi.mocked(apiRequest).mock.calls[0] as [string];
-      expect(url).toContain('query=hello');
+      expect(url).toContain('search=hello');
     });
 
-    it('omits query param when query is blank', async () => {
+    it('omits the search param when query is blank', async () => {
       vi.mocked(apiRequest).mockResolvedValueOnce(response);
 
       await todosApi.getAll({ ...filters, query: '   ' });
 
       const [url] = vi.mocked(apiRequest).mock.calls[0] as [string];
-      expect(url).not.toContain('query=');
+      expect(url).not.toContain('search=');
     });
   });
 });

@@ -21,7 +21,7 @@ export const todosApi = {
     });
 
     if (filters.query.trim()) {
-      params.set('query', filters.query.trim());
+      params.set('search', filters.query.trim());
     }
 
     return apiRequest<TodosResponse>(`todos?${params.toString()}`);

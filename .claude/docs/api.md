@@ -39,10 +39,10 @@ All errors propagate to the Redux `errorMiddleware`, which logs them through `Co
 ### `todosApi.getAll(filters: TodoFilters): Promise<TodosResponse>`
 
 ```
-GET /todos?limit={n}&offset={n}&order={asc|desc}&sortBy={title|completed}&query={string}
+GET /todos?limit={n}&offset={n}&order={asc|desc}&sortBy={title|completed}&search={string}
 ```
 
-Query param `query` is only included when non-empty after trim.
+`offset` is a 0-based row offset (the backend applies it as `skip`), so page N starts at `(N - 1) * limit` and the first page is `offset=0`. `limit` is 1 to 100. The backend default sort is `createdAt` descending; the client always sends `sortBy` and `order`. The `query` filter is sent as the `search` param (max 100 characters, matched against the title by default) and only when non-empty after trim.
 
 Response:
 
@@ -118,6 +118,8 @@ Content-Type: application/json
 
 Sends a client log stack (on web, logrock's `Stack` from `LoggerContainer.onError`). Core types it as `object` so it does not depend on logrock.
 
+The endpoint is public (no token needed) and throttled to 20 requests per 60 seconds per client, so excess sends fail with `429 TOO_MANY_REQUESTS` and are dropped. The body requires `metadata`; `actions` holds at most 100 entries and an action `stack` at most 10000 characters. The payload must not contain PII.
+
 ---
 
 ## Backend Error Codes
@@ -126,14 +128,18 @@ Returned in `BackendError.code`. Frontend maps these to user-facing messages:
 
 | Code                     | User message                                                  |
 | ------------------------ | ------------------------------------------------------------- |
+| `BAD_REQUEST`            | The request could not be processed. Please check your input.  |
 | `DATABASE_ERROR`         | A storage error occurred. Please try again later.             |
 | `DTO_VALIDATION_ERROR`   | Your request contains invalid data. Please check your input.  |
 | `FORBIDDEN`              | You do not have permission to perform this action.            |
 | `HTTP_EXCEPTION`         | An unexpected request error occurred.                         |
 | `INFRA_FAILURE`          | A service is temporarily unavailable. Please try again later. |
 | `INTERNAL_ERROR`         | Something went wrong on our end. Please try again later.      |
+| `NOT_FOUND`              | The requested item could not be found.                        |
+| `PAYLOAD_TOO_LARGE`      | The data you sent is too large.                               |
 | `REDIS_ERROR`            | A caching error occurred. Please try again later.             |
 | `TODO_NOT_FOUND`         | The requested item could not be found.                        |
+| `TOO_MANY_REQUESTS`      | Too many requests. Please wait a moment and try again.        |
 | `USER_IS_NOT_AUTHORIZED` | Please log in to continue.                                    |
 | `USER_NOT_FOUND`         | The requested user could not be found.                        |
 | _(fallback)_             | Something went wrong. Please try again later.                 |

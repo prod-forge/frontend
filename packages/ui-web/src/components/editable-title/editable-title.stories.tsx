@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { EditableTitle } from './editable-title';
 
-const demoSchema = z.string().trim().min(1, 'Title is required').max(50, 'Title must be 50 characters or fewer');
+const demoSchema = z.string().trim().min(1, 'Title is required').max(200, 'Title must be 200 characters or fewer');
 
 const meta = {
   component: EditableTitle,
@@ -33,7 +33,7 @@ export const LongTitle: Story = {
   args: {
     onSubmit: noop,
     schema: demoSchema,
-    value: 'A reasonably long task title that fits within the 50-char limit',
+    value: 'A reasonably long task title that fits within the 200-char limit',
   },
 };
 
