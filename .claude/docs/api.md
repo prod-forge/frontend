@@ -2,7 +2,7 @@
 
 All HTTP calls go through `packages/core/src/api/client.ts`. Never call `fetch` directly from components or pages.
 
-Base URL: `getCoreConfig().apiBaseUrl`, set by the app through `configureCore` (web passes `VITE_API_BASE_URL`, e.g. `http://localhost:3000/api/v1/`). It must end with `/`; `configureCore` throws otherwise. If no app called `configureCore`, the first request throws `CoreNotConfiguredError`.
+Base URL: `getCoreConfig().apiBaseUrl`, set by the app through `configureCore` (web passes `VITE_API_BASE_URL`, e.g. `https://api.example.com/api/v1/`, and falls back to `/api/v1/`, the Vite dev proxy path, when it is unset; mobile passes `EXPO_PUBLIC_API_BASE_URL`). It must end with `/`; `configureCore` throws otherwise. If no app called `configureCore`, the first request throws `CoreNotConfiguredError`.
 
 ---
 
@@ -28,7 +28,7 @@ x-trace-id: <uuid>
   - Otherwise → throws `ApiError` (message: `HTTP {status}`, status: number)
 - `204 No Content` → returns `undefined as T`
 
-All errors propagate to the Redux `errorMiddleware`, which logs them through `CoreLogger`, dispatches `pushError` and calls `getCoreConfig().reportError` (Sentry on web) unless the error carries a 4xx `status` or the thunk rejected with a `silent` / `not-found` value. Todo and auth thunks use `serializeError: serializeApiError` so `status` survives RTK's error serialization; errors without a status (network, frontend bugs) are always reported.
+All errors propagate to the Redux `errorMiddleware`, which logs them through `CoreLogger`, dispatches `pushError` and calls `getCoreConfig().reportError` (Sentry on web) unless the error carries a 4xx `status` or the thunk rejected with a `silent` / `not-found` value. Todo thunks use `serializeError: serializeApiError` (login and register use a wrapper around it) so `status` survives RTK's error serialization; errors without a status (network, frontend bugs) are always reported.
 
 **401 on an authenticated request:** a listener in `features/auth/auth.listeners.ts` dispatches `logout()` for any rejected thunk whose serialized error has `status === 401` while `auth.token` is set (expired, revoked or forged token). `fetchTodoById` rethrows a 401 instead of turning it into a `rejectValue`, so the status reaches the listener. A rejected login has no token yet and is not affected.
 
@@ -137,7 +137,7 @@ Content-Type: application/json
 
 Sends a client log stack (on web, logrock's `Stack` from `LoggerContainer.onError`). Core types it as `object` so it does not depend on logrock.
 
-The endpoint is public (no token needed) and throttled to 20 requests per 60 seconds per client, so excess sends fail with `429 TOO_MANY_REQUESTS` and are dropped. The body requires `metadata`; `actions` holds at most 100 entries and an action `stack` at most 10000 characters. The payload must not contain PII.
+The endpoint is public (no token needed) and throttled to 20 requests per 60 seconds per client, so excess sends fail with `429 TOO_MANY_REQUESTS` and are dropped. The body requires `metadata`; `actions` holds at most 100 entries and an action `stack` at most 10000 characters. The payload must not contain PII. A mobile counterpart (`POST /client-logs/mobile`) exists in the backend, but no client code calls it.
 
 ---
 

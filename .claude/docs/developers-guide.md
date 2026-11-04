@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Node.js 24.21.0
-- npm 10+
+- npm (the version bundled with Node 24.21.0, the version CI uses)
 
 ---
 
@@ -17,7 +17,7 @@ npm install
 cp .env.example .env
 ```
 
-Required env variables:
+Variables in `.env.example` (all optional in dev; `VITE_API_BASE_URL` falls back to `/api/v1/` when unset, but a production build requires an absolute `http(s)://` URL ending with `/`):
 
 ```
 VITE_API_BASE_URL=/api/v1/   # relative: the Vite dev server proxies /api to http://localhost:3000
@@ -29,7 +29,7 @@ VITE_SENTRY_DSN=          # leave empty for local dev
 
 ## Running the App
 
-To log in against the local backend: run `docker compose up` in the backend repo, then `npm run dev` here, and log in with `user1@example.com`. The Vite dev server proxies `/api` to `http://localhost:3000`, so the backend CORS allowlist is not involved.
+To log in against the local backend: start it as described in the backend README ("Getting started": database and cache containers, migrations, `npm run db:seed`, `npm run start:dev`; API on `http://localhost:3000`), then `npm run dev` here, and log in with `user1@example.com`. The Vite dev server proxies `/api` to `http://localhost:3000`, so the backend CORS allowlist is not involved.
 
 ```bash
 # Start web-client dev server (http://localhost:5173)
@@ -147,11 +147,11 @@ npm run format
 npm run knip
 
 # Type check
-npx nx run web-client:lint:ts
+cd apps/web-client && npm run lint:ts
 cd apps/mobile-client && npm run lint:ts
 ```
 
-Pre-commit hooks (Husky + lint-staged) run formatting and lint automatically on staged files.
+Husky hooks: `pre-commit` runs lint-staged (Prettier, ESLint and `tsc --noEmit` on staged files), `commit-msg` runs commitlint, `pre-push` runs `npm run knip && npm test`.
 
 ---
 
@@ -173,7 +173,7 @@ cd apps/web-client && ANALYZE=true npm run build
 ## Adding a New Component
 
 1. Create a folder under `packages/ui-web/src/components/{name}/`
-2. Add `{name}.tsx` — named export, `ReactNode` return type, `displayName` set
+2. Add `{name}.tsx` — named export, `ReactNode` return type
 3. Add `{name}.test.tsx` — negative cases first, then positive
 4. Add `{name}.stories.tsx` — at minimum one default story
 5. Export from `packages/ui-web/src/index.ts`
@@ -203,7 +203,7 @@ Core must stay platform-neutral: no `import.meta.env`, no `localStorage`, no bro
 1. Add a route file under `apps/mobile-client/src/app/` (file name = route; default export, the ESLint override allows it there)
 2. Register its title in the `<Stack>` of `src/app/_layout.tsx`
 3. Add a test in `src/app-tests/`, not next to the route
-4. Keep store access in the route file; components in `src/components/` take props only and get colors from `useThemedStyles(createThemedStyles(...))`
+4. Keep store access in the route file; components in `src/components/` take props only and get theme colors from `useThemedStyles` with a `createThemedStyles(...)` factory
 
 ---
 
@@ -225,7 +225,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/):
 feat: add pagination to todo list
 fix: correct optimistic rollback on delete
 docs: update architecture guide
-chore: bump vitest to 4.2
+chore: bump vitest
 ```
 
 `commitlint` enforces this on every commit. The `release` script uses commit history to auto-generate changelogs.
@@ -238,11 +238,12 @@ chore: bump vitest to 4.2
 npm run release
 ```
 
-Runs `before-release.ts` (pre-checks), then `release-it` with:
+Runs `before-release.ts` (an interactive checklist), then `release-it` (must run on a clean `main`) with:
 
-- Conventional changelog generation
-- Version bump in `package.json`
-- Git tag
+- `npm run lint` before the bump and `npm run build` after it
+- Conventional changelog generation (`CHANGELOG.md`, never edited by hand)
+- Version bump in the root `package.json` and `apps/*/package.json`
+- Release commit `chore(release): v<version>`, git tag `v<version>` and push
 - GitHub release
 
 ---

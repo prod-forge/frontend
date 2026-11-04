@@ -31,13 +31,18 @@ apps/mobile-client
   └── packages/design-tokens (JS module: colors, spacing, radius, typography)
 
 packages/ui-web
-  └── packages/design-tokens
+  ├── packages/core        (types and Zod schemas only: Todo, SelectOption, loginSchema, ...)
+  ├── packages/design-tokens
+  └── packages/styles-web
+
+packages/test-data
+  └── packages/core        (type imports only)
 
 packages/core
   └── (no internal deps — pure business logic)
 ```
 
-Rule: `ui-web` has no Redux dependency. `core` has no React dependency. The apps are the only places that wire them together: on mobile, `src/components/**` never import the store; only `src/app/**` route files do.
+Rule: `ui-web` has no Redux dependency (it takes types and Zod schemas from `core`, never the store). `core` has no React dependency. The apps are the only places that wire them together: on mobile, `src/components/**` never import the store; only `src/app/**` route files do.
 
 ---
 
@@ -45,27 +50,27 @@ Rule: `ui-web` has no Redux dependency. `core` has no React dependency. The apps
 
 ```
 apps/
-└── web-client/
-    └── src/
-        ├── app.tsx                  # Root: Provider, Router, ErrorBoundary, LoggerContainer, lazy routes
-        ├── main.tsx                 # Entry point — setupCore, Sentry init, hydrateAuth, render
-        ├── theme-init.ts            # Sets data-theme before main.tsx runs (no inline script, see CSP)
-        ├── styles.css               # Tailwind entry + @source directives
-        ├── containers/
-        │   ├── auth/                # AuthHydrationGate — renders routes once auth is restored
-        │   ├── layout/              # LayoutContainer — auth state, logout
-        │   └── errors/              # ErrorNotifierContainer — error toasts
-        ├── hooks/
-        │   └── redux/redux.ts       # useAppDispatch, useAppSelector
-        ├── services/
-        │   ├── core-setup.ts        # setupCore(): web adapters for configureCore
-        │   ├── console-logger.ts    # logrock stdout for the browser console
-        │   └── sentry.ts            # initSentry (+ web vitals), captureException, bindSentryUser
-        └── pages/
-            ├── home/                # Todo list, filters, search, delete with confirmation
-            ├── login/
-            ├── register/
-            └── todo-detail/         # Single todo view (by :id)
+├── web-client/
+│   └── src/
+│       ├── app.tsx                  # Root: Provider, Router, ErrorBoundary, LoggerContainer, lazy routes
+│       ├── main.tsx                 # Entry point — setupCore, Sentry init, hydrateAuth, render
+│       ├── theme-init.ts            # Sets data-theme before main.tsx runs (no inline script, see CSP)
+│       ├── styles.css               # Tailwind entry + @source directives
+│       ├── containers/
+│       │   ├── auth/                # AuthHydrationGate — renders routes once auth is restored
+│       │   ├── layout/              # LayoutContainer — auth state, logout
+│       │   └── errors/              # ErrorNotifierContainer — error toasts
+│       ├── hooks/
+│       │   └── redux/redux.ts       # useAppDispatch, useAppSelector
+│       ├── services/
+│       │   ├── core-setup.ts        # setupCore(): web adapters for configureCore
+│       │   ├── console-logger.ts    # logrock stdout for the browser console
+│       │   └── sentry.ts            # initSentry (+ web vitals), captureException, bindSentryUser
+│       └── pages/
+│           ├── home/                # Todo list, filters, search, delete with confirmation
+│           ├── login/
+│           ├── register/
+│           └── todo-detail/         # Single todo view (by :id)
 └── mobile-client/
     ├── index.ts                     # Entry: imports src/bootstrap, then expo-router/entry
     ├── app.json                     # Expo config: name "Prod Forge", scheme prodforge, iOS/Android only
@@ -153,7 +158,7 @@ packages/
 
 ```ts
 configureCore({
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL, // must end with "/"
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1/', // must end with "/"; web falls back to the dev proxy path
   getToken: () => store.getState().auth.token, // read on every request
   logger: logrockLogger, // CoreLogger: debug / warn / error
   reportError: captureException, // Sentry on web
@@ -163,7 +168,7 @@ configureCore({
 
 Each app calls `configureCore` once in its entry point, before the first dispatch or request. Web does it in `apps/web-client/src/services/core-setup.ts` (`setupCore()`); mobile does it in `apps/mobile-client/src/services/core-setup.ts` with SecureStore, a console logger and Sentry React Native. Core reads the config lazily through `getCoreConfig()`, so forgetting the call fails on the first request with `CoreNotConfiguredError` and a message that names the fix, not with a `TypeError` deep inside `fetch`.
 
-The storage interface is asynchronous because SecureStore and AsyncStorage are. That is why auth is no longer read in the reducer's initial state: the entry point dispatches `hydrateAuth()`, which moves `auth.hydration` from `idle` to `hydrating` to `done`, and both apps render routes only after `done` (`AuthHydrationGate` on web, `RootNavigator` in `apps/mobile-client/src/app/_layout.tsx` on mobile, which shows a `Preloader` meanwhile). Without the gate a reload on `/todo/:id` would redirect a signed-in user before the token is read, and on mobile the login screen would flash on every cold start while SecureStore is read.
+The storage interface is asynchronous because SecureStore is. That is why auth is not read in the reducer's initial state: the entry point dispatches `hydrateAuth()`, which moves `auth.hydration` from `idle` to `hydrating` to `done`, and both apps render routes only after `done` (`AuthHydrationGate` on web, `RootNavigator` in `apps/mobile-client/src/app/_layout.tsx` on mobile, which shows a `Preloader` meanwhile). Without the gate a reload on `/todo/:id` would redirect a signed-in user before the token is read, and on mobile the login screen would flash on every cold start while SecureStore is read.
 
 ---
 
@@ -183,10 +188,10 @@ main.tsx
 
 app.tsx
   └── <Provider store={store}>
-        <ErrorNotifierContainer>        ← error toasts
-          <LoggerContainer>             ← logrock + trace ID
-            <ErrorBoundary>             ← Sentry capture on crash
-              <AuthHydrationGate>       ← waits for auth.hydration === 'done'
+        <ErrorNotifierContainer />      ← error toasts (sibling, renders no children)
+        <LoggerContainer>               ← logrock + trace ID
+          <ErrorBoundary>               ← Sentry capture on crash
+            <AuthHydrationGate>         ← renders children once auth.hydration === 'done'
               <BrowserRouter>
                 <Routes>
                   <Route element={<LayoutContainer />}>
@@ -278,16 +283,16 @@ Pages are containers scoped to a route. They orchestrate state and compose layou
 
 ## Environment Variables
 
-| Variable                   | Used in                             | Purpose                                                         |
-| -------------------------- | ----------------------------------- | --------------------------------------------------------------- |
-| `VITE_API_BASE_URL`        | `services/core-setup.ts`, CSP       | Base URL for all API requests, passed to `configureCore`        |
-| `EXPO_PUBLIC_API_BASE_URL` | mobile `src/services/core-setup.ts` | Mobile API base URL (must end with `/`), inlined at bundle time |
-| `EXPO_PUBLIC_SENTRY_DSN`   | mobile `src/services/sentry.ts`     | Sentry React Native DSN; Sentry stays off when empty            |
-| `VITE_ASSETS_BASE_URL`     | `ui-web` TodoItem, `index.html` CSP | Base URL for S3-hosted static assets (optional)                 |
-| `VITE_SENTRY_DSN`          | `services/sentry.ts`                | Sentry project DSN                                              |
-| `SENTRY_ORG`               | `vite.config.ts`                    | Sentry org for source map upload                                |
-| `SENTRY_PROJECT`           | `vite.config.ts`                    | Sentry project for source map upload                            |
-| `SENTRY_AUTH_TOKEN`        | `vite.config.ts`                    | Auth token for Sentry CLI                                       |
+| Variable                   | Used in                             | Purpose                                                                                                      |
+| -------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `VITE_API_BASE_URL`        | `services/core-setup.ts`, CSP       | Base URL for all API requests, passed to `configureCore`; unset in dev falls back to `/api/v1/` (Vite proxy) |
+| `EXPO_PUBLIC_API_BASE_URL` | mobile `src/services/core-setup.ts` | Mobile API base URL (must end with `/`), inlined at bundle time                                              |
+| `EXPO_PUBLIC_SENTRY_DSN`   | mobile `src/services/sentry.ts`     | Sentry React Native DSN; Sentry stays off when empty                                                         |
+| `VITE_ASSETS_BASE_URL`     | `ui-web` TodoItem, `index.html` CSP | Base URL for S3-hosted static assets (optional)                                                              |
+| `VITE_SENTRY_DSN`          | `services/sentry.ts`                | Sentry project DSN                                                                                           |
+| `SENTRY_ORG`               | `vite.config.ts`                    | Sentry org for source map upload                                                                             |
+| `SENTRY_PROJECT`           | `vite.config.ts`                    | Sentry project for source map upload                                                                         |
+| `SENTRY_AUTH_TOKEN`        | `vite.config.ts`                    | Auth token for Sentry CLI                                                                                    |
 
 ---
 
@@ -295,15 +300,15 @@ Pages are containers scoped to a route. They orchestrate state and compose layou
 
 ```
 dist/
-├── index.html          # Injected with <!-- version: x.y.z --> comment
+├── index.html          # Prefixed with a <!-- Version: x.y.z --> comment
 ├── favicon.svg
 ├── icons.svg
 └── static/             # Hashed JS, CSS, assets; one JS chunk per lazy route
 ```
 
-A build without a valid `VITE_API_BASE_URL` (missing, or without a trailing `/`) fails with a clear message instead of producing a bundle whose requests go to a URL starting with `undefined`. The check is `assertBuildEnv` in `vite.build-env.ts`, run by the `buildEnvGuard` plugin (`apply: 'build'`, `configResolved` hook). It runs only during `vite build`, not when the config file is merely evaluated, so the dev server and tools that load `vite.config.ts` (knip) work without the variable.
+A build without a valid `VITE_API_BASE_URL` (missing, not an absolute `http(s)://` URL, or without a trailing `/`) fails with a clear message instead of producing a bundle whose requests go to a URL starting with `undefined`. The check is `assertBuildEnv` in `vite.build-env.ts`, run by the `buildEnvGuard` plugin (`apply: 'build'`, `configResolved` hook). It runs only during `vite build`, not when the config file is merely evaluated, so the dev server and tools that load `vite.config.ts` (knip) work without the variable.
 
-Sentry source maps are uploaded automatically when `SENTRY_AUTH_TOKEN` is set. Bundle analysis via `stats.html` when `ANALYZE=true`.
+Sentry source maps are uploaded automatically when `SENTRY_AUTH_TOKEN` is set. Bundle analysis via `dist/stats.html` when `ANALYZE=true`.
 
 ---
 
