@@ -152,6 +152,12 @@ describe('initSentry web vitals', () => {
 const createAuthStore = (): Store =>
   configureStore({ reducer: { auth: authReducer, errors: errorsReducer, todos: todosReducer } });
 
+const sha256Hex = async (value: string): Promise<string> => {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+};
+
 describe('bindSentryUser', () => {
   describe('negative cases', () => {
     it('does not set the user when the Sentry client is not initialized', () => {
@@ -162,6 +168,30 @@ describe('bindSentryUser', () => {
       store.dispatch(login({ email: 'a@b.com' }));
 
       expect(Sentry.setUser).not.toHaveBeenCalled();
+    });
+
+    it('never passes the email to Sentry', async () => {
+      vi.mocked(Sentry.getClient).mockReturnValue({} as NonNullable<ReturnType<typeof Sentry.getClient>>);
+      const store = createAuthStore();
+
+      bindSentryUser(store);
+      store.dispatch(login({ email: 'a@b.com' }));
+      await vi.waitFor(() => expect(Sentry.setUser).toHaveBeenCalled());
+
+      expect(JSON.stringify(vi.mocked(Sentry.setUser).mock.calls)).not.toContain('a@b.com');
+    });
+
+    it('leaves the user null when logout arrives before the digest resolves', async () => {
+      vi.mocked(Sentry.getClient).mockReturnValue({} as NonNullable<ReturnType<typeof Sentry.getClient>>);
+      const store = createAuthStore();
+
+      bindSentryUser(store);
+      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(logout());
+      await new Promise((resolve) => setTimeout(resolve, 20));
+
+      expect(Sentry.setUser).toHaveBeenCalledTimes(1);
+      expect(Sentry.setUser).toHaveBeenLastCalledWith(null);
     });
 
     it('does not set the user again when an action leaves the user unchanged', async () => {
@@ -180,7 +210,7 @@ describe('bindSentryUser', () => {
       vi.mocked(Sentry.getClient).mockReturnValue({} as NonNullable<ReturnType<typeof Sentry.getClient>>);
     });
 
-    it('sets the user email after hydrateAuth restores a session', async () => {
+    it('sets the hashed user id after hydrateAuth restores a session', async () => {
       const { storage } = getCoreConfig();
       await storage.setItem(TOKEN_STORAGE_KEY, 'token');
       await storage.setItem(USER_STORAGE_KEY, JSON.stringify({ email: 'restored@b.com', name: 'Ann' }));
@@ -189,23 +219,26 @@ describe('bindSentryUser', () => {
       bindSentryUser(store);
       await store.dispatch(hydrateAuth());
 
-      expect(Sentry.setUser).toHaveBeenCalledWith({ email: 'restored@b.com' });
+      await vi.waitFor(async () =>
+        expect(Sentry.setUser).toHaveBeenCalledWith({ id: await sha256Hex('restored@b.com') }),
+      );
     });
 
-    it('sets the user email after login', () => {
+    it('sets the sha-256 of the lowercased email as the user id after login', async () => {
+      const store = createAuthStore();
+
+      bindSentryUser(store);
+      store.dispatch(login({ email: 'A@B.com' }));
+
+      await vi.waitFor(async () => expect(Sentry.setUser).toHaveBeenCalledWith({ id: await sha256Hex('a@b.com') }));
+    });
+
+    it('clears the user after logout', async () => {
       const store = createAuthStore();
 
       bindSentryUser(store);
       store.dispatch(login({ email: 'a@b.com' }));
-
-      expect(Sentry.setUser).toHaveBeenCalledWith({ email: 'a@b.com' });
-    });
-
-    it('clears the user after logout', () => {
-      const store = createAuthStore();
-
-      bindSentryUser(store);
-      store.dispatch(login({ email: 'a@b.com' }));
+      await vi.waitFor(() => expect(Sentry.setUser).toHaveBeenCalledTimes(1));
       store.dispatch(logout());
 
       expect(Sentry.setUser).toHaveBeenLastCalledWith(null);

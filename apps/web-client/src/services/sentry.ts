@@ -10,7 +10,7 @@ type AuthStore = {
   subscribe: (listener: () => void) => () => void;
 };
 
-// Mirrors the signed-in user into Sentry: covers hydrateAuth, login, register and logout without touching core.
+// Mirrors the signed-in user into Sentry as a SHA-256 id (no PII): covers hydrateAuth, login, register and logout without touching core.
 export function bindSentryUser(store: AuthStore): void {
   if (!Sentry.getClient()) return;
 
@@ -22,7 +22,17 @@ export function bindSentryUser(store: AuthStore): void {
     if (email === currentEmail) return;
 
     currentEmail = email;
-    Sentry.setUser(email ? { email } : null);
+
+    if (!email) {
+      Sentry.setUser(null);
+
+      return;
+    }
+
+    void hashEmail(email).then((id) => {
+      // A logout or another user may have arrived while the digest was pending
+      if (currentEmail === email) Sentry.setUser({ id });
+    });
   });
 }
 
@@ -60,6 +70,12 @@ export function initSentry(): void {
 
   Sentry.setTag('trace_id', traceId);
   reportWebVitals();
+}
+
+async function hashEmail(email: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email.toLowerCase()));
+
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 function reportWebVital(metric: Metric): void {
