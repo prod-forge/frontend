@@ -1,42 +1,50 @@
 # Changelog
 
-## [1.2.2](https://github.com/prod-forge/frontend/compare/v1.2.1...v1.2.2) (2026-05-28)
+## 1.0.0 (2026-11-04)
 
-### Bug Fixes
+First published version of the Prod Forge frontend: a React web client, an Expo mobile client and the shared packages
+they are built from. Earlier tags (`v1.1.0` to `v1.2.2`, May 2026) were local scaffolding iterations that were never
+pushed; their content is folded into this release. Requires backend `1.0.0`: the client logs in against the backend,
+sends the issued JWT and relies on its pagination, validation limits and error codes.
 
-- pipeline fixes ([91fa677](https://github.com/prod-forge/frontend/commit/91fa677e53b8ece501303ad54c83d13807440b75))
+### Web client
 
-## [1.2.1](https://github.com/prod-forge/frontend/compare/v1.2.0...v1.2.1) (2026-05-28)
+- Todo list with offset pagination and "load more", create, edit and delete, including delete from the list view.
+- Login against the backend with the issued JWT, todos are cleared on logout.
+- Route-level code splitting, web vitals reported to Sentry, Content Security Policy shared with CloudFront.
+- Sentry error reporting with a hashed user id instead of the email; source maps are uploaded to Sentry and kept out of
+  the public bucket.
+- Production builds fail without an absolute `VITE_API_BASE_URL`; the dev server proxies the API to the local backend.
 
-### Bug Fixes
+### Mobile client
 
-- bumping versions ([a27f296](https://github.com/prod-forge/frontend/commit/a27f2967d89b3b73f312310cd016bd5e39484069))
-- static folder ([ba746ba](https://github.com/prod-forge/frontend/commit/ba746ba6450ba94068460a391a038d9d68b4fda4))
+- Expo SDK 58 app (iOS and Android) on the shared core and design tokens, with stable "load more" offsets.
 
-# [1.2.0](https://github.com/prod-forge/frontend/compare/v1.1.0...v1.2.0) (2026-05-28)
+### Shared packages
 
-### Features
+- `core`: platform-neutral `configureCore`, async auth hydration, `fetchMoreTodos` that appends the next page and tracks
+  the server offset, error mapping aligned with the backend contract (including bodies without a trace id), no
+  reporting of silent and not-found rejections.
+- `design-tokens`: color, shadow and base tokens built with Style Dictionary for web and mobile.
+- `styles-web`: Tailwind CSS v4 setup shared by the web client and the UI library.
+- `ui-web`: component library with Storybook, visual and accessibility tests.
+- `test-data`: one source of seed data for unit, e2e and visual tests, with backend-compatible search and sorting.
 
-- add assets management ([b7ad803](https://github.com/prod-forge/frontend/commit/b7ad8032b590bc3b109ad70920f29f1aa0de5b90))
-- add cd ([9315e43](https://github.com/prod-forge/frontend/commit/9315e4332bc7ddc6312815428e3fdbe9eafb3751))
+### Quality gates
 
-# 1.1.0 (2026-05-28)
+- ESLint config mirroring `@rockpack/codestyle`, Prettier, knip, cspell, Husky with lint-staged and commitlint.
+- The `commit-msg` hook rejects AI attribution trailers.
+- Vitest unit tests, Playwright e2e tests, visual regression and accessibility tests.
 
-### Bug Fixes
+### CI/CD
 
-- ci issues ([f434877](https://github.com/prod-forge/frontend/commit/f4348772f541bf8bd6f2cefb2eaa46bc12c39b70))
-- ci visual tests ([451d64f](https://github.com/prod-forge/frontend/commit/451d64f96cc68316f031396e25861f23344ae8e4))
-- enabled state in ci ([c09a699](https://github.com/prod-forge/frontend/commit/c09a699a1103785d2821b906e2ef7af8157dee46))
-- lint issue ([f2b169b](https://github.com/prod-forge/frontend/commit/f2b169b651e1a3e46d3d53cc0fdfd266111ff33b))
-- lintstaged fixes ([4b17921](https://github.com/prod-forge/frontend/commit/4b17921c51fc3ea7eaeb5d67b16da24ac1b167b7))
+- CI workflow with lint, knip, unit, e2e, visual and accessibility tests and a build, kept disabled on purpose (see
+  the roadmap).
+- CD on `v*` tags: assets and web client to S3, CloudFront invalidation, rollback with a validated version input.
+- AWS role, CloudFront distribution and bucket names come from terraform outputs; Sentry build variables are passed to
+  the build; Node.js 24.21.0.
 
-### Features
+### Documentation
 
-- add ci pipeline ([fe5d8bc](https://github.com/prod-forge/frontend/commit/fe5d8bc8ee0bd44ae67ac0ca9d996d9e0c49f3d1))
-- add design tokens ([90feba1](https://github.com/prod-forge/frontend/commit/90feba1174b3630db536bf055e48116d1a3feeda))
-- add enabled state to ci ([7ed383f](https://github.com/prod-forge/frontend/commit/7ed383f7cbc1be3fe5754524fc57e5401e798891))
-- add init app ([d4762c8](https://github.com/prod-forge/frontend/commit/d4762c8983235324ec515792579cbd1fe331bcc1))
-- finalizing migration to nx ([d721878](https://github.com/prod-forge/frontend/commit/d721878ab7b6518d9e7b804d4c9bd09680b28464))
-- progress ([25efbb7](https://github.com/prod-forge/frontend/commit/25efbb77eb682c0c2c5eeaebc906b7e3015a17d8))
-- setup release scripts ([7f4c7c4](https://github.com/prod-forge/frontend/commit/7f4c7c40f6599cb58d4d402ed54bb9751f37e299))
-- work in progress transform todolist to nx ([6b5fa6a](https://github.com/prod-forge/frontend/commit/6b5fa6a7d097050ac1cc163832f01bf9df68df65))
+- 17-chapter frontend guide, from repository strategy to the mobile client.
+- Agent docs in `.claude/docs`, `.env.example` templates for both clients, roadmap, contributing guide, MIT license.

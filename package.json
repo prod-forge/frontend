@@ -1,6 +1,6 @@
 {
   "name": "prod-forge-todolist-frontend",
-  "version": "1.2.2",
+  "version": "1.0.0",
   "description": "Prod Forge frontend: React web client, Expo mobile client and design system built with production practices",
   "homepage": "https://github.com/prod-forge/frontend#readme",
   "bugs": {
