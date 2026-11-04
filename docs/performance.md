@@ -57,7 +57,7 @@ The result is that a returning visitor downloads one small HTML file and reuses 
 
 One caveat. The root sync in `cd.yml` applies the immutable header to every file in `dist/` first, and then overrides only `index.html`. Files from `apps/web-client/public/` that have no hash in the name (`favicon.svg`) are therefore also cached for a year. That is fine while they never change. If one has to change, give it a versioned name.
 
-Source maps are built as `hidden` (no `sourceMappingURL` comment in the bundle) and uploaded to Sentry only when `SENTRY_AUTH_TOKEN` is set. They add nothing to what the user downloads. See [Client Observability](client-observability.md).
+Source maps are built as `hidden`: the bundle has no `sourceMappingURL` comment, so browsers do not download the `.map` files and they add nothing to the page weight. They are uploaded to Sentry when `SENTRY_AUTH_TOKEN` is set. But they are still written to `dist/static/*.map`, and `cd.yml` syncs the whole `dist` to S3 without excluding them, so today they are publicly fetchable by anyone who guesses the URL. The remedy is not implemented: `sourcemaps.filesToDeleteAfterUpload` in the Sentry plugin, or `--exclude "*.map"` in the sync steps of `cd.yml`. See [Client Observability](client-observability.md) and [Security](security.md#dependency-hygiene).
 
 ## Assets CDN
 
@@ -73,7 +73,7 @@ A proposal that fits this repository:
 
 - Add `size-limit` with `@size-limit/file` to `apps/web-client`, pointing at `dist/static/*.js`.
 - Start with the numbers measured on the current build plus a margin of about 10%, and set them per chunk: the entry chunk strictest, route chunks looser.
-- Run it as `npm run size` after `build` in `ci.yml` (`npm run build` is the last step there already), so a pull request that adds a heavy dependency fails with a message that names the file and the limit.
+- Run it as `npm run size` after `npm run build:web-client` in the `build` job of `ci.yml`, so a pull request that adds a heavy dependency fails with a message that names the file and the limit.
 - Review the budget when the limit is hit. Raising it is a legitimate answer, but it becomes a visible, reviewed decision instead of a silent one.
 
 It is not done here because the application is small and `ci.yml` is disabled (see [Testing Strategy](testing-strategy.md)). A budget in a pipeline that does not run would only look like a guarantee.
@@ -84,7 +84,7 @@ Runtime performance is already measured for real users: Core Web Vitals (LCP, IN
 
 The rule used in this code base: do not optimize rendering before it is measured.
 
-- There is no `React.memo`, `useMemo` or `useCallback` in the application code today. The lists are paginated by the backend (`limit` and `offset` in the todos filters), so a screen renders tens of rows, not thousands.
+- There is no `React.memo` or `useCallback` in the code. `useMemo` is used in three places, and none of them is a render optimization of a list: `editable-title.tsx` and `editable-description.tsx` in `packages/ui-web` memoize the zod form schema built from a prop, and `use-themed-styles.ts` in the mobile client memoizes the style object per theme. The lists are paginated by the backend (`limit` and `offset` in the todos filters), so a screen renders tens of rows, not thousands.
 - What does protect rendering is the store design. Components read state through memoized selectors from `packages/core/src/features/todos/todos.selectors.ts`, created with `createSelector`. `selectCompletedTodos` filters the list only when `items` changes. A selector that returns an unchanged reference does not re-render the component, with no work in the component itself. See [State Management](state-management.md).
 - Optimistic updates (`toggleTodo`) change one item and keep the others by reference, so only the changed row has new props.
 

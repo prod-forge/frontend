@@ -128,8 +128,6 @@ Every major technical decision is documented and explained.
 
 <!-- -->
 
-<!-- -->
-
 - [9. State Management](docs/state-management.md)
   - [Why Redux Toolkit Here](docs/state-management.md#why-redux-toolkit-here)
   - [Slices and Thunks](docs/state-management.md#slices-and-thunks)

@@ -100,7 +100,7 @@ Most of the code in the bundle is not written by the team. What is in place:
 - **Exact versions.** No `^` or `~` in any `package.json`, so a new release of a dependency cannot enter the build by itself.
 - **Lockfile and `npm ci`.** `package-lock.json` is committed, and the workflows install with `npm ci`, which fails if it does not match `package.json`.
 - **Knip** (`npm run knip`, part of the pre-push hook) reports dependencies that are declared and not used, and the opposite. A smaller list of dependencies is a smaller attack surface.
-- **Hidden source maps** are not published with the bundle, so the readable source is not shipped to every visitor (they go to Sentry only).
+- **Hidden source maps** are not referenced from the bundle (no `sourceMappingURL`), so browsers do not load them. They are, however, still emitted to `dist/static/*.map` and synced to S3 by `cd.yml`, so they are publicly fetchable today and expose the readable source. Not implemented: `sourcemaps.filesToDeleteAfterUpload` in the Sentry plugin or `--exclude "*.map"` in `cd.yml`.
 
 What is not done and is worth adding:
 
