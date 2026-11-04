@@ -59,6 +59,7 @@ export default function TodosScreen(): ReactNode {
   const total = useAppSelector(selectTotalTodos);
   const completed = useAppSelector(selectCompletedTodos);
   const status = useAppSelector(selectStatus);
+  const nextOffset = useAppSelector((state) => state.todos.nextOffset);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -70,9 +71,9 @@ export default function TodosScreen(): ReactNode {
     return <Redirect href="/login" />;
   }
 
-  // Load more continues from the last loaded item; filters.offset stays 0 on mobile.
+  // nextOffset counts only rows the server returned; items.length also counts optimistic adds and would skip a row.
   const loadMore = (): void => {
-    void dispatch(fetchMoreTodos({ ...filters, offset: items.length }));
+    void dispatch(fetchMoreTodos({ ...filters, offset: nextOffset }));
   };
 
   const retry = (): void => {

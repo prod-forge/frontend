@@ -19,10 +19,10 @@ const jsonResponse = (status: number, body?: unknown): Response =>
 export const backendErrorResponse = (status: number, code: string): Response =>
   jsonResponse(status, { code, details: {}, message: code, status, traceId: 'test-trace-id' });
 
-const listTodos = ({ searchParams }: URL): Response =>
+const listTodos = (db: readonly Todo[], { searchParams }: URL): Response =>
   jsonResponse(
     200,
-    applyTodosQuery(todos, {
+    applyTodosQuery(db, {
       limit: Number(searchParams.get('limit')),
       offset: Number(searchParams.get('offset')),
       order: searchParams.get('order') === 'desc' ? 'desc' : 'asc',
@@ -31,42 +31,56 @@ const listTodos = ({ searchParams }: URL): Response =>
     }),
   );
 
-const handleTodo = (id: string, { body, method }: FakeRequest): Response => {
-  const todo = todos.find((item) => item.id === id);
+const createTodo = (db: Todo[], body: Partial<Todo>): Response => {
+  const created: Todo = { completed: false, description: '', id: `created-todo-${db.length}`, title: '', ...body };
+  db.push(created);
 
-  if (!todo) {
+  return jsonResponse(201, { data: created });
+};
+
+const handleTodo = (db: Todo[], id: string, { body, method }: FakeRequest): Response => {
+  const index = db.findIndex((item) => item.id === id);
+
+  if (index === -1) {
     return backendErrorResponse(404, 'TODO_NOT_FOUND');
   }
 
   if (method === 'DELETE') {
+    db.splice(index, 1);
+
     return jsonResponse(204);
   }
 
-  return jsonResponse(200, { data: method === 'PATCH' ? { ...todo, ...body } : todo });
+  if (method === 'PATCH') {
+    db[index] = { ...db[index], ...body };
+  }
+
+  return jsonResponse(200, { data: db[index] });
 };
 
-const route = (request: FakeRequest): Response => {
+const route = (db: Todo[], request: FakeRequest): Response => {
   const path = request.url.pathname.replace('/api/v1/', '');
 
   if (path === 'todos') {
-    return request.method === 'POST'
-      ? jsonResponse(201, { data: { completed: false, id: 'created-todo-id', ...request.body } })
-      : listTodos(request.url);
+    return request.method === 'POST' ? createTodo(db, request.body) : listTodos(db, request.url);
   }
 
   const [, id] = path.split('/');
 
-  return handleTodo(id, request);
+  return handleTodo(db, id, request);
 };
 
-// Answers like the real backend, backed by the shared seed data from test-data.
-export const mockFakeBackend = (): jest.SpiedFunction<typeof fetch> =>
-  jest.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+// Answers like the real backend: a per-test copy of the test-data seed that POST, PATCH and DELETE mutate.
+export const mockFakeBackend = (): jest.SpiedFunction<typeof fetch> => {
+  const db: Todo[] = [...todos];
+
+  return jest.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
     const url = new URL(input instanceof Request ? input.url : input);
     const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as Partial<Todo>) : {};
 
-    return Promise.resolve(route({ body, method: init?.method ?? 'GET', url }));
+    return Promise.resolve(route(db, { body, method: init?.method ?? 'GET', url }));
   });
+};
 
 export const fetchCalls = (fetchMock: jest.SpiedFunction<typeof fetch>, method: string): string[] =>
   fetchMock.mock.calls

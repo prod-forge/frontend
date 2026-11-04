@@ -30,3 +30,8 @@ jest.mock(
   'react-native-safe-area-context',
   () => jest.requireActual<{ default: Record<string, unknown> }>('react-native-safe-area-context/jest/mock').default,
 );
+
+// Tests assert on behavior, not log lines: the device console adapter is replaced by spies so output stays clean.
+jest.mock('./src/services/console-logger', () => ({
+  consoleLogger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+}));

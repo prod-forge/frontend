@@ -117,7 +117,7 @@ npm run test:a11y
 
 Test data lives only in `@prod-forge-todolist-frontend/test-data` (`todos`, `users`, `applyTodosQuery`). Core does not export fixtures; tests and e2e mocks import from test-data.
 
-Mobile tests run on `jest-expo`. `jest.config.ts` maps `core`, `test-data` and `design-tokens/js` to their sources, so no prior build is needed. Screen tests live in `src/app-tests/` (every file in `src/app/` is a route), use the real core `store`, mock `fetch` with `src/test-utils/fake-backend.ts` (answers from test-data) and mock `expo-router` with `src/test-utils/expo-router-mock.tsx`. `jest.setup.ts` replaces native modules (SecureStore, Sentry, safe-area insets).
+Mobile tests run on `jest-expo`. `jest.config.ts` maps `core`, `test-data` and `design-tokens/js` to their sources, so no prior build is needed. Screen tests live in `src/app-tests/` (every file in `src/app/` is a route), use the real core `store`, mock `fetch` with `src/test-utils/fake-backend.ts` (a per-test copy of the test-data seed that POST, PATCH and DELETE mutate) and mock `expo-router` with `src/test-utils/expo-router-mock.tsx`. `jest.setup.ts` replaces native modules (SecureStore, Sentry, safe-area insets) and the console logger, so test output stays clean.
 
 ---
 

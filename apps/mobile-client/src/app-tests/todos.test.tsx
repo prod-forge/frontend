@@ -10,6 +10,8 @@ import { prepareStore, renderWithStore } from '../test-utils/render-with-store';
 jest.mock('expo-router', () => jest.requireActual<Record<string, unknown>>('../test-utils/expo-router-mock'));
 
 const firstPage = applyTodosQuery(todos, { sortBy: 'title' }).data;
+// First item of the second page: the one an offset that counts optimistic rows would skip.
+const firstPageBoundaryTitle = applyTodosQuery(todos, { offset: firstPage.length, sortBy: 'title' }).data[0].title;
 
 const renderSignedIn = async (): Promise<void> => {
   store.dispatch(login({ email: 'a@b.com' }));
@@ -108,6 +110,25 @@ describe('<TodosScreen />', () => {
       await waitFor(() => {
         expect(fetchCalls(fetchMock, 'POST')).toEqual(['http://localhost:3000/api/v1/todos']);
       });
+    });
+
+    it('loads every server todo with "Load more" after adding one that sorts past the first page', async () => {
+      const user = userEvent.setup();
+      await renderSignedIn();
+      await screen.findAllByTestId('todo-row');
+
+      await user.type(screen.getByLabelText('Title'), 'ZZZ Last task');
+      await user.press(screen.getByRole('button', { name: 'Add task' }));
+      await waitFor(() => {
+        expect(fetchCalls(fetchMock, 'POST')).toHaveLength(1);
+      });
+      await user.press(screen.getByRole('button', { name: 'Load more' }));
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('todo-row')).toHaveLength(todos.length + 1);
+      });
+      expect(screen.getByText(firstPageBoundaryTitle)).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: 'Load more' })).not.toBeOnTheScreen();
     });
 
     it('opens the detail screen when a todo is pressed', async () => {
