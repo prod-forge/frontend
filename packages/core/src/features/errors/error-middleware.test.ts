@@ -24,6 +24,20 @@ const makeRejectedAction = (error: Record<string, unknown>): Record<string, unkn
   type: 'todos/fetchAll/rejected',
 });
 
+const makeRejectedWithValue = (payload: Record<string, unknown>): Record<string, unknown> => ({
+  error: { message: 'Rejected' },
+  meta: {
+    aborted: false,
+    arg: 'some-id',
+    condition: false,
+    rejectedWithValue: true,
+    requestId: 'id',
+    requestStatus: 'rejected',
+  },
+  payload,
+  type: 'todos/action/rejected',
+});
+
 describe('errorMiddleware', () => {
   describe('negative cases', () => {
     it('does not dispatch pushError for a regular action', () => {
@@ -61,9 +75,34 @@ describe('errorMiddleware', () => {
 
       expect(getCoreConfig().reportError).not.toHaveBeenCalled();
     });
+
+    it('does not report a rejection marked silent', () => {
+      const { dispatch, invoke } = makeSetup();
+
+      invoke(makeRejectedWithValue({ silent: true }));
+
+      expect(getCoreConfig().reportError).not.toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledOnce();
+    });
+
+    it('does not report a not-found rejection', () => {
+      const { invoke } = makeSetup();
+
+      invoke(makeRejectedWithValue({ kind: 'not-found' }));
+
+      expect(getCoreConfig().reportError).not.toHaveBeenCalled();
+    });
   });
 
   describe('positive cases', () => {
+    it('reports a rejectWithValue rejection that is neither silent nor not-found', () => {
+      const { invoke } = makeSetup();
+
+      invoke(makeRejectedWithValue({ kind: 'error' }));
+
+      expect(getCoreConfig().reportError).toHaveBeenCalledOnce();
+    });
+
     it('reports an error with a 5xx status', () => {
       const { invoke } = makeSetup();
 

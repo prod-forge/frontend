@@ -134,7 +134,7 @@ interface AppError {
 }
 ```
 
-**`silent`** — errors from optimistic rollbacks (e.g. deleting a temp item that fails) are marked silent. They are still logged and reported (unless the error has a 4xx status) but not shown as toasts. `selectVisibleErrors` filters them out.
+**`silent`** — errors from optimistic rollbacks (e.g. deleting a temp item that fails) are marked silent. They are still logged, but neither reported (`reportError`) nor shown as toasts. `selectVisibleErrors` filters them out.
 
 ---
 

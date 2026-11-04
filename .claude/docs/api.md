@@ -28,7 +28,7 @@ x-trace-id: <uuid>
   - Otherwise → throws `ApiError` (message: `HTTP {status}`, status: number)
 - `204 No Content` → returns `undefined as T`
 
-All errors propagate to the Redux `errorMiddleware`, which logs them through `CoreLogger`, dispatches `pushError` and calls `getCoreConfig().reportError` (Sentry on web) unless the error carries a 4xx `status`. Todo thunks use `serializeError: serializeApiError` so `status` survives RTK's error serialization; errors without a status (network, frontend bugs) are always reported.
+All errors propagate to the Redux `errorMiddleware`, which logs them through `CoreLogger`, dispatches `pushError` and calls `getCoreConfig().reportError` (Sentry on web) unless the error carries a 4xx `status` or the thunk rejected with a `silent` / `not-found` value. Todo thunks use `serializeError: serializeApiError` so `status` survives RTK's error serialization; errors without a status (network, frontend bugs) are always reported.
 
 ---
 

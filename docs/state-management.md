@@ -127,7 +127,8 @@ Errors are handled once, in `errorMiddleware` (`features/errors/error-middleware
 rejected action
    |
    +--> logger.error(...)                      always
-   +--> reportError(...)                       only if status is missing or >= 500
+   +--> reportError(...)                       only if status is missing or >= 500,
+   |                                           and the rejected value is not silent / not-found
    +--> dispatch(pushError({ message, silent })) always; UI reads selectVisibleErrors
 ```
 
@@ -137,7 +138,7 @@ For the middleware to see the status, thunks are created with `serializeError: s
 
 The errors slice (`errors.slice.ts`) stores `AppError` records (`id`, `message`, `silent`, `source`, `timestamp`, `type`). `selectVisibleErrors` filters out `silent` ones. How these become toasts is described in [API Client and Errors](api-client-and-errors.md).
 
-Known gap: `fetchTodoById` uses `rejectWithValue` to tell "not found" from other failures. A thunk rejected that way carries no `status` on `action.error`, so the middleware treats it as status-less and **does** report it. A 404 on the detail page therefore still reaches Sentry, even though the user sees a normal "not found" screen. The fix is to put the status into the rejected value and check it in `shouldReport`; it is not done yet.
+Thunks that use `rejectWithValue` for expected outcomes are not reported either. `fetchTodoById` rejects with `{ kind: 'not-found', silent: true }` on a 404, and the optimistic thunks reject with `{ silent: true }` for temp ids that never reached the server. Such a rejection has no `status` on `action.error`, so `shouldReport` alone would treat it as status-less; the middleware therefore also skips any rejected value that is `silent` or of kind `not-found`. A different `rejectWithValue` payload (for example `{ kind: 'error' }`) is still reported.
 
 ## Normalization or Not
 
