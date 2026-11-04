@@ -1,42 +1,34 @@
 <p align="center">
-  <img alt="Logo" src="https://github.com/prod-forge/backend/blob/main/docs/assets/prod-forge-logo.png" width="264px" height="243px">
+  <img alt="Prod Forge" src="https://raw.githubusercontent.com/prod-forge/.github/main/assets/prod-forge-logo.png" width="264px" height="243px">
 </p>
 
 _AI made writing the code easy. Running it in production is still hard._
 
-**Prod Forge** is an open-source reference that shows how to build and operate a production-ready system: AI-assisted
-development, quality gates, CI/CD, infrastructure, observability, migrations, and rollback.
+This repository holds the web and mobile clients in one NX monorepo, with a shared design system. It answers: how do I build, ship, and keep web and mobile clients healthy?
 
-The implementation is based on a simple Todo API, but the architecture follows patterns used in real production systems
-at scale.
-
-Every major technical decision is documented and explained.
-
----
-
-## Project structure
-
-| Repository                                                | Description                                     |
-| --------------------------------------------------------- | ----------------------------------------------- |
-| [Frontend](https://github.com/prod-forge/frontend)        | React Web and React Mobile apps + Design System |
-| [Backend](https://github.com/prod-forge/backend)          | NestJS API - the main guide                     |
-| [Infrastructure](https://github.com/prod-forge/terraform) | Terraform on AWS                                |
+Part of Prod Forge — start with the organization overview: https://github.com/prod-forge
 
 ## Stack
 
-<p align="center">
-  <img alt="Architecture" src="https://github.com/prod-forge/backend/blob/main/docs/assets/architecture_diagram.png">
-</p>
-
+<!-- prettier-ignore -->
 | Layer          | Tools                                            |
 | -------------- | ------------------------------------------------ |
 | Web Client     | React · Vite · Redux Toolkit · Tailwind CSS · NX |
 | Mobile Client  | Expo · React Native · Redux Toolkit              |
-| Deploy         | AWS S3 · CloudFront · ECR · ECS                  |
-| Backend        | NestJS · Prisma · PostgreSQL · Redis · Docker    |
-| Infrastructure | Terraform · AWS · RDS · ElastiCache              |
-| Observability  | Prometheus · Grafana · Loki · Promtail · Tempo   |
 | Quality        | ESLint · Prettier · Husky · Commitlint · CI/CD   |
+
+The full stack table is on the organization page: https://github.com/prod-forge
+
+## Getting started
+
+Requires Node 24 and the backend API running (see the [backend guide](https://github.com/prod-forge/backend#readme)).
+
+```shell
+npm ci
+cp .env.example .env   # VITE_API_BASE_URL is required for a build (absolute URL ending with "/"); dev falls back to the /api/v1/ proxy
+npm run dev            # web client
+npm run dev:mobile     # mobile client (Expo)
+```
 
 # Table of contents
 
