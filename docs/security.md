@@ -108,12 +108,12 @@ What is not done and is worth adding:
 
 Security headers that a meta tag cannot carry are the job of the CDN. In this setup the distribution is described in the Terraform repository: [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/docs/frontend.md). The distribution attaches a response headers policy (`aws_cloudfront_response_headers_policy.security`) to every cache behavior:
 
-| Header                                           | Value                                 | Purpose                                     |
-| ------------------------------------------------ | ------------------------------------- | ------------------------------------------- |
-| `Content-Security-Policy` with `frame-ancestors` | `frame-ancestors 'none'`              | clickjacking, the part the meta tag ignores |
-| `Strict-Transport-Security`                      | `max-age=63072000; includeSubDomains` | HTTPS only                                  |
-| `X-Frame-Options`                                | `DENY`                                | clickjacking, for older browsers            |
-| `X-Content-Type-Options`                         | `nosniff`                             | no MIME sniffing                            |
-| `Referrer-Policy`                                | `strict-origin-when-cross-origin`     | do not leak paths to other sites            |
+| Header                      | Value                                 | Purpose                               |
+| --------------------------- | ------------------------------------- | ------------------------------------- |
+| `Content-Security-Policy`   | full policy (same as the meta tag)    | script, connection and framing limits |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains` | HTTPS only                            |
+| `X-Frame-Options`           | `DENY`                                | clickjacking, for older browsers      |
+| `X-Content-Type-Options`    | `nosniff`                             | no MIME sniffing                      |
+| `Referrer-Policy`           | `strict-origin-when-cross-origin`     | do not leak paths to other sites      |
 
-This tabThe header CSP carries only `frame-ancestors`: the full policy stays in the meta tag because it needs the build-time API URL, and the browser enforces every CSP it receives. Check the deployed response with `curl -I`. end headers (Helmet, CORS) are separate and are covered in the [backend chapter](https://github.com/prod-forge/backend/blob/main/docs/security.md#security-headers).
+The header enforces the full policy in production, including `frame-ancestors 'none'`, which a meta tag cannot carry. The meta tag is shipped too and kept identical: the two match when `VITE_ASSETS_BASE_URL` is unset or same-origin; otherwise the meta tag adds the assets origin, both policies are enforced and the stricter one (the header) wins. Check the deployed response with `curl -I`. The backend headers (Helmet, CORS) are separate and are covered in the [backend chapter](https://github.com/prod-forge/backend/blob/main/docs/security.md#security-headers).
