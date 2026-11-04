@@ -27,26 +27,43 @@ jobs:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Verify version exists
+      - name: Validate version
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          aws s3 ls s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/${{ inputs.version }}/ || \
-            (echo "Version ${{ inputs.version }} not found in releases" && exit 1)
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version: $VERSION (expected vX.Y.Z)"
+            exit 1
+          fi
+
+      - name: Verify version exists
+        env:
+          BUCKET: ${{ vars.S3_WEB_CLIENT_BUCKET }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          aws s3 ls "s3://$BUCKET/releases/$VERSION/" || \
+            (echo "Version $VERSION not found in releases" && exit 1)
 
       - name: Restore version from archive
+        env:
+          BUCKET: ${{ vars.S3_WEB_CLIENT_BUCKET }}
+          VERSION: ${{ inputs.version }}
         run: |
           aws s3 sync \
-            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/${{ inputs.version }}/ \
-            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/ \
+            "s3://$BUCKET/releases/$VERSION/" \
+            "s3://$BUCKET/" \
             --exclude "releases/*" \
             --delete \
             --cache-control "max-age=31536000,immutable"
           aws s3 cp \
-            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/${{ inputs.version }}/index.html \
-            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/index.html \
+            "s3://$BUCKET/releases/$VERSION/index.html" \
+            "s3://$BUCKET/index.html" \
             --cache-control "no-cache, no-store, must-revalidate"
 
       - name: Invalidate CloudFront
+        env:
+          DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-id "$DISTRIBUTION_ID" \
             --paths "/*"
