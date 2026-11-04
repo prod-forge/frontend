@@ -22,6 +22,7 @@
     "design-token:build": "nx run design-tokens:build",
     "dev": "nx serve web-client",
     "dev:assets": "npx serve assets -l 4000",
+    "dev:mobile": "nx start mobile-client",
     "doctor": "react-doctor .",
     "format": "nx run-many -t format",
     "full-check": "npm run lint && npm run knip && npm run test && npm run test:e2e && npm run test:visual && npm run test:a11y",
@@ -38,6 +39,7 @@
     "test:cov": "nx run-many -t test:cov",
     "test:e2e": "nx test:e2e web-client",
     "test:e2e:cov": "nx test:e2e:cov web-client",
+    "test:mobile": "nx test mobile-client",
     "test:visual": "nx test:visual ui-web",
     "test:visual:update": "nx test:visual:update ui-web"
   },

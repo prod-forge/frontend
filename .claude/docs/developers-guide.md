@@ -39,6 +39,30 @@ npm run dev:assets
 
 `dev:assets` is needed when working on features that load media from S3. It serves the `assets/` folder locally so the app can fetch them without hitting real S3.
 
+### Mobile client (Expo, iOS and Android)
+
+The mobile app reads its own env file, `apps/mobile-client/.env` (Expo loads it from the app folder, not from the repo root):
+
+```
+EXPO_PUBLIC_API_BASE_URL=http://localhost:3000/api/v1/
+EXPO_PUBLIC_SENTRY_DSN=          # leave empty for local dev
+```
+
+`EXPO_PUBLIC_*` values are inlined into the bundle, so restart Expo after changing them. `setupCore()` throws at startup when `EXPO_PUBLIC_API_BASE_URL` is missing. On a physical device or the Android emulator `localhost` is the device itself: use the machine's LAN IP (or `http://10.0.2.2:3000/api/v1/` on the Android emulator).
+
+```bash
+# Start Metro; open the app in Expo Go (scan the QR code) or press i / a for a simulator
+npm run dev:mobile
+
+# Mobile unit tests (jest-expo + React Native Testing Library)
+npm run test:mobile
+
+# Check the Expo project (SDK versions, config schema, Metro config)
+npx nx doctor mobile-client
+```
+
+There is no `expo web` target: the web client is `apps/web-client`.
+
 ---
 
 ## NX Commands
@@ -47,6 +71,8 @@ npm run dev:assets
 # Run a specific target in one project
 npx nx test core
 npx nx test test-data
+npx nx test mobile-client
+npx nx start mobile-client
 npx nx build web-client
 npx nx storybook ui-web
 
@@ -74,6 +100,9 @@ npm run test:e2e
 # E2E with coverage
 npm run test:e2e:cov
 
+# Mobile unit tests (Jest, not Vitest)
+npm run test:mobile
+
 # Visual regression tests (Storybook-based)
 npm run test:visual
 
@@ -87,6 +116,8 @@ npm run test:a11y
 **Run only affected tests** when making isolated changes — do not run the full suite for a single file change.
 
 Test data lives only in `@prod-forge-todolist-frontend/test-data` (`todos`, `users`, `applyTodosQuery`). Core does not export fixtures; tests and e2e mocks import from test-data.
+
+Mobile tests run on `jest-expo`. `jest.config.ts` maps `core`, `test-data` and `design-tokens/js` to their sources, so no prior build is needed. Screen tests live in `src/app-tests/` (every file in `src/app/` is a route), use the real core `store`, mock `fetch` with `src/test-utils/fake-backend.ts` (answers from test-data) and mock `expo-router` with `src/test-utils/expo-router-mock.tsx`. `jest.setup.ts` replaces native modules (SecureStore, Sentry, safe-area insets).
 
 ---
 
@@ -115,6 +146,7 @@ npm run knip
 
 # Type check
 npx nx run web-client:lint:ts
+cd apps/mobile-client && npm run lint:ts
 ```
 
 Pre-commit hooks (Husky + lint-staged) run formatting and lint automatically on staged files.
@@ -164,6 +196,15 @@ Core must stay platform-neutral: no `import.meta.env`, no `localStorage`, no bro
 
 ---
 
+## Adding a New Mobile Screen
+
+1. Add a route file under `apps/mobile-client/src/app/` (file name = route; default export, the ESLint override allows it there)
+2. Register its title in the `<Stack>` of `src/app/_layout.tsx`
+3. Add a test in `src/app-tests/`, not next to the route
+4. Keep store access in the route file; components in `src/components/` take props only and get colors from `useThemedStyles(createThemedStyles(...))`
+
+---
+
 ## Adding a New Page
 
 1. Create `apps/web-client/src/pages/{name}/{name}.tsx`
@@ -206,10 +247,11 @@ Runs `before-release.ts` (pre-checks), then `release-it` with:
 
 ## Project-Specific Notes
 
-- **No default exports** — ESLint enforces named exports everywhere.
+- **No default exports** — ESLint enforces named exports everywhere, except expo-router route files in `apps/mobile-client/src/app/**`.
 - **No `any`** — use `unknown` + type narrowing.
 - **No API calls outside `core/src/api/`** — all fetch logic lives there.
-- **Typed Redux hooks only** — use `useAppDispatch` / `useAppSelector` from `apps/web-client/src/hooks/redux/redux.ts`, never raw `useDispatch` / `useSelector`.
+- **Typed Redux hooks only** — use `useAppDispatch` / `useAppSelector` from `apps/web-client/src/hooks/redux/redux.ts` (mobile: `src/hooks/use-app-dispatch.ts`, `use-app-selector.ts`), never raw `useDispatch` / `useSelector`.
 - **Optimistic updates** — `addTodo`, `deleteTodo`, `toggleTodo`, `updateTodo` all apply changes before the server responds. Rollback happens automatically in `rejected` handler.
 - **Error handling** — never catch and swallow Redux thunk errors. Let them propagate to `errorMiddleware`, which dispatches `pushError` and reports 5xx and status-less errors through `getCoreConfig().reportError` (Sentry on web). Pass `serializeError: serializeApiError` to new thunks that call the API so the HTTP status reaches the middleware.
-- **Core configuration** — every app calls `configureCore` in its entry point before dispatching or rendering (web: `setupCore()` in `main.tsx`), then dispatches `hydrateAuth()`. Missing configuration throws `CoreNotConfiguredError` on the first request.
+- **One React version** — `web-client`, `ui-web` and `mobile-client` pin the same `react` (the one the Expo SDK requires). An Expo SDK upgrade bumps all three together; do not add root `overrides`.
+- **Core configuration** — every app calls `configureCore` in its entry point before dispatching or rendering (web: `setupCore()` in `main.tsx`; mobile: `src/bootstrap.ts`), then dispatches `hydrateAuth()`. Missing configuration throws `CoreNotConfiguredError` on the first request.

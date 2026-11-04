@@ -92,7 +92,7 @@ Persistence is a side effect in `auth.listeners.ts`: `login`/`register` write bo
 interface TodosState {
   items: Todo[]; // Current page of todos shown in the list.
   total: number; // Total count from last getAll response (for pagination).
-  status: AsyncStatus; // 'idle' | 'loading' | 'error' — for the list fetch.
+  status: AsyncStatus; // 'idle' | 'loading' | 'error' — for the list fetch (fetchTodos and fetchMoreTodos).
 
   currentTodo: Todo | null; // Todo being viewed on the detail page.
   currentTodoStatus: DetailStatus; // 'idle' | 'loading' | 'error' | 'not-found' — for detail fetch.

@@ -26,6 +26,7 @@ jest.mock('@sentry/react-native', () => ({
   withScope: jest.fn(),
 }));
 
-jest.mock('react-native-safe-area-context', () =>
-  jest.requireActual<Record<string, unknown>>('react-native-safe-area-context/jest/mock'),
+jest.mock(
+  'react-native-safe-area-context',
+  () => jest.requireActual<{ default: Record<string, unknown> }>('react-native-safe-area-context/jest/mock').default,
 );

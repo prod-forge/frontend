@@ -10,9 +10,12 @@
       "entry": ["src/**/*.test.{ts,tsx}"]
     },
     "apps/mobile-client": {
-      "entry": ["babel.config.js", "src/app/**/*.tsx", "src/**/*.test.{ts,tsx}"],
+      "entry": ["src/app/**/*.tsx", "src/**/*.test.{ts,tsx}"],
       "ignore": ["expo-env.d.ts"],
-      "ignoreBinaries": ["expo-doctor"]
+      "ignoreBinaries": ["expo-doctor"],
+      "babel": {
+        "config": ["babel.config.js"]
+      }
     },
     "packages/core": {
       "entry": ["src/**/*.test.{ts,tsx}"]
