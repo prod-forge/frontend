@@ -13,6 +13,10 @@ describe('assertBuildEnv', () => {
     it('throws when VITE_API_BASE_URL has no trailing slash', () => {
       expect(() => assertBuildEnv({ VITE_API_BASE_URL: 'https://api.example.com/v1' }, true)).toThrow('trailing slash');
     });
+
+    it('throws when VITE_API_BASE_URL is relative on build', () => {
+      expect(() => assertBuildEnv({ VITE_API_BASE_URL: '/api/v1/' }, true)).toThrow('absolute');
+    });
   });
 
   describe('positive cases', () => {

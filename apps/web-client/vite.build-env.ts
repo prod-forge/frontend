@@ -11,6 +11,10 @@ export function assertBuildEnv(env: Record<string, string | undefined>, isBuild:
     throw new Error('VITE_API_BASE_URL is required for production build');
   }
 
+  if (!/^https?:\/\//.test(apiBaseUrl)) {
+    throw new Error('VITE_API_BASE_URL must be an absolute http(s) URL for production build');
+  }
+
   if (!apiBaseUrl.endsWith('/')) {
     throw new Error('VITE_API_BASE_URL must end with a trailing slash');
   }

@@ -45,6 +45,14 @@ describe('setupCore', () => {
       expect(getCoreConfig().getToken()).toBe(store.getState().auth.token);
     });
 
+    it('falls back to the dev proxy path when VITE_API_BASE_URL is empty', () => {
+      vi.stubEnv('VITE_API_BASE_URL', '');
+
+      setupCore();
+
+      expect(getCoreConfig().apiBaseUrl).toBe('/api/v1/');
+    });
+
     it('reports errors through Sentry when the client is initialized', () => {
       vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/');
       vi.mocked(Sentry.getClient).mockReturnValue({} as NonNullable<ReturnType<typeof Sentry.getClient>>);

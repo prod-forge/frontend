@@ -8,7 +8,7 @@ A browser bundle cannot read environment variables. Vite replaces every `import.
 
 ```ts
 // apps/web-client/src/services/core-setup.ts
-apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
+apiBaseUrl: import.meta.env.VITE_API_BASE_URL || DEV_API_BASE_URL,
 ```
 
 ```js
@@ -75,6 +75,10 @@ export function assertBuildEnv(env: Record<string, string | undefined>, isBuild:
 
   if (!apiBaseUrl) {
     throw new Error('VITE_API_BASE_URL is required for production build');
+  }
+
+  if (!/^https?:\/\//.test(apiBaseUrl)) {
+    throw new Error('VITE_API_BASE_URL must be an absolute http(s) URL for production build');
   }
 
   if (!apiBaseUrl.endsWith('/')) {
