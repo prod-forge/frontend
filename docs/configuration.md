@@ -63,7 +63,7 @@ Nx loads the root `.env` into the environment of its tasks. That detail matters 
 
 ## assertBuildEnv
 
-A build without an API URL is the worst kind of failure: it succeeds, ships, and then every request goes to `undefinedtodos`. `assertBuildEnv` in `apps/web-client/vite.build-env.ts` makes it fail at build time instead:
+A build without an API URL is the worst kind of failure: it succeeds, ships, and then every request goes to a URL that starts with the literal text `undefined`. `assertBuildEnv` in `apps/web-client/vite.build-env.ts` makes it fail at build time instead:
 
 ```ts
 export function assertBuildEnv(env: Record<string, string | undefined>, isBuild: boolean): void {

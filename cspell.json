@@ -1,0 +1,40 @@
+{
+  "version": "0.2",
+  "language": "en,en-GB",
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/.terraform/**",
+    "**/*.lock.hcl",
+    "**/generated/**",
+    "**/*.generated.ts",
+    "CHANGELOG.md",
+    "package-lock.json",
+    "docs/openapi.json",
+    ".superpowers/**"
+  ],
+  "words": [
+    "Aleksandrov",
+    "autodocs",
+    "chdir",
+    "lintstagedrc",
+    "logrock",
+    "nosniff",
+    "nycrc",
+    "overengineering",
+    "prodforge",
+    "Promtail",
+    "Qube",
+    "RNTL",
+    "sntrys",
+    "tftest",
+    "todoitem",
+    "todolist",
+    "treemap",
+    "TTFB",
+    "unitless",
+    "WCAG"
+  ]
+}
