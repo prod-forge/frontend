@@ -58,6 +58,7 @@ jobs:
         run: |
           aws s3 sync apps/web-client/dist \
             s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/${{ github.ref_name }}/ \
+            --exclude "*.map" \
             --delete
 
       - name: Deploy to root (active version)
@@ -65,6 +66,7 @@ jobs:
           aws s3 sync apps/web-client/dist \
             s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/ \
             --exclude "releases/*" \
+            --exclude "*.map" \
             --delete \
             --cache-control "max-age=31536000,immutable"
           aws s3 cp apps/web-client/dist/index.html \

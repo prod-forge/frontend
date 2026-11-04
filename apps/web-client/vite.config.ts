@@ -69,7 +69,7 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
         org: process.env.SENTRY_ORG,
         project: process.env.SENTRY_PROJECT,
         release: { name: version },
-        sourcemaps: {},
+        sourcemaps: { filesToDeleteAfterUpload: ['dist/**/*.map'] },
         telemetry: false,
       }),
     );
