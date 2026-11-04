@@ -69,7 +69,7 @@ Sentry.init({
 - **Replay: 10% of sessions, 100% of sessions with an error.** Recording everything is expensive and mostly useless; recording every failure is cheap and is exactly what is needed. `maskAllText: false` is acceptable here because the application shows no sensitive text beyond the user's own todos; an application that does must turn masking on.
 - **Traces: 20% in production, 100% elsewhere.** Sampling keeps the quota under control while production stays representative.
 - **Release is the package version.** `vite.config.ts` defines `import.meta.env.VITE_APP_VERSION` from `apps/web-client/package.json`. The same value is used as the release name when source maps are uploaded, so an issue in `v1.2.2` resolves to the original source lines of `v1.2.2`.
-- **Source maps are hidden.** `build.sourcemap: 'hidden'` produces `.map` files without the `sourceMappingURL` comment, so browsers and users never find them. When `SENTRY_AUTH_TOKEN` is set at build time, `sentryVitePlugin` uploads them to Sentry (configuration is in [Configuration](configuration.md)). Without the token the build still succeeds and stack traces in Sentry stay minified.
+- **Source maps are hidden.** `build.sourcemap: 'hidden'` produces `.map` files without the `sourceMappingURL` comment, so browsers do not load them. They are still emitted to `dist/static/*.map` and synced to S3 by `cd.yml`, so they are currently publicly fetchable; see [Security](security.md#dependency-hygiene). When `SENTRY_AUTH_TOKEN` is set at build time, `sentryVitePlugin` uploads them to Sentry (configuration is in [Configuration](configuration.md)). Without the token the build still succeeds and stack traces in Sentry stay minified.
 
 What gets reported:
 
