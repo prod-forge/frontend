@@ -176,7 +176,7 @@ index.html
 main.tsx
   └── setupCore()                     ← configureCore with web adapters
       └── initSentry()                ← also subscribes to CLS/INP/LCP
-          └── bindSentryUser(store)   ← mirrors auth.user.email into Sentry.setUser
+          └── bindSentryUser(store)   ← mirrors a SHA-256 of auth.user.email into Sentry.setUser({ id })
               └── store.dispatch(hydrateAuth())
                   └── render(<App />)
 
@@ -308,6 +308,6 @@ Sentry source maps are uploaded automatically when `SENTRY_AUTH_TOKEN` is set. B
 
 - **Sentry** — lives in the apps, not in core. Mobile uses `@sentry/react-native` (`src/services/sentry.ts`), initialized in `src/bootstrap.ts`. Web: `services/sentry.ts`, initialized in `main.tsx` before React render. Browser tracing + session replay (10% sample, 100% on errors). `captureException()` is called from `ErrorBoundary` and, through `configureCore({ reportError })`, from the error middleware. The middleware skips 4xx responses and silent / not-found rejections: they are expected outcomes, not defects.
 - **Web Vitals** — `initSentry()` subscribes to `onCLS`, `onINP` and `onLCP` from `web-vitals` and sends each value as a Sentry metric: `Sentry.metrics.distribution('web_vitals.lcp' | 'web_vitals.inp' | 'web_vitals.cls', value, { unit, attributes: { rating } })`. LCP and INP use `millisecond`, CLS is unitless. A distribution keeps percentiles (p75 is the number Core Web Vitals are judged by), which a tagged `captureMessage` per page view would not. Nothing is subscribed when `VITE_SENTRY_DSN` is unset.
-- **User context** — `bindSentryUser(store)` in `main.tsx` subscribes to the store and calls `Sentry.setUser({ email })` whenever `auth.user.email` changes (session restored by `hydrateAuth`, login, register) and `Sentry.setUser(null)` after `logout`. It lives in web-client because core stays Sentry-free; a store subscription is used because the core store's listener middleware is not open to the apps. Only the email is sent; `sendDefaultPii` stays `false`, so IP addresses and cookies are still not collected.
+- **User context** — `bindSentryUser(store)` in `main.tsx` subscribes to the store and calls `Sentry.setUser({ id })` (SHA-256 hex of the lowercased email, computed async; a stale digest is dropped) whenever `auth.user.email` changes (session restored by `hydrateAuth`, login, register) and `Sentry.setUser(null)` after `logout`. It lives in web-client because core stays Sentry-free; a store subscription is used because the core store's listener middleware is not open to the apps. The email itself is never sent; `sendDefaultPii` stays `false`, so IP addresses and cookies are still not collected.
 - **Logrock** — structured logging with trace ID. Core logs through the `CoreLogger` interface; web adapts it to logrock in `services/core-setup.ts`. Each request carries an `x-trace-id` header for cross-service correlation.
 - **Trace ID** — generated once per session (UUID), attached to all API requests and Sentry events.

@@ -57,7 +57,7 @@ The result is that a returning visitor downloads one small HTML file and reuses 
 
 One caveat. The root sync in `cd.yml` applies the immutable header to every file in `dist/` first, and then overrides only `index.html`. Files from `apps/web-client/public/` that have no hash in the name (`favicon.svg`) are therefore also cached for a year. That is fine while they never change. If one has to change, give it a versioned name.
 
-Source maps are built as `hidden`: the bundle has no `sourceMappingURL` comment, so browsers do not download the `.map` files and they add nothing to the page weight. They are uploaded to Sentry when `SENTRY_AUTH_TOKEN` is set. But they are still written to `dist/static/*.map`, and `cd.yml` syncs the whole `dist` to S3 without excluding them, so today they are publicly fetchable by anyone who guesses the URL. The remedy is not implemented: `sourcemaps.filesToDeleteAfterUpload` in the Sentry plugin, or `--exclude "*.map"` in the sync steps of `cd.yml`. See [Client Observability](client-observability.md) and [Security](security.md#dependency-hygiene).
+Source maps are built as `hidden`: the bundle has no `sourceMappingURL` comment, so browsers do not download the `.map` files and they add nothing to the page weight. They are uploaded to Sentry when `SENTRY_AUTH_TOKEN` is set and deleted after upload; `cd.yml` also excludes `*.map` from the S3 sync, so they are never public. See [Client Observability](client-observability.md) and [Security](security.md#dependency-hygiene).
 
 ## Assets CDN
 

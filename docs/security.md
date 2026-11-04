@@ -81,7 +81,7 @@ What this is good for: the whole client flow (hydration from storage, logout, th
 
 The storage and header code does not change. What stays out of scope even then: passwords, refresh tokens, and an identity provider. Until phase 2a is finished, do not deploy this application with real data.
 
-The email is also sent to Sentry as the current user (`setUser({ email })`, `sendDefaultPii` is `false`), which is described in [Client Observability](client-observability.md#sentry).
+Sentry receives a SHA-256 hash of the email as `user.id`, not the email (`sendDefaultPii` is `false`), which is described in [Client Observability](client-observability.md#sentry).
 
 ## XSS Surface
 
@@ -100,7 +100,7 @@ Most of the code in the bundle is not written by the team. What is in place:
 - **Exact versions.** No `^` or `~` in any `package.json`, so a new release of a dependency cannot enter the build by itself.
 - **Lockfile and `npm ci`.** `package-lock.json` is committed, and the workflows install with `npm ci`, which fails if it does not match `package.json`.
 - **Knip** (`npm run knip`, part of the pre-push hook) reports dependencies that are declared and not used, and the opposite. A smaller list of dependencies is a smaller attack surface.
-- **Hidden source maps** are not referenced from the bundle (no `sourceMappingURL`), so browsers do not load them. They are, however, still emitted to `dist/static/*.map` and synced to S3 by `cd.yml`, so they are publicly fetchable today and expose the readable source. Not implemented: `sourcemaps.filesToDeleteAfterUpload` in the Sentry plugin or `--exclude "*.map"` in `cd.yml`.
+- **Hidden source maps** are not referenced from the bundle (no `sourceMappingURL`), so browsers do not load them. They are uploaded to Sentry and deleted after upload (`filesToDeleteAfterUpload`), and `cd.yml` excludes `*.map` from every S3 sync as a second guard, so they are not publicly fetchable.
 
 What is not done and is worth adding:
 
