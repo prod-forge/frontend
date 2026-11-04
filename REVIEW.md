@@ -25,7 +25,7 @@ endOfLine: lf
 - Avoid `any`. Use `unknown` when the type is genuinely unknown and narrow it explicitly.
 - Prefer `type` over `interface`.
 - Prefer `readonly` where mutation is not needed.
-- Explicit return types are required for exported functions (ESLint warns on missing ones).
+- Explicit return types are required for exported functions (ESLint errors on missing ones).
 - Avoid unnecessary generics. Only parameterize when the type parameter is actually useful.
 
 ```ts
@@ -177,7 +177,7 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 ## API Layer
 
 - All HTTP calls go through `apiRequest` in `core/src/api/client.ts`.
-- API modules export plain objects with typed methods (`todosApi`, `authApi`).
+- API modules export plain objects with typed methods (`todosApi`, `todosApi`).
 - API modules live in `core` — never import fetch or make HTTP calls from components.
 - Error handling is centralized: `ApiError`, `BackendError`, `NetworkError` are thrown from the client and caught by the Redux error middleware.
 

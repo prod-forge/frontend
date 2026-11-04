@@ -4,7 +4,7 @@
   "ignore": [],
   "workspaces": {
     ".": {
-      "project": ["*.{mjs,cjs}"]
+      "project": ["*.{ts,mjs,cjs}", "release/**/*.ts"]
     },
     "apps/web-client": {
       "entry": ["src/**/*.test.{ts,tsx}"]

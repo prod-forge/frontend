@@ -1,14 +1,14 @@
 {
   "name": "prod-forge-todolist-frontend",
   "version": "1.2.2",
-  "description": "An experiment in creating a project from scratch using Claude Code",
-  "homepage": "https://github.com/AlexSergey/todolist-ai#readme",
+  "description": "Prod Forge frontend: React web client, Expo mobile client and design system built with production practices",
+  "homepage": "https://github.com/prod-forge/frontend#readme",
   "bugs": {
-    "url": "https://github.com/AlexSergey/todolist-ai/issues"
+    "url": "https://github.com/prod-forge/frontend/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AlexSergey/todolist-ai.git"
+    "url": "git+https://github.com/prod-forge/frontend.git"
   },
   "license": "MIT",
   "author": "Aleksandrov Sergey <gooddev.sergey@gmail.com>",

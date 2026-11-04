@@ -1,5 +1,5 @@
 {
-  "name": "@prod-forge-todolist-frontend/design-tokens",
+  "name": "design-tokens",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "packages/design-tokens/src",

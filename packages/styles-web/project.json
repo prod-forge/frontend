@@ -1,5 +1,5 @@
 {
-  "name": "@prod-forge-todolist-frontend/styles-web",
+  "name": "styles-web",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "packages/styles-web/src",

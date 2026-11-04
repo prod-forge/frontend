@@ -13,11 +13,11 @@ const beforeRelease = async (): Promise<never> => {
       value: 'tasks',
     },
     {
-      name: 'Fill out the Changelog',
+      name: 'Verify CHANGELOG.md will be generated from conventional commits (do not edit by hand)',
       value: 'changelog',
     },
     {
-      name: 'Fill out the Migration Guide, Breaking Changes (if necessary)',
+      name: 'Document breaking changes in the PR description (if any)',
       value: 'migration_guide',
     },
   ];

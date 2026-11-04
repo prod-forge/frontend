@@ -40,6 +40,13 @@
         "cwd": "packages/ui-web"
       }
     },
+    "test:storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:storybook",
+        "cwd": "packages/ui-web"
+      }
+    },
     "test:cov": {
       "executor": "nx:run-commands",
       "options": {

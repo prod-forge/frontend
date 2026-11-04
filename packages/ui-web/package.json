@@ -6,7 +6,8 @@
   "scripts": {
     "storybook": "storybook dev -p 6006",
     "build:storybook": "storybook build",
-    "test": "vitest run",
+    "test": "vitest run --project unit",
+    "test:storybook": "vitest run --project storybook",
     "test:cov": "vitest run --project unit --coverage",
     "test:a11y": "playwright test --config=playwright.a11y.config.ts",
     "test:visual": "playwright test --config=playwright.visual.config.ts",

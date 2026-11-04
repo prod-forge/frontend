@@ -10,8 +10,8 @@ NX monorepo with npm workspaces. Three main layers:
 
 Supporting packages:
 
-- **`packages/design-tokens`** — CSS custom properties + Tailwind v4 theme.
-- **`packages/styles-web`** — Web-specific theme overrides.
+- **`packages/design-tokens`** — JSON design tokens compiled by Style Dictionary into CSS custom properties and a JS module.
+- **`packages/styles-web`** — Web-specific Tailwind v4 theme (`theme.css`).
 - **`packages/test-data`** — Shared mock data for tests.
 
 ---
@@ -80,7 +80,7 @@ packages/
 │
 ├── ui-web/
 │   └── src/
-│       ├── components/              # 24+ base components (Button, Input, Modal, ...)
+│       ├── components/              # 22 base components (Button, Input, Modal, ...)
 │       ├── widgets/
 │       │   ├── auth/                # LoginForm, RegisterForm
 │       │   ├── todos/               # AddTodoForm
@@ -89,10 +89,13 @@ packages/
 │           └── theme/use-theme.ts   # Dark/light toggle via localStorage + data-theme
 │
 ├── design-tokens/
-│   └── src/
-│       ├── tokens.css               # CSS custom properties (:root + dark)
-│       ├── theme.css                # @theme inline for Tailwind
-│       └── global.css               # Storybook entry
+│   ├── src/tokens/**                # JSON tokens (base, color, shadow)
+│   ├── style-dictionary.config.mjs  # Style Dictionary build config
+│   ├── tokens.css                   # Generated: CSS custom properties (:root + dark)
+│   └── js/                          # Generated: index.mjs + index.d.ts
+│
+├── styles-web/
+│   └── src/theme.css                # @theme inline for Tailwind
 │
 └── test-data/
     └── src/index.ts                 # Mock Todo[] for tests

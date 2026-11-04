@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing.
 
-Prod Forge is an open-source guide to building production-ready backend systems. Contributions that improve the quality, clarity, and completeness of that guide are welcome.
+Prod Forge is an open-source guide to building production-ready frontend systems. Contributions that improve the quality, clarity, and completeness of that guide are welcome.
 
 ---
 
@@ -17,8 +17,11 @@ Prod Forge is an open-source guide to building production-ready backend systems.
 
 ### Code contributions
 
-- Improvements to the backend application
-- Infrastructure improvements
+- Improvements to the web client
+- Improvements to the mobile client
+- Design system improvements (tokens, components)
+- Storybook stories
+- Visual and accessibility tests
 - CI/CD pipeline improvements
 - New test coverage
 
@@ -55,8 +58,8 @@ For small fixes (typos, broken links), you can submit a pull request directly.
 ### 2. Fork the repository
 
 ```shell
-git clone https://github.com/prod-forge/backend.git
-cd backend
+git clone git@github.com:prod-forge/frontend.git
+cd frontend
 ```
 
 ### 3. Create a branch
@@ -88,7 +91,7 @@ Follow the conventional commit format:
 ```text
 docs(readme): add section on feature flags
 fix(ci): correct workflow trigger condition
-feat(observability): add alerting configuration example
+feat(ui-web): add empty state story
 ```
 
 ### 6. Open a pull request

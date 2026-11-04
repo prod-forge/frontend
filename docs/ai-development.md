@@ -153,13 +153,13 @@ by hand for files nobody should review:
 ```markdown
 ## Skip
 
-- Generated files: ./database-manager/generated/\*\*
+- Generated files: ./packages/design-tokens/js/\*\*
 - Lock files: _-lock, _.lock
 ```
 
 ### docs/
 
-Keep at least basic docs (`architecture.md`, `api.md`, `db-schema.md`, `developers-guide.md`) — they help both Claude
+Keep at least basic docs (`architecture.md`, `api.md`, `data-schema.md`, `developers-guide.md`) — they help both Claude
 and developers. Then tell Claude to keep them current via `CLAUDE.md`:
 
 ```markdown
@@ -169,7 +169,7 @@ After every change, update any affected docs in `.claude/docs/`:
 
 - architecture.md — modules added/removed, middleware/interceptor/filter wiring, request lifecycle
 - api.md — endpoints, request/response shapes, error codes, auth behavior
-- db-schema.md — schema changes (models, fields, indexes, relations)
+- data-schema.md — domain types, state shape, validation constraints
 - developers-guide.md — setup, env vars, scripts, feature patterns
 
 Skip docs for internal refactors with no observable effect on architecture, API, schema, or workflow.
