@@ -29,8 +29,8 @@
     "@hookform/resolvers": "5.2.2",
     "@prod-forge-todolist-frontend/core": "*",
     "classnames": "2.5.1",
-    "react": "19.2.6",
-    "react-dom": "19.2.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-hook-form": "7.75.0",
     "react-router-dom": "7.15.0",
     "zod": "4.4.3"

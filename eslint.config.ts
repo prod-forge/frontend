@@ -272,6 +272,7 @@ const disableDefaultExportBlockingForStorybook: Linter.Config = {
     '**/.storybook/**',
     '**/vite.config.ts',
     '**/vitest.config.ts',
+    '**/jest.config.ts',
     '**/eslint.config.ts',
   ],
   rules: {
@@ -344,6 +345,16 @@ const fixturesOverrides: Linter.Config = {
   },
 };
 
+// expo-router discovers screens by file name and needs a default export per route file:
+// `_layout.tsx` and `[id].tsx` cannot be kebab-case, and named exports are not picked up as screens.
+const expoRouterOverrides: Linter.Config = {
+  files: ['apps/mobile-client/src/app/**/*.{ts,tsx}'],
+  rules: {
+    '@check-file/filename-naming-convention': 'off',
+    '@import-lite/no-default-export': 'off',
+  },
+};
+
 // Differences from @rockpack/codestyle.
 const projectOverrides = [...storybook.configs['flat/recommended']] as Linter.Config[];
 
@@ -364,6 +375,7 @@ export default [
   dtsOverrides,
   testOverrides,
   fixturesOverrides,
+  expoRouterOverrides,
   ...reactTestConfigs,
   ...projectOverrides,
 ];
