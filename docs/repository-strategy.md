@@ -42,11 +42,15 @@ Mixing different kinds of systems in one repository brings organizational comple
 ```
 prod-forge-todolist-frontend/
 ├── apps/
-│   └── web-client/         # Main React application
+│   ├── web-client/         # React web application (Vite)
+│   └── mobile-client/      # Expo application for iOS and Android
 ├── packages/
-│   ├── core/               # Business logic, store, API layer
-│   ├── design-tokens/      # CSS custom properties
-│   └── ui-web/             # UI components, Storybook
+│   ├── core/               # Business logic, store, API layer (no DOM)
+│   ├── design-tokens/      # Token sources, CSS variables and JS exports
+│   ├── styles-web/         # Shared web styles (Tailwind layer)
+│   ├── test-data/          # Todo fixtures shared by the tests of both apps
+│   └── ui-web/             # Web UI components, Storybook
+├── assets/                 # Media synced to S3 independently of the build
 ├── tsconfig.base.json
 ├── nx.json
 └── package.json
@@ -58,8 +62,18 @@ Dependency graph:
 web-client
   ├── core
   ├── ui-web
-  │     └── core
-  └── design-tokens
+  │     ├── core
+  │     ├── styles-web
+  │     └── design-tokens
+  ├── styles-web
+  ├── design-tokens
+  └── test-data   (dev only)
+        └── core
+
+mobile-client
+  ├── core
+  ├── design-tokens   (JS entry)
+  └── test-data       (dev only)
 ```
 
-`core` has no dependency on `ui-web` — data only flows one way.
+`core` has no dependency on `ui-web`, and no client depends on another client: data only flows one way. The mobile app does not import `ui-web`, which is built for the DOM. See [Mobile Client](mobile-client.md) for what is shared.
