@@ -35,7 +35,7 @@ Unit tests are the largest layer and carry most of the logic checks: thunks and 
 
 ## Why E2E Mocks the API
 
-The Playwright tests in `apps/web-client/e2e` do not talk to a backend. The `mockApi` fixture in `e2e/fixtures.ts` is declared with `auto: true`, so every test gets it, and it intercepts `/api/v1/todos` with `page.route`:
+The Playwright tests in `apps/web-client/e2e` do not talk to a backend. The `mockApi` fixture in `e2e/fixtures.ts` is declared with `auto: true`, so every test gets it, and it intercepts `/api/v1/todos` (and `/api/v1/auth/login`, which answers a fixed token and a 401 for one unknown email) with `page.route`:
 
 ```ts
 await page.route(/\/api\/v1\/todos/, async (route) => {
@@ -80,12 +80,12 @@ Core has no ambient state between tests. `packages/core/vitest.setup.ts` calls `
 
 Where a threshold exists, it is 80% for branches, functions, lines and statements:
 
-| Scope                     | Tool          | Threshold                     | Where            |
-| ------------------------- | ------------- | ----------------------------- | ---------------- |
-| `apps/web-client` unit    | Vitest, v8    | 80% (all four)                | `vite.config.ts` |
-| `apps/web-client` e2e     | nyc, istanbul | 80% (all four)                | `.nycrc.json`    |
-| `packages/core`, `ui-web` | Vitest        | none, `test:cov` only reports | -                |
-| `apps/mobile-client`      | Jest          | none, `test:cov` only reports | -                |
+| Scope                     | Tool          | Threshold                     | Where              |
+| ------------------------- | ------------- | ----------------------------- | ------------------ |
+| `apps/web-client` unit    | Vitest, v8    | 80% (all four)                | `vite.config.ts`   |
+| `apps/web-client` e2e     | nyc, istanbul | 80% (all four)                | root `.nycrc.json` |
+| `packages/core`, `ui-web` | Vitest        | none, `test:cov` only reports | -                  |
+| `apps/mobile-client`      | Jest          | none, `test:cov` only reports | -                  |
 
 Coverage excludes tests, stories and `main.tsx`.
 
@@ -128,7 +128,7 @@ Mobile tests run on Jest with the `jest-expo` preset and `@testing-library/react
 What makes them different from web tests:
 
 - **No navigation container.** `test-utils/expo-router-mock.tsx` replaces `expo-router`: `useRouter` returns spies, and `<Redirect>` renders its target as text, so a test can assert where a screen sent the user.
-- **Native modules are replaced** in `jest.setup.ts`: `expo-secure-store` with an in-memory map, `@sentry/react-native` with spies, safe-area insets with the library mock.
+- **Native modules are replaced** in `jest.setup.ts`: `expo-secure-store` with an in-memory map, `@sentry/react-native` with spies, safe-area insets with the library mock, the console logger with spies.
 - **The real store and the real core run.** Only `fetch` is faked, by `mockFakeBackend`, which answers from `test-data` and can return a backend-format error with `backendErrorResponse(500, 'INTERNAL_ERROR')`. The same data and the same error shape are used as on web.
 - **Workspace packages map to sources** (`moduleNameMapper` in `jest.config.ts`), so tests never depend on a prior build. Packages that ship ESM only are listed in `transformIgnorePatterns`, which is the first thing to check when Jest fails with "Unexpected token 'export'".
 

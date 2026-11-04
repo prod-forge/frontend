@@ -57,10 +57,11 @@ Rollback does not rebuild anything. The previous build already sits in `releases
 
 **`rollback.yml`** ("Rollback Frontend") takes one input, `version` (for example `v1.0.0`), and does:
 
-1. `aws s3 ls releases/<version>/`. If the folder does not exist, the job fails with `Version ... not found in releases`.
-2. `s3 sync releases/<version>/` to the root with `--delete` and without `releases/*`.
-3. `s3 cp` of that `index.html` to the root with the no-cache header.
-4. CloudFront invalidation for `/*`.
+1. Validates the input: it must match `^v[0-9]+\.[0-9]+\.[0-9]+$`, otherwise the job fails with `Invalid version` before any bucket path is built from it.
+2. `aws s3 ls releases/<version>/`. If the folder does not exist, the job fails with `Version ... not found in releases`.
+3. `s3 sync releases/<version>/` to the root with `--delete` and without `releases/*`.
+4. `s3 cp` of that `index.html` to the root with the no-cache header.
+5. CloudFront invalidation for `/*`.
 
 An invalidation is eventually consistent, so some edges can serve the previous version for up to a minute (see the Terraform chapter). The Sentry release stays: errors reported by the restored version carry its own `VITE_APP_VERSION`, so they are not mixed with the failed release.
 

@@ -52,9 +52,10 @@ The todos slice (`todos.slices.ts`) keeps this state:
 
 Thunks are created with `createAsyncThunk` and call the API through `todosApi`, never through `fetch`. The slice reacts to the three lifecycle actions of every thunk in `extraReducers`.
 
-Two details are worth knowing:
+Three details are worth knowing:
 
-- `nextOffset` is the offset on the **server**, computed as `arg.offset + payload.length` when a page arrives. It is deliberately independent of `items.length`, because optimistic inserts make the local list longer than what the server has. `fetchMoreTodos` (used by the mobile "load more" list) appends the next page and uses `nextOffset`; `fetchTodos` replaces the list.
+- `nextOffset` is the offset on the **server**, computed as `arg.offset + payload.length` when a page arrives. It is deliberately independent of `items.length`, because optimistic inserts make the local list longer than what the server has. `fetchMoreTodos` (used by the mobile "load more" list) appends the next page (skipping ids that are already loaded) and uses `nextOffset`; `fetchTodos` replaces the list.
+- The `logout` action resets the whole todos slice to its initial state, so the next session never sees the previous user's list.
 - Filter changes (`setLimit`, `setOrder`, `setSortBy`, `updateFilters`) reset `filters.offset` through one helper, `resetPagination`, so a new sort never keeps a stale page.
 
 ## Optimistic Updates and Rollback
@@ -132,7 +133,7 @@ rejected action
    +--> dispatch(pushError({ message, silent })) always; UI reads selectVisibleErrors
 ```
 
-The `reportError` rule is `error.status === undefined || error.status >= 500`. A 4xx is an expected outcome: wrong password, validation failure, an item that was deleted elsewhere. It is shown to the user, but it is not a defect, and sending it to Sentry would bury the real ones.
+The `reportError` rule is `error.status === undefined || error.status >= 500`. A 4xx is an expected outcome: an unknown email at login, validation failure, an item that was deleted elsewhere. It is shown to the user, but it is not a defect, and sending it to Sentry would bury the real ones.
 
 For the middleware to see the status, thunks are created with `serializeError: serializeApiError` (`errors/serialize-api-error.ts`). RTK's default serializer keeps only `name`, `message` and `stack`, so without this the status would be lost before the middleware runs.
 
@@ -179,6 +180,6 @@ type CoreConfig = {
 
 If the entry point forgets to call it, the first request throws `CoreNotConfiguredError` with a message that says what to do, instead of a `TypeError` from an undefined config. `configureCore` also rejects an empty base URL or one without a trailing slash.
 
-Storage is asynchronous on purpose (`KeyValueStorage` returns promises), because SecureStore is. Auth persistence is therefore not done in reducers. It is a listener (`auth.listeners.ts`) that writes the token and user after `login` or `register`, and removes them after `logout`. On startup the `hydrateAuth` thunk reads the storage and `auth.hydration` moves `idle -> hydrating -> done`. On web, `AuthHydrationGate` renders nothing until hydration is done, so the UI does not flash a signed-out state for a user who is signed in.
+Storage is asynchronous on purpose (`KeyValueStorage` returns promises), because SecureStore is. Auth persistence is therefore not done in reducers. It is a listener (`auth.listeners.ts`) that writes the token and user after `login` or `register`, and removes them after `logout`. A second listener dispatches `logout()` when any request is rejected with a 401 while a token exists (see [Security](security.md#authentication)). On startup the `hydrateAuth` thunk reads the storage and `auth.hydration` moves `idle -> hydrating -> done`. On web, `AuthHydrationGate` renders nothing until hydration is done, so the UI does not flash a signed-out state for a user who is signed in.
 
 More about the mobile side is in the [Mobile Client](mobile-client.md) chapter.

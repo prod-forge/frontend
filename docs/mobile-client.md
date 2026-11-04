@@ -4,7 +4,7 @@
 
 ## Why Expo
 
-A React Native project can be started with the bare CLI or with Expo. Expo was chosen because the goal here is a reference that runs after `npm install` and `npx expo start`, without Xcode or Android Studio project files to maintain:
+A React Native project can be started with the bare CLI or with Expo. Expo was chosen because the goal here is a reference that runs after `npm install` and `npm run dev:mobile` (`expo start`), without Xcode or Android Studio project files to maintain:
 
 - **Managed native layer.** `app.json` is the whole native configuration. Native modules used here (`expo-secure-store`, `expo-crypto`) come with the SDK and are versioned together with it.
 - **File-based routing** with `expo-router`: a file in `src/app` is a screen, the way pages are a folder in other frameworks.
@@ -39,10 +39,11 @@ apps/mobile-client/
     ├── app/                 # routes: _layout, index, login, register, todos/
     ├── app-tests/           # screen tests (not routes)
     ├── components/          # React Native UI
-    ├── hooks/               # typed dispatch/selector, theme hooks
+    ├── hooks/               # typed dispatch/selector, theme hooks, auth redirect
     ├── services/            # platform adapters
     ├── test-utils/          # store render helper, fake backend, router mock
-    └── theme/               # token mapping and themed styles
+    ├── theme/               # token mapping and themed styles
+    └── utils/               # form field helpers
 ```
 
 **Tests do not live in `src/app`.** `expo-router` turns every file in `src/app` into a route, including a `*.test.tsx`. Screen tests are therefore in `src/app-tests/`, and each imports the screen from `../app/...`.
@@ -129,7 +130,7 @@ Details of `jest.config.ts` that explain themselves once you know the problem:
 
 - **`moduleNameMapper`** points `core`, `design-tokens/js` and `test-data` at their sources, so tests do not need a build.
 - **`transformIgnorePatterns`** extends the jest-expo list with ESM-only packages that `core` resolves to (`@reduxjs/toolkit`, `immer`, `redux`, `reselect`, `react-redux`, `uuid`). Without it Jest fails with `SyntaxError: Cannot use import statement`.
-- **`jest.setup.ts`** replaces native modules: SecureStore by an in-memory map, Sentry by spies, safe-area insets by the library's mock.
+- **`jest.setup.ts`** replaces native modules: SecureStore by an in-memory map, Sentry by spies, safe-area insets by the library's mock, the console logger by spies.
 
 Tests use the real store (`render-with-store.tsx`), and `fake-backend.ts` stubs `fetch`, the same principle as on web (see [Testing Strategy](testing-strategy.md)). `root-layout.test.tsx` covers the hydration gate described above. The negative cases come first, as in the rest of the project.
 

@@ -17,7 +17,7 @@ What this application protects against, and where:
 | Injected script (XSS)         | React escaping, no `dangerouslySetInnerHTML`, CSP | components, `index.html`          |
 | Page embedded in another site | `frame-ancestors 'none'` as a response header     | CloudFront (see below)            |
 | Token theft from storage      | CSP only; a real fix needs an HttpOnly cookie     | see Token Storage                 |
-| Malicious dependency          | exact versions, lockfile, `npm ci`, `knip`        | `package.json`, `ci.yml`          |
+| Malicious dependency          | exact versions, lockfile, `npm ci`, `knip`        | `package.json`, pre-push hook     |
 | Secret in the bundle          | nothing secret is read by the client              | [Configuration](configuration.md) |
 
 ## Content Security Policy

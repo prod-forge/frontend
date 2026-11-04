@@ -28,13 +28,13 @@ All of them are initialized in `apps/web-client/src/main.tsx` after `setupCore()
 export const traceId = uuid();
 ```
 
-`apiRequest` sends it on every request as `x-trace-id`. The backend middleware (`trace-id.middleware.ts`) takes the incoming value, or creates its own when the header is missing, stores it in the request context and echoes it back in the `X-Trace-Id` response header. Every backend log line written during that request carries the id.
+`apiRequest` sends it on every request as `x-trace-id`. The backend middleware (`trace-id.middleware.ts`) uses the id of the active OpenTelemetry span when tracing is on, otherwise the incoming `x-trace-id` value, or creates its own when the header is missing. It stores the id in the request context and echoes it back in the `X-Trace-Id` response header (exposed to browser code by the backend CORS configuration). Every error response carries this header. Every backend log line written during that request carries the id.
 
 The same id is attached on the client side:
 
 - `Sentry.setTag('trace_id', traceId)` in `initSentry`, so a Sentry issue can be searched by trace id;
 - the `traceId` prop of logrock's `LoggerContainer` in `app.tsx`, so the log payload sent to the backend contains it (see Client Logs Endpoint);
-- the `traceId` field of an error response, which `BackendError` keeps and `apiRequest` writes to the warn log.
+- the `X-Trace-Id` header of an error response (the body has no trace id), which `BackendError` keeps and `apiRequest` writes to the warn log.
 
 The granularity is a **page load**, not a single request: reload the page and a new id is issued. This is a deliberate trade-off. One id per session lets support ask for a single value and see everything the user did; per-request ids would be more precise but would need to be shown to the user for every error.
 
@@ -111,7 +111,7 @@ onError={(stack) => {
 
 `logsApi.send` (`packages/core/src/api/logs.api.ts`) is `POST client-logs/web`. The backend validates the payload (`WebLogDto`: `actions`, `env`, `metadata`, `timestamp`, `traceId`) and answers `204`.
 
-What the backend does with it today: `ClientLogsService.processWebLog` writes the payload to the backend log at warn level; it is not stored anywhere else yet. Until the storage is added, the trace of "what the user did before the error" is available in Sentry replay and breadcrumbs, not in the backend.
+What the backend does with it today: `ClientLogsService.processWebLog` writes the payload to the backend log at warn level; it is not stored anywhere else yet. The client's own id is logged as `clientTraceId`, and query string and hash are stripped from `fullUrl` and `url` in the metadata. Until the storage is added, the trace of "what the user did before the error" is available in Sentry replay and breadcrumbs, not in the backend.
 
 `POST client-logs/web` is public, so logs from signed-out pages (login, registration) are accepted without a token. It is throttled to 20 requests per 60 seconds; a throttled send fails with `429 TOO_MANY_REQUESTS` and ends up in `console.error` like any other failed send. `metadata` is required, `actions` holds at most 100 entries, an action `stack` at most 10000 characters, and the payload must not contain PII.
 
