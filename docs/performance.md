@@ -73,7 +73,7 @@ A proposal that fits this repository:
 
 - Add `size-limit` with `@size-limit/file` to `apps/web-client`, pointing at `dist/static/*.js`.
 - Start with the numbers measured on the current build plus a margin of about 10%, and set them per chunk: the entry chunk strictest, route chunks looser.
-- Run it as `npm run size` after `npm run build:web-client` as a step of the `verify` job in `ci.yml`, so a pull request that adds a heavy dependency fails with a message that names the file and the limit.
+- Run it as `npm run size` after `npm run build:web-client` in the `build` job of `ci.yml`, so a pull request that adds a heavy dependency fails with a message that names the file and the limit.
 - Review the budget when the limit is hit. Raising it is a legitimate answer, but it becomes a visible, reviewed decision instead of a silent one.
 
 It is not done here because the application is small and `ci.yml` is disabled (see [Testing Strategy](testing-strategy.md)). A budget in a pipeline that does not run would only look like a guarantee.
