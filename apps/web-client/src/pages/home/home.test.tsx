@@ -23,6 +23,28 @@ const applyFilters = (filters: TodoFilters): Promise<TodosResponse> => {
   );
 };
 
+const applyFiltersTo = (source: typeof todos, filters: TodoFilters): Promise<TodosResponse> =>
+  Promise.resolve(
+    applyTodosQuery(source, {
+      limit: filters.limit,
+      offset: filters.offset,
+      order: filters.order,
+      search: filters.query,
+      sortBy: filters.sortBy,
+    }),
+  );
+
+const mockServerTodos = (initial: typeof todos): void => {
+  let serverTodos = [...initial];
+
+  vi.mocked(todosApi.getAll).mockImplementation((filters) => applyFiltersTo(serverTodos, filters));
+  vi.mocked(todosApi.delete).mockImplementation((id) => {
+    serverTodos = serverTodos.filter((t) => t.id !== id);
+
+    return Promise.resolve();
+  });
+};
+
 const renderHome = async (options: { authenticated?: boolean } = {}): Promise<ReturnType<typeof render>> => {
   const { authenticated = true } = options;
   const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
@@ -452,6 +474,18 @@ describe('<Home /> page — delete from the list', () => {
 
       expect(todosApi.delete).not.toHaveBeenCalled();
     });
+    it('does not refetch the list when the delete request fails', async () => {
+      const user = userEvent.setup();
+      vi.mocked(todosApi.delete).mockRejectedValue(new Error('Network error'));
+      await renderHome();
+      const getAllCallsBefore = vi.mocked(todosApi.getAll).mock.calls.length;
+
+      const dialog = await openDeleteConfirmation(user);
+      await user.click(within(dialog).getByRole('button', { name: /^delete$/i }));
+
+      expect(await screen.findByRole('link', { name: firstTodo.title })).toBeInTheDocument();
+      expect(vi.mocked(todosApi.getAll).mock.calls.length).toBe(getAllCallsBefore);
+    });
   });
 
   describe('positive cases', () => {
@@ -466,6 +500,7 @@ describe('<Home /> page — delete from the list', () => {
 
     it('deletes the todo and removes it from the list after confirming', async () => {
       const user = userEvent.setup();
+      mockServerTodos(todos);
       await renderHome();
 
       const dialog = await openDeleteConfirmation(user);
@@ -475,6 +510,31 @@ describe('<Home /> page — delete from the list', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       expect(screen.queryByRole('link', { name: firstTodo.title })).not.toBeInTheDocument();
       expect(screen.getByText(new RegExp(`of ${totalCount - 1} completed`))).toBeInTheDocument();
+    });
+
+    it('moves back one page when the last todo of the last page is deleted', async () => {
+      const user = userEvent.setup();
+      mockServerTodos(todos.slice(0, 11));
+      await renderHome();
+
+      await user.click(screen.getByRole('button', { name: 'Page 2' }));
+      await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(1));
+      const dialog = await openDeleteConfirmation(user);
+      await user.click(within(dialog).getByRole('button', { name: /^delete$/i }));
+
+      await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(10));
+      expect(screen.queryByText(/no tasks match your search/i)).not.toBeInTheDocument();
+    });
+
+    it('refetches the current page after a delete so the list is refilled', async () => {
+      const user = userEvent.setup();
+      mockServerTodos(todos);
+      await renderHome();
+
+      const dialog = await openDeleteConfirmation(user);
+      await user.click(within(dialog).getByRole('button', { name: /^delete$/i }));
+
+      await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(10));
     });
   });
 });

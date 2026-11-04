@@ -89,10 +89,26 @@ export const Home = (): ReactNode => {
   }
 
   const handleConfirmDelete = (): void => {
-    if (pendingDeleteId) {
-      void dispatch(deleteTodo(pendingDeleteId));
-    }
+    const id = pendingDeleteId;
     setPendingDeleteId(null);
+
+    if (!id) {
+      return;
+    }
+
+    const wasLastOnPage = todos.length === 1;
+
+    void dispatch(deleteTodo(id)).then((result) => {
+      if (!deleteTodo.fulfilled.match(result)) {
+        return;
+      }
+
+      if (wasLastOnPage && filters.offset > 0) {
+        dispatch(setOffset(Math.max(0, filters.offset - filters.limit)));
+      } else {
+        void dispatch(fetchTodos(filters));
+      }
+    });
   };
 
   return (
