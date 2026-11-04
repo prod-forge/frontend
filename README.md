@@ -27,6 +27,7 @@ Requires Node 24 and the backend API running (see the [backend guide](https://gi
 npm ci
 cp .env.example .env   # VITE_API_BASE_URL is required for a build (absolute URL ending with "/"); dev falls back to the /api/v1/ proxy
 npm run dev            # web client
+cp apps/mobile-client/.env.example apps/mobile-client/.env   # EXPO_PUBLIC_API_BASE_URL, mobile client only
 npm run dev:mobile     # mobile client (Expo)
 ```
 
