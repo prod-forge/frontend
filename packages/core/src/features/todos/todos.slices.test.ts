@@ -7,6 +7,7 @@ import type { Todo, TodoFilters, TodosState } from './todos.types';
 import {
   addTodo,
   deleteTodo,
+  fetchMoreTodos,
   fetchTodoById,
   fetchTodos,
   setLimit,
@@ -124,6 +125,60 @@ describe('todos slice — fetchTodos', () => {
       expect(state.items).toEqual([todoA, todoB]);
       expect(state.total).toBe(2);
       expect(state.status).toBe('idle');
+    });
+  });
+});
+
+describe('todos slice — fetchMoreTodos', () => {
+  const todoC: Todo = { completed: false, description: 'desc-c', id: 'c', title: 'Cherry' };
+  const nextPage: TodosResponse = {
+    data: [todoB, todoC],
+    meta: { limit: 10, offset: 1, total: 3 },
+  };
+
+  describe('negative cases', () => {
+    it('keeps loaded items and sets status to error when rejected', async () => {
+      vi.mocked(todosApi.getAll).mockRejectedValueOnce(new Error('Network error'));
+      const store = makeTodosStore([todoA], 3);
+
+      await store.dispatch(fetchMoreTodos({ ...defaultFilters, offset: 1 }));
+
+      const state = store.getState().todos;
+      expect(state.items).toEqual([todoA]);
+      expect(state.status).toBe('error');
+    });
+
+    it('does not duplicate items that are already loaded', async () => {
+      vi.mocked(todosApi.getAll).mockResolvedValueOnce(nextPage);
+      const store = makeTodosStore([todoA, todoB], 3);
+
+      await store.dispatch(fetchMoreTodos({ ...defaultFilters, offset: 2 }));
+
+      expect(store.getState().todos.items.map((t) => t.id)).toEqual(['a', 'b', 'c']);
+    });
+  });
+
+  describe('positive cases', () => {
+    it('appends the next page to the loaded items and updates total', async () => {
+      vi.mocked(todosApi.getAll).mockResolvedValueOnce(nextPage);
+      const store = makeTodosStore([todoA], 2);
+
+      await store.dispatch(fetchMoreTodos({ ...defaultFilters, offset: 1 }));
+
+      const state = store.getState().todos;
+      expect(state.items).toEqual([todoA, todoB, todoC]);
+      expect(state.total).toBe(3);
+      expect(state.status).toBe('idle');
+    });
+
+    it('requests the page with the given offset and leaves filters unchanged', async () => {
+      vi.mocked(todosApi.getAll).mockResolvedValueOnce(nextPage);
+      const store = makeTodosStore([todoA], 3);
+
+      await store.dispatch(fetchMoreTodos({ ...defaultFilters, offset: 1 }));
+
+      expect(todosApi.getAll).toHaveBeenCalledWith({ ...defaultFilters, offset: 1 });
+      expect(store.getState().todos.filters).toEqual(defaultFilters);
     });
   });
 });

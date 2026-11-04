@@ -53,6 +53,7 @@ export {
   addTodo,
   clearCurrentTodo,
   deleteTodo,
+  fetchMoreTodos,
   fetchTodoById,
   fetchTodos,
   setLimit,

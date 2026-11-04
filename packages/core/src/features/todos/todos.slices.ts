@@ -41,6 +41,17 @@ export const fetchTodos = createAsyncThunk<TodosResponse, TodoFilters>(
   { serializeError: serializeApiError },
 );
 
+// Appends the next page instead of replacing the list (infinite lists on mobile); filters stay untouched.
+export const fetchMoreTodos = createAsyncThunk<TodosResponse, TodoFilters>(
+  'todos/fetchMore',
+  (filters) => {
+    getCoreConfig().logger.debug(`offset=${filters.offset} limit=${filters.limit}`, 'todos/fetchMore');
+
+    return todosApi.getAll(filters);
+  },
+  { serializeError: serializeApiError },
+);
+
 export const fetchTodoById = createAsyncThunk<
   Todo,
   string,
@@ -146,6 +157,19 @@ const todosSlice = createSlice({
         state.status = 'error';
       })
 
+      // fetchMoreTodos
+      .addCase(fetchMoreTodos.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchMoreTodos.fulfilled, (state, action) => {
+        state.status = 'idle';
+        const loadedIds = new Set(state.items.map((t) => t.id));
+        state.items.push(...action.payload.data.filter((t) => !loadedIds.has(t.id)));
+        state.total = action.payload.meta.total;
+      })
+      .addCase(fetchMoreTodos.rejected, (state) => {
+        state.status = 'error';
+      })
       // fetchTodoById
       .addCase(fetchTodoById.pending, (state) => {
         state.currentTodo = null;

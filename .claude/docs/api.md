@@ -144,14 +144,17 @@ Returned in `BackendError.code`. Frontend maps these to user-facing messages:
 
 Thunks are defined in `packages/core/src/features/todos/todos.slices.ts`. Each has optimistic update logic.
 
-| Thunk           | Input                                                  | Output          | Optimistic |
-| --------------- | ------------------------------------------------------ | --------------- | ---------- |
-| `fetchTodos`    | `TodoFilters`                                          | `TodosResponse` | No         |
-| `fetchTodoById` | `string` (id)                                          | `Todo`          | No         |
-| `addTodo`       | `{ title: string; description: string }`               | `Todo`          | Yes        |
-| `deleteTodo`    | `string` (id)                                          | `string` (id)   | Yes        |
-| `toggleTodo`    | `string` (id)                                          | `Todo`          | Yes        |
-| `updateTodo`    | `{ id: string; title?: string; description?: string }` | `Todo`          | Yes        |
+| Thunk            | Input                                                  | Output          | Optimistic |
+| ---------------- | ------------------------------------------------------ | --------------- | ---------- |
+| `fetchTodos`     | `TodoFilters`                                          | `TodosResponse` | No         |
+| `fetchMoreTodos` | `TodoFilters` (offset = next page start)               | `TodosResponse` | No         |
+| `fetchTodoById`  | `string` (id)                                          | `Todo`          | No         |
+| `addTodo`        | `{ title: string; description: string }`               | `Todo`          | Yes        |
+| `deleteTodo`     | `string` (id)                                          | `string` (id)   | Yes        |
+| `toggleTodo`     | `string` (id)                                          | `Todo`          | Yes        |
+| `updateTodo`     | `{ id: string; title?: string; description?: string }` | `Todo`          | Yes        |
+
+`fetchTodos` replaces `items` (page-by-page navigation on web). `fetchMoreTodos` appends the page to `items`, skipping ids that are already loaded, and does not touch `filters` (the "Load more" list on mobile). Both share `status` (`loading` / `idle` / `error`) and update `total`.
 
 **Optimistic pattern:**
 
