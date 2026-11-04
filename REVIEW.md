@@ -177,7 +177,7 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 ## API Layer
 
 - All HTTP calls go through `apiRequest` in `core/src/api/client.ts`.
-- API modules export plain objects with typed methods (`todosApi`, `todosApi`).
+- API modules export plain objects with typed methods (`todosApi`).
 - API modules live in `core` — never import fetch or make HTTP calls from components.
 - Error handling is centralized: `ApiError`, `BackendError`, `NetworkError` are thrown from the client and caught by the Redux error middleware.
 
