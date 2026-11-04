@@ -27,6 +27,21 @@ export function buildEnvGuard(env: Record<string, string | undefined>): Plugin {
   };
 }
 
+// The meta tag is built from the same policy as the CloudFront header, which allows the API by origin.
+// Reduces absolute connect-src URLs (https://api.example.com/api/v1/) to their origin, removes duplicates and drops
+// relative ones (/api/v1/), which are invalid CSP sources; 'self' already covers them.
+export function normalizeCspOrigins(html: string): string {
+  return html.replace(/(connect-src )([^;"]*)/, (_match, directive: string, sources: string) => {
+    const normalized = sources
+      .split(/\s+/)
+      .filter(Boolean)
+      .filter((source) => !source.startsWith('/'))
+      .map((source) => (/^https?:\/\/[^*]+$/.test(source) ? new URL(source).origin : source));
+
+    return directive + [...new Set(normalized)].join(' ');
+  });
+}
+
 // Vite substitutes %VITE_*% in index.html but leaves the token as-is when the variable is unset
 // (VITE_ASSETS_BASE_URL is optional), which would put an invalid source into the CSP.
 export function stripUnsetHtmlEnv(html: string): string {

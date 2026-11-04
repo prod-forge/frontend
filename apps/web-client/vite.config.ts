@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-import { buildEnvGuard, stripUnsetHtmlEnv } from './vite.build-env';
+import { buildEnvGuard, normalizeCspOrigins, stripUnsetHtmlEnv } from './vite.build-env';
 
 const require = createRequire(import.meta.url);
 const { version } = require('./package.json') as { version: string };
@@ -40,7 +40,7 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
     ...extraPlugins,
     {
       name: 'html-strip-unset-env',
-      transformIndexHtml: stripUnsetHtmlEnv,
+      transformIndexHtml: (html: string): string => normalizeCspOrigins(stripUnsetHtmlEnv(html)),
     },
     {
       name: 'html-version-comment',
@@ -108,7 +108,7 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
       },
       environment: 'jsdom',
       globals: true,
-      include: ['src/**/*.test.{ts,tsx}', 'vite.build-env.test.ts'],
+      include: ['src/**/*.test.{ts,tsx}', 'vite.build-env.test.ts', 'index-csp.test.ts'],
       setupFiles: ['./vitest.setup.ts'],
     },
   };

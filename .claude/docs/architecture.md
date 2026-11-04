@@ -217,9 +217,11 @@ worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'no
 
 `script-src 'self'` forbids inline scripts, so the theme bootstrap that used to be inline in `index.html` now lives in `src/theme-init.ts`, loaded as a module before `main.tsx`. Vite bundles both module scripts into one entry and evaluates `theme-init.ts` first, so `data-theme` is set before React renders and dark mode does not flash light (covered by `e2e/theme.spec.ts`). The alternative, a per-response nonce, needs a server that rewrites HTML, which a static S3/CloudFront site does not have. `style-src` keeps `'unsafe-inline'` so that `style` attributes set at runtime (by React or third-party code) are not blocked.
 
+The CloudFront response headers policy (terraform repo) serves the same policy as a header and is the enforced source of truth; this meta tag is the local-dev fallback. `index-csp.test.ts` asserts the rendered meta policy against the string the terraform edge test asserts. `normalizeCspOrigins` (`vite.build-env.ts`) reduces the API URL to its origin and drops relative URLs so the two stay identical.
+
 Vite replaces `%VITE_*%` placeholders in `index.html` at build and dev time, but it leaves the token untouched when the variable is unset. `VITE_ASSETS_BASE_URL` is optional, so `vite.config.ts` runs `stripUnsetHtmlEnv` (`vite.build-env.ts`) as a `transformIndexHtml` hook: it drops any leftover `%VITE_*%` token instead of shipping an invalid CSP source.
 
-Two limits of a `<meta>` CSP: browsers ignore `frame-ancestors` there (it only works as an HTTP header), and a relative `VITE_API_BASE_URL` such as `/api/v1/` (used by the e2e dev server) is reported as an invalid source and ignored; `'self'` already covers it. Clickjacking protection therefore needs a `Content-Security-Policy` or `X-Frame-Options` response header on the CDN.
+Two limits of a `<meta>` CSP: browsers ignore `frame-ancestors` there (it only works as an HTTP header), and a relative `VITE_API_BASE_URL` such as `/api/v1/` (used by the e2e dev server) would be an invalid source, so `normalizeCspOrigins` drops it; `'self'` already covers it. Clickjacking protection therefore needs a `Content-Security-Policy` or `X-Frame-Options` response header on the CDN.
 
 ---
 

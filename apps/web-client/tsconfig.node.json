@@ -11,6 +11,7 @@
     "vite.config.ts",
     "vite.build-env.ts",
     "vite.build-env.test.ts",
+    "index-csp.test.ts",
     "vitest.setup.ts",
     "playwright.config.ts",
     "playwright.coverage.config.ts"

@@ -22,6 +22,8 @@ What this application protects against, and where:
 
 ## Content Security Policy
 
+The CloudFront response headers policy (terraform repo, `docs/frontend.md#security-headers`) is the enforced source of truth: it sends the policy below as a `Content-Security-Policy` header. The `<meta>` tag in `apps/web-client/index.html` carries the same policy as a fallback for local development, where there is no CDN. The two must stay identical after substitution; both repos assert the same string (`apps/web-client/index-csp.test.ts` here, `edge.tftest.hcl` in terraform). Change them together.
+
 `apps/web-client/index.html` carries the policy in a `<meta>` tag:
 
 ```text
@@ -33,8 +35,8 @@ font-src 'self' data:; worker-src 'self' blob:; object-src 'none'; base-uri 'sel
 Every directive is there for a reason:
 
 - `script-src 'self'` is the one that matters most. Only scripts served from the same origin run, so an injected `<script>` or an inline `onclick` is blocked. This is why the theme initialization is a module, `src/theme-init.ts`, and not an inline script in the HTML: an inline script would need `'unsafe-inline'`, which would cancel the protection.
-- `connect-src` lists where the app may send requests: itself, the API (`VITE_API_BASE_URL`), the assets CDN and Sentry. A script that tries to send data to another host is blocked. The two `%VITE_*%` tokens are replaced by Vite at build time; `stripUnsetHtmlEnv` removes a token whose variable is not set (`VITE_ASSETS_BASE_URL` is optional), so the policy never contains an invalid source.
-- `style-src 'unsafe-inline'` is a known concession. Some libraries set inline styles. Styles are a smaller risk than scripts, but this is the line to tighten first if the libraries allow it.
+- `connect-src` lists where the app may send requests: itself, the API (`VITE_API_BASE_URL`), the assets CDN and Sentry. A script that tries to send data to another host is blocked. The two `%VITE_*%` tokens are replaced by Vite at build time; `stripUnsetHtmlEnv` removes a token whose variable is not set (`VITE_ASSETS_BASE_URL` is optional), so the policy never contains an invalid source. `normalizeCspOrigins` (same file) reduces the API URL to its origin (`https://api.example.com/api/v1/` becomes `https://api.example.com`), removes duplicates and drops a relative URL, so the meta tag matches the header, which cannot know the API path. In production the assets are served by the same CloudFront distribution, so the assets origin is redundant with `'self'` there; the header omits it.
+- `style-src 'unsafe-inline'` is a known concession. Some libraries set inline styles. Styles are a smaller risk than scripts, but this is the line to tighten first if the libraries allow it. There is no `unsafe-eval` anywhere.
 - `img-src` allows `https:` because user content and the assets CDN may come from different hosts, and `data:` for small inlined images.
 - `worker-src 'self' blob:` is needed by Sentry Session Replay, which compresses events in a worker created from a blob.
 - `object-src 'none'` and `base-uri 'self'` close two classic injection paths (plugins and a rewritten `<base>`).
