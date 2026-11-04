@@ -1,186 +1,49 @@
 # Development Workflow
 
-<p align="center">
-  <img alt="Development Workflow" src="assets/development-workflow.png" width="733px" height="536px">
-</p>
-
-To support a reliable release pipeline, the development workflow should follow several conventions.
-
-## Task Management
-
-Every feature or fix should be associated with a clearly defined task in the project backlog.
-
-Each task should include:
-
-- description
-- acceptance criteria
-- issue identifier (e.g. Jira ticket)
-
-## Git Flow
-
-The project follows a simplified Git Flow approach.
-
-Typical workflow:
-
-```text
-feature branch → pull request → code review → merge to dev/stage
-```
-
-### Branch Naming Convention
-
-Branches follow a predictable naming format:
-
-```shell
-feat/XXXX-short-description
-```
-
-Where:
-
-- feat indicates the type of change
-- XXXX references the task ID (e.g. Jira ticket)
-- short-description briefly explains the change
-
-Example:
-
-```shell
-feat/1023-user-authentication
-```
-
-This makes it easier to trace changes back to project tasks.
-
-### Commit Conventions
-
-Commit messages follow commitlint / conventional commit standards.
-
-This improves readability and allows automatic changelog generation.
-
-Example:
-
-```text
-feat(auth): add JWT authentication
-fix(api): handle missing query parameters
-```
-
-## Feature Workflow
-
-1. Create a feature branch
-2. Implement the change
-3. Open a pull request
-4. Pass code review
-5. Rebase on `main`
-6. Merge into `main`
-7. Send the task to testing
-
-## Bug Fixing Workflow
-
-If a defect is discovered:
-
-1. Create a bugfix branch
-
-```shell
-fix/123-fix-null-pointer
-```
-
-2. Implement the fix
-3. Open a pull request
-4. Pass code review
-5. Merge after approval
-
-## Code Review
-
-Code review is **mandatory for all changes**.
-
-This applies to:
-
-- features
-- bug fixes
-- refactoring
-- infrastructure changes
-
-Consistent branch naming also makes it easy to analyze sprint results and track how issues were resolved.
-
-## Squash Merge Strategy
-
-In this project we use a **hybrid merge strategy** that combines the advantages of both **rebase** and **merge**.
-
-The goal is to keep the `main` branch:
-
-- clean
-- linear
-- easy to read
-- suitable for automated changelog generation
-
-With this approach, all commits from a feature branch are combined into **a single commit** before being added to
-`main`.
-
-This preserves a clean project history while still allowing developers to work with multiple commits inside feature
-branches.
-
-How to automate this in Github:
-
-> - Open the repository on GitHub.
-> - Go to Settings → General.
-> - Scroll down to the Pull Requests section.
-> - In the Merge button section, disable any unnecessary options:
-> - Leave only Allow squash merging enabled.
-> - Disable Allow merge commits and Allow rebase merging if you want to prevent other merge types.
-
-## Squash Merge Workflow
-
-Follow the same steps used in a rebase workflow during development:
-
-1. Create a feature branch
-2. Implement the feature with multiple commits if needed
-3. Rebase the branch on top of the latest `main`
-
-Once the feature is ready to be merged, switch back to the `main` branch and run:
-
-```shell
-git merge --squash feat/123-add-user-endpoint
-```
-
-This command prepares the merge but **does not create a commit automatically**.
-
-Next, create a single commit that represents the entire feature:
-
-```shell
-git commit -m "feat: <some description here>"
-```
-
-As a result:
-
-- the full history of the feature branch is compressed into **one commit**
-- the `main` branch remains **linear**
-- the commit history stays **easy to understand**
+The shared workflow is described in the backend guide: [Development Workflow](https://github.com/prod-forge/backend/blob/main/docs/development-workflow.md). Branch naming (`type/ID-short-description`), [commit conventions](https://github.com/prod-forge/backend/blob/main/docs/development-workflow.md#commit-conventions), the feature and bug fix flow, mandatory code review and squash merge are the same in this repository, and are not repeated here. This chapter lists only what a frontend monorepo adds.
 
 ## NX-Aware Development
 
-This monorepo uses NX for task orchestration. Prefer `nx affected` over running everything when working on a specific
-package — it runs only the tasks affected by your changes based on the dependency graph.
+This monorepo uses NX for task orchestration. Prefer `nx affected` over running everything: it runs only the tasks of the packages affected by your changes, based on the dependency graph.
 
 ```shell
-# Run tests only for packages affected by current changes
 npx nx affected -t test
-
-# Run lint only for affected packages
 npx nx affected -t lint
-
-# See which projects are affected
-npx nx affected:graph
+npx nx graph
 ```
 
-This significantly reduces feedback time during development and is especially important in CI.
+Because `core` is a dependency of `ui-web`, `web-client` and `mobile-client`, a change in `core` affects all three, while a change in `ui-web` leaves `mobile-client` alone. For a single project, call it by name: `npx nx test core`, `npx nx storybook ui-web`.
 
-## Why this matters
+## Visual Snapshots in a Pull Request
 
-A clean and structured commit history becomes extremely valuable when the project grows.
+If a pull request changes how a component looks, the visual tests fail on purpose. The author does not hide that, and does the following:
 
-This approach allows us to:
+1. Run `npm run test:visual` and open the Playwright report to see the actual, expected and diff images.
+2. If the change is intended, run `npm run test:visual:update` and look at every changed file in `packages/ui-web/visual-tests/snapshots/`. Each is a screenshot of a story; a changed image is a changed UI.
+3. Commit the updated snapshots in the same pull request, so the reviewer sees the code and its visual result together.
+4. If the change is not intended, fix the code and leave the snapshots alone.
 
-- generate **automated changelogs**
-- simplify release notes
-- make code history easier to navigate
-- clearly see which commits introduced specific features
+Snapshots depend on the operating system, and today only `darwin` snapshots are stored. This and the Linux workflow are explained in [Design System](design-system.md#snapshots-are-per-platform). Never regenerate snapshots to make a failing test pass without looking at the diff: that is what the test is for.
 
-The more **atomic and structured** the commits in the `main` branch are, the easier it becomes to manage releases and
-maintain the project over time.
+## Storybook in Review
+
+For a change in `packages/ui-web`, the reviewer should look at the component, not only the diff. Run `npx nx storybook ui-web`, open the affected stories in both themes (the toolbar has a theme switch) and check the states the change touches: empty, error, long text.
+
+A story is part of the change. A new component without a story is incomplete, because the story is the input of the visual and the accessibility tests as well. Storybook is not deployed, so a reviewer needs a local checkout; see [Design System](design-system.md#designer-workflow) for what that means for designers.
+
+## Checks Before You Push
+
+CI is disabled for this repository (see [Testing Strategy](testing-strategy.md)), so the local checks are the gate:
+
+| When       | What runs                                                   | Where                  |
+| ---------- | ----------------------------------------------------------- | ---------------------- |
+| commit     | Prettier, ESLint and `tsc --noEmit` on the staged files     | `.husky/pre-commit`    |
+| commit msg | commitlint                                                  | `.husky/commit-msg`    |
+| push       | `knip` and the unit tests of all packages, including mobile | `.husky/pre-push`      |
+| on demand  | `npm run full-check`: lint, knip, unit, e2e, visual, a11y   | before a larger change |
+
+`full-check` is the full gate, and it takes minutes because it starts Storybook and a browser. Run it before opening a pull request that touches UI, and rely on the hooks for the rest. More on the hooks is in [Code Quality](code-quality.md).
+
+## Documentation Is Part of the Change
+
+When a change affects the architecture, the API layer or the data shapes, the matching file in `.claude/docs/` is updated in the same pull request (`architecture.md`, `api.md`, `data-schema.md`, `developers-guide.md`). The chapters in `docs/` describe decisions; the files in `.claude/docs/` describe the current code, and both are read by people and by AI tools, as explained in [AI-Assisted Development](ai-development.md).

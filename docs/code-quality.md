@@ -1,126 +1,50 @@
 # Code Quality
 
-<p align="center">
-  <img alt="Code Quality" src="assets/code-quality.png" width="698px" height="393px">
-</p>
+The shared approach is described in the backend guide: [Code Quality](https://github.com/prod-forge/backend/blob/main/docs/code-quality.md). The same six layers apply here: EditorConfig and Prettier, ESLint, pre-commit protection, commitlint, CI checks and dependency locking. The commitlint config is the same conventional preset, and exact versions with `npm ci` are used. This chapter lists only the differences for a frontend monorepo.
 
-Maintaining consistent code quality is essential for long-term project sustainability.
+## Layer 1. Formatting
 
-In this project, code quality is protected by a **six-layer defense system**.
+Prettier uses the same options as the backend (`printWidth` 120, single quotes, trailing commas). The difference is the file types: `lint-staged` also formats `*.md` and `*.json`, because documentation is part of the product here.
 
-## Layer 1. Code Formatting And Consistency
+CSS is formatted and checked by **Stylelint** (`stylelint-config-standard`, with the Tailwind `@theme` at-rule allowed in `.stylelintrc.json`). It runs from `packages/styles-web` (`npm run lint:css`, `format:css`), where the shared stylesheets live. See [Styles Management](styles-management.md).
 
-The first layer ensures that the entire codebase follows consistent formatting rules.
+## Layer 2. Static Analysis
 
-We use two tools for this purpose:
+The ESLint config is one flat `eslint.config.ts` at the root, and it differs from the backend in what it protects:
 
-- **EditorConfig** - ensures consistent formatting across different editors and IDEs
-- **Prettier** - enforces automatic code formatting
+- **React rules.** `@eslint-react/eslint-plugin` (no components created inside components, correct keys) and `eslint-plugin-react-hooks` (`rules-of-hooks`, `exhaustive-deps`). The duplicate `@eslint-react/rules-of-hooks` is turned off, because the hooks plugin reports the same problems.
+- **Kebab-case names.** `eslint-plugin-check-file` requires every file and folder under `src/**` to be kebab-case (`todo-detail.tsx`, not `TodoDetail.tsx`). The component inside is still PascalCase. Middle extensions are ignored, so `todos.slices.test.ts` is valid.
+- **No default exports.** `@import-lite/no-default-export` is an error. Two things need default exports by their nature, and are the known exceptions: `expo-router` screens in `apps/mobile-client/src/app`, and config files. Lazy routes work around it with `.then((module) => ({ default: module.Home }))`, see [Performance](performance.md#code-splitting-by-route).
+- **Cognitive complexity** is limited to 20 by `eslint-plugin-sonarjs`; a function above it is split.
+- **Testing plugins.** `eslint-plugin-testing-library`, `eslint-plugin-jest-dom` and `eslint-plugin-no-only-tests` keep the component tests idiomatic, and `eslint-plugin-storybook` checks the story files.
+- **`no-console` is an error.** Code logs through the logger passed to `core`, so a stray `console.log` fails the lint. The few places that need the console carry an explicit disable with a reason.
 
-These tools eliminate stylistic discussions during code reviews and ensure a uniform code style across the project.
+## Layer 3. Pre-commit and Pre-push
 
-## Layer 2. Static Analysis With ESLint
+`pre-commit` runs `lint-staged`: Prettier, ESLint with `--fix`, and `tsc --noEmit` only for the packages that contain staged files. In a monorepo the last part matters, because type-checking everything on each commit would take too long; `.lintstagedrc.cjs` maps staged paths to `apps/<name>` or `packages/<name>` and runs `tsc` with that package's `tsconfig.json` and `tsconfig.node.json`.
 
-The second layer introduces stricter rules through **ESLint**.
+`pre-push` runs `npm run knip && npm test`, and `npm test` is `nx run-many -t test`, so the web, core, UI and mobile unit tests all run before code leaves the machine.
 
-While ESLint can be configured in many different ways, this project uses the following plugins:
+**Knip is configured per workspace** (`knip.json`). A monorepo makes unused-code detection harder, because an export is "used" when another package imports it. The configuration tells Knip where each workspace starts:
 
-- `typescript-eslint` - TypeScript-specific linting rules
-- `@eslint-react/eslint-plugin` - React component rules (no components inside components, prop types, etc.)
-- `eslint-plugin-react-hooks` - enforces Rules of Hooks and exhaustive dependency arrays
-- `eslint-plugin-sonarjs` - cognitive complexity limits and code duplication detection
-- `eslint-plugin-unicorn` - JavaScript best practices (modern APIs, consistent patterns)
-- `eslint-plugin-storybook` - Storybook file conventions and story structure
-- `eslint-plugin-import-lite` - default export in modules are prohibited
-- `eslint-plugin-no-only-tests` - only statement in tests are prohibited
-- `eslint-plugin-regexp` - validation and best practices for regular expressions
-- `eslint-plugin-prettier` - integration with Prettier
-- `eslint-plugin-perfectionist` - sorting of imports and object properties
-- `eslint-plugin-package-json` - validation rules for `package.json`
-- `eslint-plugin-check-file` - file and folder naming conventions (kebab-case enforced)
-- `@eslint/json` - additional validation for JSON files
-- `@eslint/js` - JavaScript linting support for auxiliary scripts
+- `apps/mobile-client` treats `src/app/**/*.tsx` as entries, because `expo-router` loads routes by file name and nothing imports them. It also ignores the `expo-doctor` binary and points at the Babel config.
+- `packages/ui-web` lists the stories' companion specs (`*.a11y-spec.ts`, `*.visual-spec.ts`) and test folders as entries.
+- `packages/design-tokens` and `packages/styles-web` have empty entries, because they contain generated or CSS-only files.
 
-Even in TypeScript projects, it is useful to lint JavaScript files that may exist in tooling scripts or configuration
-files.
+An export that no workspace imports fails Knip, which is how `core/index.ts` stays limited to what the clients really use.
 
-ESLint should be integrated with your IDE so that checks run automatically **on save or paste**.
+## Layer 4. Commitlint
 
-This ensures developers receive immediate feedback during development.
+Same conventional-commit rules as in the backend, with the same allowed types (`ci`, `chore`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`). They matter more here because the release tool reads the history: `release-it` builds `CHANGELOG.md` and picks the next version from the commit types, see [Release and Deployment](release-and-deployment.md).
 
-## Layer 3. Pre-commit Protection
+## Layer 5. Continuous Integration
 
-The third layer prevents problematic code from entering the repository.
-
-This is implemented using **Husky** with three hooks.
-
-**pre-commit** runs lint-staged on staged files only:
-
-- Prettier formats modified `*.ts`, `*.tsx`, `*.json`, `*.md` files
-- ESLint checks and auto-fixes modified `*.ts` and `*.tsx` files
-- `tsc --noEmit` runs per affected package (only packages with staged TypeScript files are checked)
-
-**pre-push** runs broader validation before code reaches the remote:
-
-- Knip detects unused exports, dead code, and undeclared dependencies
-- full test suite runs to catch regressions before push
-
-**commit-msg** validates the commit message format via commitlint.
-
-This ensures that commits do not break the CI pipeline or introduce formatting issues.
-
-## Layer 4. Commitlint Configuration
-
-Consistent commit messages are an important part of maintaining a readable and traceable project history. Clear commit
-messages help developers understand what changed, why it changed, and make it easier to navigate the codebase over time.
-
-In this project we use commitlint to enforce a standardized commit message format. This ensures that all commits follow
-the same structure and remain meaningful.
-
-Standardized commits also allow us to automatically generate a clean and structured changelog using tools like
-release-it during the release process.
-
-This approach improves:
-
-- readability of the git history
-- traceability of changes
-- automated changelog generation
-- overall release management workflow
-
-## Layer 5. Continuous Integration Checks
-
-The final layer runs full validation during the **CI pipeline**.
-
-At this stage the entire codebase is analyzed to ensure:
-
-- linting rules pass
-- formatting rules are satisfied
-- tests run successfully
-
-This final check acts as a safeguard before any changes are merged into the main branch.
+The checks described here exist as `.github/workflows/ci.yml`, but the `verify` job is disabled with `if: false`, an owner decision. The local hooks and `npm run full-check` replace it for now. What the job contains, why it is heavy and what enabling it would take is in [Testing Strategy](testing-strategy.md#running-locally-vs-ci).
 
 ## Layer 6. Dependency Locking
 
-To keep builds stable and predictable, avoid using `^` versions in `package.json`.
+Exact versions are enforced for every package in the workspace: the root, `apps/*` and `packages/*` all use pinned versions, and the one `package-lock.json` at the root is the source of truth. Workspace packages refer to each other with `*`, which npm resolves to the local folder.
 
-Minor dependency updates can still introduce breaking changes and unexpectedly break CI or releases even without code
-changes.
+The one frontend-specific rule: **React must resolve to a single copy.** The web and mobile apps declare the same `react` version, so npm hoists one package and Metro does not bundle two (see [Mobile Client](mobile-client.md#metro-in-a-monorepo)). When you upgrade React, upgrade it in both applications in the same change.
 
-Recommended setup:
-
-- use exact dependency versions
-- commit `package-lock.json`
-- use `npm ci` in CI environments
-- add to `.npmrc`:
-
-```shell
-save-exact=true
-```
-
-For dependency updates, use:
-
-```shell
-npm i -g npm-check-updates
-ncu -u
-npm install
-```
+An additional check is `react-doctor` (`npm run doctor`), which scans the React code for common problems; its settings are in `react-doctor.config.json`.
