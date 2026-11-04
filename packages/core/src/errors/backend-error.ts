@@ -14,12 +14,13 @@ type BackendErrorCode =
   | 'USER_IS_NOT_AUTHORIZED'
   | 'USER_NOT_FOUND';
 
+// The backend body is { code, message, status, details? }; the trace id comes in the X-Trace-Id header instead.
 type BackendErrorResponse = {
   readonly code: string;
-  readonly details: Record<string, unknown>;
+  readonly details?: Record<string, unknown>;
   readonly message: string;
   readonly status: number;
-  readonly traceId: string;
+  readonly traceId?: string;
 };
 
 const ERROR_MESSAGES: Record<BackendErrorCode, string> = {
@@ -44,7 +45,7 @@ const FALLBACK_MESSAGE = 'Something went wrong. Please try again later.';
 export class BackendError extends Error {
   readonly code: string;
   readonly status: number;
-  readonly traceId: string;
+  readonly traceId: string | undefined;
 
   constructor(response: BackendErrorResponse) {
     super((ERROR_MESSAGES as Partial<Record<string, string>>)[response.code] ?? FALLBACK_MESSAGE);
@@ -62,6 +63,6 @@ export function isBackendErrorResponse(body: unknown): body is BackendErrorRespo
     'code' in body &&
     typeof (body as Record<string, unknown>).code === 'string' &&
     'status' in body &&
-    'traceId' in body
+    typeof (body as Record<string, unknown>).status === 'number'
   );
 }

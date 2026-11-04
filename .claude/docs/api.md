@@ -24,7 +24,7 @@ x-trace-id: <uuid>
 
 - Network failure → throws `NetworkError` ("Unable to connect to the server. Please check your connection.")
 - Non-2xx response → tries to parse JSON body:
-  - If body matches `BackendErrorResponse` → throws `BackendError` (with code, message, status, traceId)
+  - If body matches `BackendErrorResponse` (`{ code: string; message; status: number; details? }`, the shape of the backend's `GlobalExceptionFilter`) → throws `BackendError` (with code, mapped message, status, and `traceId` from the body or else the `X-Trace-Id` response header)
   - Otherwise → throws `ApiError` (message: `HTTP {status}`, status: number)
 - `204 No Content` → returns `undefined as T`
 

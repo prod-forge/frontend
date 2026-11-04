@@ -96,14 +96,21 @@ describe('isBackendErrorResponse', () => {
       expect(isBackendErrorResponse({ code: 'INTERNAL_ERROR', traceId: 'x' })).toBe(false);
     });
 
-    it('returns false when traceId is missing', () => {
-      expect(isBackendErrorResponse({ code: 'INTERNAL_ERROR', status: 500 })).toBe(false);
+    it('returns false when status is not a number', () => {
+      expect(isBackendErrorResponse({ code: 'INTERNAL_ERROR', status: '500' })).toBe(false);
     });
   });
 
   describe('positive cases', () => {
     it('returns true for a valid backend error response', () => {
       expect(isBackendErrorResponse(makeResponse())).toBe(true);
+    });
+
+    // The backend filter sends { code, message, status, details? }; the trace id travels in the X-Trace-Id header.
+    it('returns true for the body the backend sends, without traceId and details', () => {
+      expect(
+        isBackendErrorResponse({ code: 'USER_IS_NOT_AUTHORIZED', message: 'User is not authorized', status: 401 }),
+      ).toBe(true);
     });
   });
 });

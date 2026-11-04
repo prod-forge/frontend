@@ -92,6 +92,25 @@ describe('apiRequest', () => {
       await expect(apiRequest('todos')).rejects.toThrow('Something went wrong. Please try again later.');
     });
 
+    it('throws BackendError with the mapped message for the backend body without traceId', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          headers: new Headers({ 'X-Trace-Id': 'header-trace-id' }),
+          json: vi.fn().mockResolvedValue({ code: 'TOO_MANY_REQUESTS', message: 'Too Many Requests', status: 429 }),
+          ok: false,
+          status: 429,
+        }),
+      );
+
+      await expect(apiRequest('auth/login')).rejects.toMatchObject({
+        message: 'Too many requests. Please wait a moment and try again.',
+        name: 'BackendError',
+        status: 429,
+        traceId: 'header-trace-id',
+      });
+    });
+
     it('throws NetworkError when fetch rejects due to no connection', async () => {
       vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
 

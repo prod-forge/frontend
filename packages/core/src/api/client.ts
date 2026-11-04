@@ -36,8 +36,18 @@ export async function apiRequest<T>(path: string, options?: RequestInit): Promis
     const body: unknown = await response.json().catch(() => null);
 
     if (isBackendErrorResponse(body)) {
-      logger.warn({ code: body.code, method, path, status: String(response.status), traceId: body.traceId }, 'api');
-      throw new BackendError(body);
+      const backendTraceId = body.traceId ?? response.headers.get('x-trace-id') ?? undefined;
+      logger.warn(
+        {
+          code: body.code,
+          method,
+          path,
+          status: String(response.status),
+          ...(backendTraceId ? { traceId: backendTraceId } : {}),
+        },
+        'api',
+      );
+      throw new BackendError({ ...body, traceId: backendTraceId });
     }
 
     logger.warn({ method, path, status: String(response.status) }, 'api');
