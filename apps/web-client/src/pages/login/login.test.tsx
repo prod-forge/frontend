@@ -58,7 +58,7 @@ describe('<Login /> page', () => {
     expect(screen.getByRole('link', { name: /create one/i })).toHaveAttribute('href', '/register');
   });
 
-  it('logs the user in and stores the token in localStorage on submit', async () => {
+  it('logs the user in on submit', async () => {
     const user = userEvent.setup();
     const { store } = renderLogin();
 
@@ -69,7 +69,6 @@ describe('<Login /> page', () => {
 
     expect(store.getState().auth.token).toBe(FAKE_TOKEN);
     expect(store.getState().auth.user).toEqual({ email: 'a@b.com' });
-    expect(localStorage.getItem('auth-token')).toBe(FAKE_TOKEN);
   });
 
   it('redirects to home when the user is already authenticated', () => {

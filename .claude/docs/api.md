@@ -2,7 +2,7 @@
 
 All HTTP calls go through `packages/core/src/api/client.ts`. Never call `fetch` directly from components or pages.
 
-Base URL: `import.meta.env.VITE_API_BASE_URL` (e.g. `http://localhost:3000/api/v1/`)
+Base URL: `getCoreConfig().apiBaseUrl`, set by the app through `configureCore` (web passes `VITE_API_BASE_URL`, e.g. `http://localhost:3000/api/v1/`). It must end with `/`; `configureCore` throws otherwise. If no app called `configureCore`, the first request throws `CoreNotConfiguredError`.
 
 ---
 
@@ -13,10 +13,12 @@ Base URL: `import.meta.env.VITE_API_BASE_URL` (e.g. `http://localhost:3000/api/v
 **Default headers on every request:**
 
 ```
-Authorization: Bearer <FAKE_TOKEN>
+Authorization: Bearer <token>   # only when getCoreConfig().getToken() returns a token
 Content-Type: application/json
 x-trace-id: <uuid>
 ```
+
+`getToken` is called on every request, so login and logout take effect without reconfiguring core. Web reads `store.getState().auth.token`. A logged-out user sends no `Authorization` header.
 
 **Error handling:**
 
@@ -26,7 +28,7 @@ x-trace-id: <uuid>
   - Otherwise → throws `ApiError` (message: `HTTP {status}`, status: number)
 - `204 No Content` → returns `undefined as T`
 
-All errors propagate to the Redux `errorMiddleware`, which dispatches `pushError` and reports to Sentry.
+All errors propagate to the Redux `errorMiddleware`, which logs them through `CoreLogger`, dispatches `pushError` and calls `getCoreConfig().reportError` (Sentry on web) unless the error carries a 4xx `status`. Todo thunks use `serializeError: serializeApiError` so `status` survives RTK's error serialization; errors without a status (network, frontend bugs) are always reported.
 
 ---
 
@@ -107,14 +109,14 @@ Returns void (204 No Content).
 
 **Module:** `packages/core/src/api/logs.api.ts`
 
-### `logsApi.send(stack: Stack): Promise<void>`
+### `logsApi.send(stack: object): Promise<void>`
 
 ```
 POST /client-logs/web
 Content-Type: application/json
 ```
 
-Sends logrock `Stack` payload for client-side error reporting.
+Sends a client log stack (on web, logrock's `Stack` from `LoggerContainer.onError`). Core types it as `object` so it does not depend on logrock.
 
 ---
 
@@ -158,3 +160,7 @@ Thunks are defined in `packages/core/src/features/todos/todos.slices.ts`. Each h
 - `rejected` — roll back to previous state; mark as `silent: true` if operating on a temp optimistic ID
 
 Temp IDs use the prefix `optimistic-{requestId}`.
+
+### Auth thunk
+
+`hydrateAuth` (`packages/core/src/features/auth/auth.thunks.ts`), `AsyncThunk<AuthUser | null, void, { state: RootState }>`. Reads `TOKEN_STORAGE_KEY` and `USER_STORAGE_KEY` from `getCoreConfig().storage`. When both are present and the user parses with a string `email`, it restores `token` and `user` and resolves with the user; otherwise it resolves with `null`. A storage failure is logged as a warning and also resolves with `null`, so hydration always ends in `done` and never surfaces an error toast. Each app dispatches it once at startup, after `configureCore`.

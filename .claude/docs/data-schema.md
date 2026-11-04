@@ -69,15 +69,18 @@ interface SelectOption<T extends string = string> {
 ### `AuthState`
 
 ```ts
-interface AuthState {
+type AuthState = {
+  hydration: 'idle' | 'hydrating' | 'done'; // Progress of restoring auth from storage.
   token: string | null; // JWT or session token. null = unauthenticated.
-  // Persisted in localStorage under key 'auth-token'.
+  // Persisted in KeyValueStorage under key 'auth-token'.
   user: AuthUser | null; // Authenticated user info.
-  // Persisted in localStorage under key 'auth-user'.
-}
+  // Persisted in KeyValueStorage under key 'auth-user'.
+};
 ```
 
-Auth is initialized from localStorage on app boot. `token !== null` is the authoritative check for authentication (`selectIsAuthenticated`).
+The initial state is always `{ hydration: 'idle', token: null, user: null }`. Storage is asynchronous (localStorage on web, SecureStore on mobile), so the app dispatches `hydrateAuth()` on boot: `pending` sets `hydrating`, `fulfilled` sets `done` and, when storage holds a valid session, restores `token` and `user`. UI that redirects on auth must wait for `done` (web: `AuthHydrationGate`). `token !== null` is the authoritative check for authentication (`selectIsAuthenticated`).
+
+Persistence is a side effect in `auth.listeners.ts`: `login`/`register` write both keys, `logout` removes them. Reducers do not touch storage.
 
 > Note: `FAKE_TOKEN` is currently used as a placeholder. Real auth flow to be implemented.
 
@@ -130,7 +133,7 @@ interface AppError {
 }
 ```
 
-**`silent`** — errors from optimistic rollbacks (e.g. deleting a temp item that fails) are marked silent. They are still logged and sent to Sentry but not shown as toasts. `selectVisibleErrors` filters them out.
+**`silent`** — errors from optimistic rollbacks (e.g. deleting a temp item that fails) are marked silent. They are still logged and reported (unless the error has a 4xx status) but not shown as toasts. `selectVisibleErrors` filters them out.
 
 ---
 

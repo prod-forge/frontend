@@ -16,7 +16,7 @@ const makeError = (overrides: Partial<AppError> = {}): AppError => ({
 });
 
 const makeState = (errors: AppError[]): RootState => ({
-  auth: { token: null, user: null },
+  auth: { hydration: 'done', token: null, user: null },
   errors: { errors },
   todos: {
     _pendingDeletes: {},

@@ -1,6 +1,5 @@
+import { traceId } from '@prod-forge-todolist-frontend/core';
 import * as Sentry from '@sentry/react';
-
-import { traceId } from '../logger/trace-id';
 
 export function captureException(error: unknown, context?: Record<string, unknown>): void {
   if (!Sentry.getClient()) return;

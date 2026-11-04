@@ -4,6 +4,7 @@ vi.mock('../services/logger/trace-id', () => ({ traceId: 'test-trace-id' }));
 
 import type { ResponseError } from '../features/errors/errors.types';
 
+import { configureCore, getCoreConfig } from '../config/core-config';
 import { NETWORK_ERROR_MESSAGES } from '../errors/network-error';
 import { apiRequest } from './client';
 
@@ -18,6 +19,13 @@ beforeEach(() => {
   vi.stubGlobal('fetch', makeFetchMock(200, { id: '1' }));
 });
 
+const lastFetchCall = (): [string, RequestInit] =>
+  (fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+
+const setToken = (token: null | string): void => {
+  configureCore({ ...getCoreConfig(), getToken: () => token });
+};
+
 const makeBackendErrorBody = (code = 'INTERNAL_ERROR', status = 500): ResponseError => ({
   code,
   details: {},
@@ -28,6 +36,24 @@ const makeBackendErrorBody = (code = 'INTERNAL_ERROR', status = 500): ResponseEr
 
 describe('apiRequest', () => {
   describe('negative cases', () => {
+    it('throws CoreNotConfiguredError on the first request when core is not configured', async () => {
+      vi.resetModules();
+      const freshClient = await import('./client');
+      const freshConfig = await import('../config/core-config');
+
+      await expect(freshClient.apiRequest('todos')).rejects.toBeInstanceOf(freshConfig.CoreNotConfiguredError);
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('omits the Authorization header when getToken returns null', async () => {
+      setToken(null);
+
+      await apiRequest('todos');
+
+      const [, init] = lastFetchCall();
+      expect(init.headers as Record<string, string>).not.toHaveProperty('Authorization');
+    });
+
     it('throws ApiError when response is not ok and body is not a backend error', async () => {
       vi.stubGlobal('fetch', makeFetchMock(404));
 
@@ -100,11 +126,36 @@ describe('apiRequest', () => {
       expect((init.headers as Record<string, string>)['x-trace-id']).toBe('test-trace-id');
     });
 
-    it('sends Authorization header', async () => {
+    it('sends the request to apiBaseUrl joined with the path', async () => {
+      await apiRequest('todos/1');
+
+      const [url] = lastFetchCall();
+      expect(url).toBe('https://api.test/todos/1');
+    });
+
+    it('sends the Authorization header with the token from getToken', async () => {
+      setToken('token-from-config');
+
       await apiRequest('todos');
 
-      const [, init] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
-      expect((init.headers as Record<string, string>).Authorization).toMatch(/^Bearer /);
+      const [, init] = lastFetchCall();
+      expect((init.headers as Record<string, string>).Authorization).toBe('Bearer token-from-config');
+    });
+
+    it('reads the token on every request', async () => {
+      setToken('first-token');
+      await apiRequest('todos');
+      setToken('second-token');
+      await apiRequest('todos');
+
+      const [, init] = (fetch as ReturnType<typeof vi.fn>).mock.calls[1] as [string, RequestInit];
+      expect((init.headers as Record<string, string>).Authorization).toBe('Bearer second-token');
+    });
+
+    it('logs the request through the configured logger', async () => {
+      await apiRequest('todos', { method: 'POST' });
+
+      expect(getCoreConfig().logger.debug).toHaveBeenCalledWith('POST /todos', 'api');
     });
 
     it('sends Content-Type application/json header', async () => {

@@ -4,7 +4,6 @@ import {
   authReducer,
   errorMiddleware,
   errorsReducer,
-  FAKE_TOKEN,
   login,
   TITLE_MAX_LENGTH,
   todosApi,
@@ -194,13 +193,6 @@ describe('<TodoDetail /> page', () => {
       await screen.findByRole('heading', { level: 1, name: openTodo.title });
 
       expect(screen.getByRole('link', { name: /back to home/i })).toHaveAttribute('href', '/');
-    });
-
-    it('persists the auth token in localStorage on login', async () => {
-      renderAt(`/todo/${openTodo.id}`);
-      await screen.findByRole('heading', { level: 1, name: openTodo.title });
-
-      expect(localStorage.getItem('auth-token')).toBe(FAKE_TOKEN);
     });
 
     it('lets the user edit the title and reflects it in the heading', async () => {

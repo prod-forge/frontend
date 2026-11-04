@@ -69,7 +69,6 @@ describe('<Register /> page', () => {
 
     expect(store.getState().auth.token).toBe(FAKE_TOKEN);
     expect(store.getState().auth.user).toEqual({ email: 'a@b.com', name: 'Anna' });
-    expect(localStorage.getItem('auth-token')).toBe(FAKE_TOKEN);
   });
 
   it('registers without a name when none is provided', async () => {

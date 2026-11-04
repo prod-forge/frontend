@@ -1,11 +1,7 @@
-import { logger } from 'logrock';
-
+import { getCoreConfig } from '../config/core-config';
 import { BackendError, isBackendErrorResponse } from '../errors/backend-error';
 import { NetworkError } from '../errors/network-error';
-import { FAKE_TOKEN } from '../features/auth/auth.constants';
 import { traceId } from '../services/logger/trace-id';
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 class ApiError extends Error {
   constructor(
@@ -18,13 +14,16 @@ class ApiError extends Error {
 }
 
 export async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
+  const { apiBaseUrl, getToken, logger } = getCoreConfig();
   const method = options?.method ?? 'GET';
   logger.debug(`${method} /${path}`, 'api');
 
-  const response = await fetch(`${BASE_URL}${path}`, {
+  const token = getToken();
+
+  const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
     headers: {
-      Authorization: `Bearer ${FAKE_TOKEN}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       'Content-Type': 'application/json',
       'x-trace-id': traceId,
       ...Object.fromEntries(new Headers(options?.headers)),

@@ -1,12 +1,13 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { logger } from 'logrock';
 
 import type { TodosResponse } from '../../interfaces/todos';
 import type { LimitValue, Order, SortBy, Todo, TodoFilters, TodosState } from './todos.types';
 
 import { todosApi } from '../../api/todos.api';
+import { getCoreConfig } from '../../config/core-config';
+import { serializeApiError } from '../../errors/serialize-api-error';
 
 const TEMP_ID_PREFIX = 'optimistic-';
 
@@ -27,20 +28,25 @@ const initialState: TodosState = {
   total: 0,
 };
 
-export const fetchTodos = createAsyncThunk<TodosResponse, TodoFilters>('todos/fetchAll', (filters) => {
-  logger.debug(
-    { limit: String(filters.limit), offset: String(filters.offset), order: filters.order, sortBy: filters.sortBy },
-    'todos/fetchAll',
-  );
+export const fetchTodos = createAsyncThunk<TodosResponse, TodoFilters>(
+  'todos/fetchAll',
+  (filters) => {
+    getCoreConfig().logger.debug(
+      `limit=${filters.limit} offset=${filters.offset} order=${filters.order} sortBy=${filters.sortBy}`,
+      'todos/fetchAll',
+    );
 
-  return todosApi.getAll(filters);
-});
+    return todosApi.getAll(filters);
+  },
+  { serializeError: serializeApiError },
+);
 
 export const fetchTodoById = createAsyncThunk<
   Todo,
   string,
   { rejectValue: { kind: 'error' | 'not-found'; silent?: boolean } }
 >('todos/fetchById', async (id, { rejectWithValue }) => {
+  const { logger } = getCoreConfig();
   logger.debug(`Fetching todo ${id}`, 'todos/fetchById');
   try {
     return await todosApi.getOne(id);
@@ -48,18 +54,22 @@ export const fetchTodoById = createAsyncThunk<
     const status = (error as { status?: number }).status;
 
     if (status === 404) {
-      logger.info(`Todo not found: ${id}`, 'todos/fetchById');
+      logger.debug(`Todo not found: ${id}`, 'todos/fetchById');
     }
 
     return rejectWithValue(status === 404 ? { kind: 'not-found', silent: true } : { kind: 'error' });
   }
 });
 
-export const addTodo = createAsyncThunk<Todo, { description: string; title: string }>('todos/add', (payload) => {
-  logger.info('Creating todo', 'todos/add');
+export const addTodo = createAsyncThunk<Todo, { description: string; title: string }>(
+  'todos/add',
+  (payload) => {
+    getCoreConfig().logger.debug('Creating todo', 'todos/add');
 
-  return todosApi.create(payload);
-});
+    return todosApi.create(payload);
+  },
+  { serializeError: serializeApiError },
+);
 
 export const deleteTodo = createAsyncThunk<string, string, { rejectValue: { silent: boolean } }>(
   'todos/delete',
@@ -68,11 +78,12 @@ export const deleteTodo = createAsyncThunk<string, string, { rejectValue: { sile
       return rejectWithValue({ silent: true });
     }
 
-    logger.info(`Deleting todo ${id}`, 'todos/delete');
+    getCoreConfig().logger.debug(`Deleting todo ${id}`, 'todos/delete');
     await todosApi.delete(id);
 
     return id;
   },
+  { serializeError: serializeApiError },
 );
 
 export const toggleTodo = createAsyncThunk<Todo, string, { rejectValue: { silent: boolean } }>(
@@ -90,25 +101,30 @@ export const toggleTodo = createAsyncThunk<Todo, string, { rejectValue: { silent
       throw new Error('Todo not found');
     }
 
-    logger.info({ completed: String(todo.completed), id }, 'todos/toggle');
+    getCoreConfig().logger.debug(`Toggling todo ${id} to completed=${todo.completed}`, 'todos/toggle');
 
     return todosApi.update(id, { completed: todo.completed });
   },
+  { serializeError: serializeApiError },
 );
 
 export const updateTodo = createAsyncThunk<
   Todo,
   { description?: string; id: string; title?: string },
   { rejectValue: { silent: boolean } }
->('todos/update', ({ id, ...data }, { rejectWithValue }) => {
-  if (id.startsWith(TEMP_ID_PREFIX)) {
-    return rejectWithValue({ silent: true });
-  }
+>(
+  'todos/update',
+  ({ id, ...data }, { rejectWithValue }) => {
+    if (id.startsWith(TEMP_ID_PREFIX)) {
+      return rejectWithValue({ silent: true });
+    }
 
-  logger.info({ fields: Object.keys(data).join(', '), id }, 'todos/update');
+    getCoreConfig().logger.debug(`Updating todo ${id}: ${Object.keys(data).join(', ')}`, 'todos/update');
 
-  return todosApi.update(id, data);
-});
+    return todosApi.update(id, data);
+  },
+  { serializeError: serializeApiError },
+);
 
 const resetPagination = (state: TodosState): void => {
   state.filters.offset = 0;

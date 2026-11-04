@@ -160,6 +160,8 @@ Components must be stateless — no Redux, no API calls.
 3. Register reducer in `packages/core/src/store.ts`
 4. Export public API from `packages/core/src/index.ts`
 
+Core must stay platform-neutral: no `import.meta.env`, no `localStorage`, no browser or Vite-only packages. Reach platform services through `getCoreConfig()` (`storage`, `logger`, `reportError`, `apiBaseUrl`, `getToken`) and keep reducers pure; put side effects in thunks or listener middleware. Core tests get fresh in-memory adapters from `packages/core/vitest.setup.ts` before every test, so assert on `getCoreConfig().storage` / `.logger` mocks instead of globals.
+
 ---
 
 ## Adding a New Page
@@ -209,4 +211,5 @@ Runs `before-release.ts` (pre-checks), then `release-it` with:
 - **No API calls outside `core/src/api/`** — all fetch logic lives there.
 - **Typed Redux hooks only** — use `useAppDispatch` / `useAppSelector` from `apps/web-client/src/hooks/redux/redux.ts`, never raw `useDispatch` / `useSelector`.
 - **Optimistic updates** — `addTodo`, `deleteTodo`, `toggleTodo`, `updateTodo` all apply changes before the server responds. Rollback happens automatically in `rejected` handler.
-- **Error handling** — never catch and swallow Redux thunk errors. Let them propagate to `errorMiddleware`, which dispatches `pushError` and reports to Sentry.
+- **Error handling** — never catch and swallow Redux thunk errors. Let them propagate to `errorMiddleware`, which dispatches `pushError` and reports 5xx and status-less errors through `getCoreConfig().reportError` (Sentry on web). Pass `serializeError: serializeApiError` to new thunks that call the API so the HTTP status reaches the middleware.
+- **Core configuration** — every app calls `configureCore` in its entry point before dispatching or rendering (web: `setupCore()` in `main.tsx`), then dispatches `hydrateAuth()`. Missing configuration throws `CoreNotConfiguredError` on the first request.

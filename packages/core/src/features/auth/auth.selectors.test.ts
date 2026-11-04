@@ -21,31 +21,33 @@ const makeAuthState = (auth: RootState['auth']): RootState => ({
 
 describe('selectAuthToken', () => {
   it('returns the token from state', () => {
-    expect(selectAuthToken(makeAuthState({ token: 'abc', user: null }))).toBe('abc');
+    expect(selectAuthToken(makeAuthState({ hydration: 'done', token: 'abc', user: null }))).toBe('abc');
   });
 
   it('returns null when there is no token', () => {
-    expect(selectAuthToken(makeAuthState({ token: null, user: null }))).toBeNull();
+    expect(selectAuthToken(makeAuthState({ hydration: 'done', token: null, user: null }))).toBeNull();
   });
 });
 
 describe('selectAuthUser', () => {
   it('returns the user object', () => {
     const user = { email: 'a@b.com', name: 'A' };
-    expect(selectAuthUser(makeAuthState({ token: 'tok', user }))).toEqual(user);
+    expect(selectAuthUser(makeAuthState({ hydration: 'done', token: 'tok', user }))).toEqual(user);
   });
 
   it('returns null when no user', () => {
-    expect(selectAuthUser(makeAuthState({ token: null, user: null }))).toBeNull();
+    expect(selectAuthUser(makeAuthState({ hydration: 'done', token: null, user: null }))).toBeNull();
   });
 });
 
 describe('selectIsAuthenticated', () => {
   it('returns true when there is a token', () => {
-    expect(selectIsAuthenticated(makeAuthState({ token: 'tok', user: { email: 'a@b.com' } }))).toBe(true);
+    expect(selectIsAuthenticated(makeAuthState({ hydration: 'done', token: 'tok', user: { email: 'a@b.com' } }))).toBe(
+      true,
+    );
   });
 
   it('returns false when there is no token', () => {
-    expect(selectIsAuthenticated(makeAuthState({ token: null, user: null }))).toBe(false);
+    expect(selectIsAuthenticated(makeAuthState({ hydration: 'done', token: null, user: null }))).toBe(false);
   });
 });

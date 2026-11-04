@@ -3,7 +3,7 @@ import type { Scope } from '@sentry/react';
 import * as Sentry from '@sentry/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../logger/trace-id', () => ({ traceId: 'test-trace-id' }));
+vi.mock('@prod-forge-todolist-frontend/core', () => ({ traceId: 'test-trace-id' }));
 
 import { captureException, initSentry } from './sentry';
 

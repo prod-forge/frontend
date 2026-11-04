@@ -1,9 +1,9 @@
 import type { Mock } from 'vitest';
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { logger } from 'logrock';
 import { describe, expect, it, vi } from 'vitest';
 
+import { getCoreConfig } from '../../config/core-config';
 import { errorMiddleware } from './error-middleware';
 
 const testThunk = createAsyncThunk('test/thunk', () => {
@@ -18,6 +18,12 @@ const makeSetup = (): { dispatch: Mock; invoke: (action: unknown) => unknown; ne
   return { dispatch, invoke, next };
 };
 
+const makeRejectedAction = (error: Record<string, unknown>): Record<string, unknown> => ({
+  error,
+  meta: { aborted: false, arg: undefined, condition: false, requestId: 'id', requestStatus: 'rejected' },
+  type: 'todos/fetchAll/rejected',
+});
+
 describe('errorMiddleware', () => {
   describe('negative cases', () => {
     it('does not dispatch pushError for a regular action', () => {
@@ -27,7 +33,7 @@ describe('errorMiddleware', () => {
 
       expect(next).toHaveBeenCalledOnce();
       expect(dispatch).not.toHaveBeenCalled();
-      expect(logger.error).not.toHaveBeenCalled();
+      expect(getCoreConfig().logger.error).not.toHaveBeenCalled();
     });
 
     it('does not dispatch pushError for a fulfilled thunk', () => {
@@ -36,11 +42,52 @@ describe('errorMiddleware', () => {
       invoke(testThunk.fulfilled(undefined, 'id'));
 
       expect(dispatch).not.toHaveBeenCalled();
-      expect(logger.error).not.toHaveBeenCalled();
+      expect(getCoreConfig().logger.error).not.toHaveBeenCalled();
+    });
+
+    it('does not report a BackendError with a 4xx status', () => {
+      const { dispatch, invoke } = makeSetup();
+
+      invoke(makeRejectedAction({ code: 'TODO_NOT_FOUND', message: 'Not found', name: 'BackendError', status: 404 }));
+
+      expect(getCoreConfig().reportError).not.toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledOnce();
+    });
+
+    it('does not report an ApiError with a 4xx status', () => {
+      const { invoke } = makeSetup();
+
+      invoke(makeRejectedAction({ message: 'HTTP 422', name: 'ApiError', status: 422 }));
+
+      expect(getCoreConfig().reportError).not.toHaveBeenCalled();
     });
   });
 
   describe('positive cases', () => {
+    it('reports an error with a 5xx status', () => {
+      const { invoke } = makeSetup();
+
+      invoke(makeRejectedAction({ code: 'INTERNAL_ERROR', message: 'Server down', name: 'BackendError', status: 503 }));
+
+      expect(getCoreConfig().reportError).toHaveBeenCalledOnce();
+      expect(getCoreConfig().reportError).toHaveBeenCalledWith(
+        new Error('Server down'),
+        expect.objectContaining({
+          action: 'todos/fetchAll/rejected',
+          errorCode: 'INTERNAL_ERROR',
+          errorName: 'BackendError',
+        }),
+      );
+    });
+
+    it('reports an error without a status', () => {
+      const { invoke } = makeSetup();
+
+      invoke(testThunk.rejected(new Error('Boom'), 'id'));
+
+      expect(getCoreConfig().reportError).toHaveBeenCalledOnce();
+    });
+
     it('dispatches pushError with the error message when a thunk is rejected', () => {
       const { dispatch, invoke } = makeSetup();
 
@@ -74,7 +121,7 @@ describe('errorMiddleware', () => {
       };
       invoke(silentAction);
 
-      expect(logger.error).toHaveBeenCalledOnce();
+      expect(getCoreConfig().logger.error).toHaveBeenCalledOnce();
     });
 
     it('dispatches pushError with silent:true when rejectWithValue payload has silent:true', () => {
@@ -98,7 +145,7 @@ describe('errorMiddleware', () => {
       expect(dispatch).toHaveBeenCalledOnce();
       const [action] = dispatch.mock.calls[0] as [{ payload: { silent: boolean }; type: string }];
       expect(action.payload.silent).toBe(true);
-      expect(logger.error).toHaveBeenCalledOnce();
+      expect(getCoreConfig().logger.error).toHaveBeenCalledOnce();
     });
 
     it('dispatches pushError with silent:false when rejectWithValue payload has no silent flag', () => {
@@ -144,8 +191,8 @@ describe('errorMiddleware', () => {
 
       invoke(testThunk.rejected(new Error('Boom'), 'id'));
 
-      expect(logger.error).toHaveBeenCalledOnce();
-      expect(logger.error).toHaveBeenCalledWith('Boom', 'test/thunk/rejected');
+      expect(getCoreConfig().logger.error).toHaveBeenCalledOnce();
+      expect(getCoreConfig().logger.error).toHaveBeenCalledWith('Boom', 'test/thunk/rejected');
     });
 
     it('calls next before dispatching pushError', () => {

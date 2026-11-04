@@ -3,6 +3,9 @@ export { apiRequest } from './api/client';
 export { logsApi } from './api/logs.api';
 
 export { todosApi } from './api/todos.api';
+// Config
+export { configureCore, CoreNotConfiguredError, getCoreConfig } from './config/core-config';
+export type { CoreConfig } from './config/core-config';
 // Errors
 export { BackendError, isBackendErrorResponse } from './errors/backend-error';
 
@@ -20,6 +23,7 @@ export type { ForgotPasswordValues, LoginValues, RegisterValues } from './featur
 export { selectAuthToken, selectAuthUser, selectIsAuthenticated } from './features/auth/auth.selectors';
 
 export { authReducer, login, logout, register } from './features/auth/auth.slices';
+export { hydrateAuth } from './features/auth/auth.thunks';
 // Auth feature
 export type { AuthState, AuthUser } from './features/auth/auth.types';
 export { errorMiddleware } from './features/errors/error-middleware';
@@ -68,11 +72,11 @@ export type { SelectOption } from './interfaces/select-option';
 // Interfaces
 export type { Todo, TodosResponse } from './interfaces/todos';
 // Services
-export { consoleLogger } from './services/logger/console.logger';
+export type { CoreLogger } from './services/logger/core-logger';
 export { loggerLimit } from './services/logger/logger.constants';
 
 export { traceId } from './services/logger/trace-id';
-export { captureException, initSentry } from './services/sentry/sentry';
+export type { KeyValueStorage } from './services/storage/key-value-storage';
 // Store
 export { store } from './store';
 export type { AppDispatch, RootState, Store } from './store';

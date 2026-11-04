@@ -13,7 +13,7 @@ import {
 } from './todos.selectors';
 
 const makeState = (overrides: { filters?: Partial<TodoFilters>; items?: Todo[]; total?: number } = {}): RootState => ({
-  auth: { token: null, user: null },
+  auth: { hydration: 'done', token: null, user: null },
   errors: { errors: [] },
   todos: {
     _pendingDeletes: {},
