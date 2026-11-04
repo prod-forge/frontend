@@ -6,6 +6,18 @@ import { applyTodosQuery, todos as seedData } from '@prod-forge-todolist-fronten
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+export const E2E_ACCESS_TOKEN = 'e2e-access-token';
+
+// The only email the mocked backend does not know: login answers it with 401 like the real one.
+export const UNKNOWN_EMAIL = 'unknown@example.com';
+
+// Same body as the backend's GlobalExceptionFilter: no traceId (it is sent in the X-Trace-Id header).
+export const unauthorizedBody = JSON.stringify({
+  code: 'USER_IS_NOT_AUTHORIZED',
+  message: 'User is not authorized',
+  status: 401,
+});
+
 type Fixtures = {
   coverage: undefined;
   mockApi: undefined;
@@ -34,6 +46,20 @@ export const test = base.extend<Fixtures>({
   mockApi: [
     async ({ page }, use): Promise<void> => {
       let items: Todo[] = structuredClone([...seedData]);
+
+      await page.route(/\/api\/v1\/auth\/login$/, async (route) => {
+        const { email } = route.request().postDataJSON() as { email: string };
+
+        if (email === UNKNOWN_EMAIL) {
+          return route.fulfill({ body: unauthorizedBody, contentType: 'application/json', status: 401 });
+        }
+
+        return route.fulfill({
+          body: JSON.stringify({ data: { accessToken: E2E_ACCESS_TOKEN, expiresIn: 3600 } }),
+          contentType: 'application/json',
+          status: 200,
+        });
+      });
 
       await page.route(/\/api\/v1\/todos/, async (route) => {
         const request = route.request();

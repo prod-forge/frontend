@@ -1,4 +1,4 @@
-import { login, store } from '@prod-forge-todolist-frontend/core';
+import { sessionRestored, store } from '@prod-forge-todolist-frontend/core';
 import { applyTodosQuery, todos } from '@prod-forge-todolist-frontend/test-data';
 import { screen, userEvent, waitFor } from '@testing-library/react-native';
 
@@ -15,7 +15,7 @@ const firstPageBoundaryTitle = applyTodosQuery(todos, { offset: firstPage.length
   .data[0].title;
 
 const renderSignedIn = async (): Promise<void> => {
-  store.dispatch(login({ email: 'a@b.com' }));
+  store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
   await renderWithStore(<TodosScreen />);
 };
 

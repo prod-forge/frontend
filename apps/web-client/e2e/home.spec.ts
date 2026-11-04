@@ -1,6 +1,4 @@
-import { expect, test } from './fixtures';
-
-const FAKE_TOKEN = 'ZWViZWNiNTktZjMwMS00ODY5LTg3ZWQtNmFmNTY2NDEyNjY2';
+import { E2E_ACCESS_TOKEN, expect, test } from './fixtures';
 
 test.describe('Home page', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,7 +7,7 @@ test.describe('Home page', () => {
         localStorage.setItem('auth-token', token);
         localStorage.setItem('auth-user', JSON.stringify({ email: 'tester@example.com' }));
       },
-      [FAKE_TOKEN],
+      [E2E_ACCESS_TOKEN],
     );
     await page.goto('/');
   });
@@ -122,7 +120,7 @@ test.describe('Home page', () => {
         localStorage.setItem('auth-token', token);
         localStorage.setItem('auth-user', JSON.stringify({ email: 'tester@example.com', name: 'Alice' }));
       },
-      [FAKE_TOKEN],
+      [E2E_ACCESS_TOKEN],
     );
     await page.goto('/');
 

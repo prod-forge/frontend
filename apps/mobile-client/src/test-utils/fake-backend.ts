@@ -4,11 +4,18 @@ import { applyTodosQuery, todos } from '@prod-forge-todolist-frontend/test-data'
 
 export const TEST_API_BASE_URL = 'http://localhost:3000/api/v1/';
 
+export const TEST_ACCESS_TOKEN = 'test-access-token';
+
+// The only email the fake backend does not know: login answers it with 401 like the real one.
+export const UNKNOWN_TEST_EMAIL = 'unknown@example.com';
+
 type FakeRequest = {
-  readonly body: Partial<Todo>;
+  readonly body: FakeRequestBody;
   readonly method: string;
   readonly url: URL;
 };
+
+type FakeRequestBody = Partial<Todo> & { readonly email?: string };
 
 const jsonResponse = (status: number, body?: unknown): Response =>
   new Response(body === undefined ? null : JSON.stringify(body), {
@@ -16,8 +23,9 @@ const jsonResponse = (status: number, body?: unknown): Response =>
     status,
   });
 
+// Same body as the backend's GlobalExceptionFilter: no traceId (it is sent in the X-Trace-Id header).
 export const backendErrorResponse = (status: number, code: string): Response =>
-  jsonResponse(status, { code, details: {}, message: code, status, traceId: 'test-trace-id' });
+  jsonResponse(status, { code, message: code, status });
 
 const listTodos = (db: readonly Todo[], { searchParams }: URL): Response =>
   jsonResponse(
@@ -58,8 +66,17 @@ const handleTodo = (db: Todo[], id: string, { body, method }: FakeRequest): Resp
   return jsonResponse(200, { data: db[index] });
 };
 
+const logIn = ({ email }: FakeRequestBody): Response =>
+  email === UNKNOWN_TEST_EMAIL
+    ? backendErrorResponse(401, 'USER_IS_NOT_AUTHORIZED')
+    : jsonResponse(200, { data: { accessToken: TEST_ACCESS_TOKEN, expiresIn: 3600 } });
+
 const route = (db: Todo[], request: FakeRequest): Response => {
   const path = request.url.pathname.replace('/api/v1/', '');
+
+  if (path === 'auth/login') {
+    return logIn(request.body);
+  }
 
   if (path === 'todos') {
     return request.method === 'POST' ? createTodo(db, request.body) : listTodos(db, request.url);
@@ -76,7 +93,7 @@ export const mockFakeBackend = (): jest.SpiedFunction<typeof fetch> => {
 
   return jest.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
     const url = new URL(input instanceof Request ? input.url : input);
-    const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as Partial<Todo>) : {};
+    const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as FakeRequestBody) : {};
 
     return Promise.resolve(route(db, { body, method: init?.method ?? 'GET', url }));
   });

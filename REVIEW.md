@@ -180,6 +180,7 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 - API modules export plain objects with typed methods (`todosApi`).
 - API modules live in `core` — never import fetch or make HTTP calls from components.
 - Error handling is centralized: `ApiError`, `BackendError`, `NetworkError` are thrown from the client and caught by the Redux error middleware.
+- Thunks that call the API keep the HTTP status (`serializeError: serializeApiError`, or rethrow it from a `rejectWithValue` thunk): the error middleware needs it to skip 4xx, and the auth listener ends the session on a 401.
 
 ```ts
 export const todosApi = {
@@ -335,6 +336,7 @@ passing.
 - [ ] No `fetch` calls outside `core/src/api/`
 - [ ] New endpoints are added to the relevant `*.api.ts` module
 - [ ] No API calls inside JSX or directly inside components
+- [ ] A new authenticated thunk lets a 401 reach the auth listener with its `status` (no swallowed `rejectWithValue`)
 
 ### Imports
 

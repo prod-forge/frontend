@@ -1,12 +1,45 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
+import type { SerializedApiError } from '../../errors/serialize-api-error';
 import type { RootState } from '../../store';
-import type { AuthUser } from './auth.types';
+import type { AuthSession, AuthUser } from './auth.types';
 
+import { authApi } from '../../api/auth.api';
 import { getCoreConfig } from '../../config/core-config';
-import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from './auth.constants';
+import { serializeApiError } from '../../errors/serialize-api-error';
+import { TOKEN_STORAGE_KEY, UNKNOWN_EMAIL_MESSAGE, USER_STORAGE_KEY } from './auth.constants';
 
-export const sessionRestored = createAction<{ token: string; user: AuthUser }>('auth/sessionRestored');
+export const sessionRestored = createAction<AuthSession>('auth/sessionRestored');
+
+// The status is kept, so a rejected login stays a 4xx for the error middleware and is not reported as a defect.
+const serializeLoginError = (error: unknown): SerializedApiError => {
+  const serialized = serializeApiError(error);
+
+  return serialized.status === 401 ? { ...serialized, message: UNKNOWN_EMAIL_MESSAGE } : serialized;
+};
+
+export const login = createAsyncThunk<AuthSession, { email: string }>(
+  'auth/login',
+  async ({ email }) => {
+    getCoreConfig().logger.debug('Logging in', 'auth/login');
+    const { accessToken } = await authApi.login(email);
+
+    return { token: accessToken, user: { email } };
+  },
+  { serializeError: serializeLoginError },
+);
+
+// The backend has no sign-up endpoint: register logs in an existing user and keeps the entered name locally.
+export const register = createAsyncThunk<AuthSession, { email: string; name?: string }>(
+  'auth/register',
+  async ({ email, name }) => {
+    getCoreConfig().logger.debug('Registering', 'auth/register');
+    const { accessToken } = await authApi.login(email);
+
+    return { token: accessToken, user: { email, ...(name ? { name } : {}) } };
+  },
+  { serializeError: serializeLoginError },
+);
 
 const parseUser = (raw: null | string): AuthUser | null => {
   if (!raw) {

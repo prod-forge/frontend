@@ -1,11 +1,10 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 
-import type { AuthState } from './auth.types';
+import type { AuthSession, AuthState } from './auth.types';
 
-import { FAKE_TOKEN } from './auth.constants';
-import { hydrateAuth, sessionRestored } from './auth.thunks';
+import { hydrateAuth, login, register, sessionRestored } from './auth.thunks';
 
 const initialState: AuthState = {
   hydration: 'idle',
@@ -33,6 +32,10 @@ const authSlice = createSlice({
       })
       .addCase(hydrateAuth.rejected, (state) => {
         state.hydration = 'done';
+      })
+      .addMatcher(isAnyOf(login.fulfilled, register.fulfilled), (state, action: PayloadAction<AuthSession>) => {
+        state.token = action.payload.token;
+        state.user = action.payload.user;
       });
   },
 
@@ -41,26 +44,13 @@ const authSlice = createSlice({
   name: 'auth',
 
   reducers: {
-    login(state, action: PayloadAction<{ email: string }>) {
-      state.token = FAKE_TOKEN;
-      state.user = { email: action.payload.email };
-    },
-
     logout(state) {
       state.token = null;
       state.user = null;
     },
-
-    register(state, action: PayloadAction<{ email: string; name?: string }>) {
-      state.token = FAKE_TOKEN;
-      state.user = {
-        email: action.payload.email,
-        ...(action.payload.name ? { name: action.payload.name } : {}),
-      };
-    },
   },
 });
 
-export const { login, logout, register } = authSlice.actions;
+export const { logout } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

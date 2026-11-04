@@ -1,4 +1,4 @@
-import { getCoreConfig, login, logout, store } from '@prod-forge-todolist-frontend/core';
+import { getCoreConfig, logout, sessionRestored, store } from '@prod-forge-todolist-frontend/core';
 import * as Sentry from '@sentry/react';
 import { logger } from 'logrock';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -40,7 +40,7 @@ describe('setupCore', () => {
       vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/');
       setupCore();
 
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
 
       expect(getCoreConfig().getToken()).toBe(store.getState().auth.token);
     });

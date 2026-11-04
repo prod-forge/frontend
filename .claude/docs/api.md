@@ -18,7 +18,7 @@ Content-Type: application/json
 x-trace-id: <uuid>
 ```
 
-`getToken` is called on every request, so login and logout take effect without reconfiguring core. Web reads `store.getState().auth.token`. A logged-out user sends no `Authorization` header.
+`getToken` is called on every request, so login and logout take effect without reconfiguring core. Web reads `store.getState().auth.token`. A logged-out user sends no `Authorization` header. The token is the HS256 JWT issued by `POST /auth/login` (see [Auth API](#auth-api)).
 
 **Error handling:**
 
@@ -28,7 +28,26 @@ x-trace-id: <uuid>
   - Otherwise → throws `ApiError` (message: `HTTP {status}`, status: number)
 - `204 No Content` → returns `undefined as T`
 
-All errors propagate to the Redux `errorMiddleware`, which logs them through `CoreLogger`, dispatches `pushError` and calls `getCoreConfig().reportError` (Sentry on web) unless the error carries a 4xx `status` or the thunk rejected with a `silent` / `not-found` value. Todo thunks use `serializeError: serializeApiError` so `status` survives RTK's error serialization; errors without a status (network, frontend bugs) are always reported.
+All errors propagate to the Redux `errorMiddleware`, which logs them through `CoreLogger`, dispatches `pushError` and calls `getCoreConfig().reportError` (Sentry on web) unless the error carries a 4xx `status` or the thunk rejected with a `silent` / `not-found` value. Todo and auth thunks use `serializeError: serializeApiError` so `status` survives RTK's error serialization; errors without a status (network, frontend bugs) are always reported.
+
+**401 on an authenticated request:** a listener in `features/auth/auth.listeners.ts` dispatches `logout()` for any rejected thunk whose serialized error has `status === 401` while `auth.token` is set (expired, revoked or forged token). `fetchTodoById` rethrows a 401 instead of turning it into a `rejectValue`, so the status reaches the listener. A rejected login has no token yet and is not affected.
+
+---
+
+## Auth API
+
+**Module:** `packages/core/src/api/auth.api.ts`
+
+### `authApi.login(email: string): Promise<AccessToken>`
+
+```
+POST /auth/login
+Content-Type: application/json
+
+{ "email": "user1@example.com" }
+```
+
+Public endpoint. Returns the unwrapped `{ accessToken: string; expiresIn: number }` from `{ data: AccessToken }`; `expiresIn` is the token lifetime in seconds (backend `JWT_TTL`, default 3600). No password is checked. Errors: `401 USER_IS_NOT_AUTHORIZED` for an unknown email, `422 DTO_VALIDATION_ERROR` for a malformed one (max 254 characters), `429 TOO_MANY_REQUESTS` after 5 calls per 60 seconds per IP. Local seeds: `user1@example.com` to `user5@example.com`.
 
 ---
 
@@ -170,6 +189,15 @@ Thunks are defined in `packages/core/src/features/todos/todos.slices.ts`. Each h
 
 Temp IDs use the prefix `optimistic-{requestId}`.
 
-### Auth thunk
+### Auth thunks
+
+All live in `packages/core/src/features/auth/auth.thunks.ts` and resolve with `AuthSession = { token, user }` (except `hydrateAuth`).
+
+| Thunk      | Input                              | Request            | On success                                  |
+| ---------- | ---------------------------------- | ------------------ | ------------------------------------------- |
+| `login`    | `{ email: string }`                | `POST /auth/login` | `token = accessToken`, `user = { email }`   |
+| `register` | `{ email: string; name?: string }` | `POST /auth/login` | same as `login`, plus `name` when not empty |
+
+The backend has no sign-up endpoint, so `register` logs an existing user in and keeps the name in the client only. Both use a serializer that keeps `status` and replaces the message of a 401 with `UNKNOWN_EMAIL_MESSAGE` ("No account was found for this email."); other errors keep the mapped backend message. The fulfilled actions are persisted by the auth listener.
 
 `hydrateAuth` (`packages/core/src/features/auth/auth.thunks.ts`), `AsyncThunk<AuthUser | null, void, { state: RootState }>`. Reads `TOKEN_STORAGE_KEY` and `USER_STORAGE_KEY` from `getCoreConfig().storage`. When both are present and the user parses with a string `email`, it restores `token` and `user` and resolves with the user; otherwise it resolves with `null`. A storage failure is logged through `logger.error(error, 'auth/hydrate')` and also resolves with `null`, so hydration always ends in `done` and never surfaces an error toast. Each app dispatches it once at startup, after `configureCore`. If `login` or `register` completes while hydration is still reading storage, the newer session wins: the restored session is applied only when no token is set yet.

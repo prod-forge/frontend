@@ -53,6 +53,17 @@ interface AuthUser {
 }
 ```
 
+### `AuthSession`
+
+```ts
+type AuthSession = {
+  token: string; // accessToken from POST /auth/login.
+  user: AuthUser;
+};
+```
+
+Result of the `login` and `register` thunks and payload of `sessionRestored` (hydration).
+
 ### `SelectOption`
 
 ```ts
@@ -71,7 +82,7 @@ interface SelectOption<T extends string = string> {
 ```ts
 type AuthState = {
   hydration: 'idle' | 'hydrating' | 'done'; // Progress of restoring auth from storage.
-  token: string | null; // JWT or session token. null = unauthenticated.
+  token: string | null; // HS256 JWT issued by POST /auth/login. null = unauthenticated.
   // Persisted in KeyValueStorage under key 'auth-token'.
   user: AuthUser | null; // Authenticated user info.
   // Persisted in KeyValueStorage under key 'auth-user'.
@@ -80,9 +91,9 @@ type AuthState = {
 
 The initial state is always `{ hydration: 'idle', token: null, user: null }`. Storage is asynchronous (localStorage on web, SecureStore on mobile), so the app dispatches `hydrateAuth()` on boot: `pending` sets `hydrating`, `fulfilled` sets `done` and, when storage holds a valid session, restores `token` and `user`. UI that redirects on auth must wait for `done` (web: `AuthHydrationGate`). `token !== null` is the authoritative check for authentication (`selectIsAuthenticated`).
 
-Persistence is a side effect in `auth.listeners.ts`: `login`/`register` write both keys, `logout` removes them. Reducers do not touch storage.
+Persistence is a side effect in `auth.listeners.ts`: `login.fulfilled`/`register.fulfilled` write both keys, `logout` removes them. Reducers do not touch storage. A rejected thunk with a 401 status while a token is set dispatches `logout()` (expired session).
 
-> Note: `FAKE_TOKEN` is currently used as a placeholder. Real auth flow to be implemented.
+`token` is the HS256 JWT returned by `POST /auth/login`; its lifetime (`expiresIn`, seconds) is not stored, expiry is detected by the backend's 401.
 
 ---
 

@@ -4,7 +4,7 @@ import {
   authReducer,
   errorMiddleware,
   errorsReducer,
-  login,
+  sessionRestored,
   TITLE_MAX_LENGTH,
   todosApi,
   todosReducer,
@@ -30,7 +30,7 @@ const renderAt = (path: string, options: { authenticated?: boolean } = {}): { st
   });
 
   if (authenticated) {
-    store.dispatch(login({ email: 'a@b.com' }));
+    store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
   }
 
   const view = render(

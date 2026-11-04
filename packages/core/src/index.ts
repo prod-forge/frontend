@@ -1,4 +1,6 @@
 // API
+export { authApi } from './api/auth.api';
+export type { AccessToken } from './api/auth.api';
 export { apiRequest } from './api/client';
 export { logsApi } from './api/logs.api';
 
@@ -10,7 +12,7 @@ export type { CoreConfig } from './config/core-config';
 export { BackendError, isBackendErrorResponse } from './errors/backend-error';
 
 export { NETWORK_ERROR_MESSAGES, NetworkError } from './errors/network-error';
-export { FAKE_TOKEN, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from './features/auth/auth.constants';
+export { TOKEN_STORAGE_KEY, UNKNOWN_EMAIL_MESSAGE, USER_STORAGE_KEY } from './features/auth/auth.constants';
 
 export {
   forgotPasswordSchema,
@@ -22,10 +24,10 @@ export {
 export type { ForgotPasswordValues, LoginValues, RegisterValues } from './features/auth/auth.schemas';
 export { selectAuthToken, selectAuthUser, selectIsAuthenticated } from './features/auth/auth.selectors';
 
-export { authReducer, login, logout, register } from './features/auth/auth.slices';
-export { hydrateAuth } from './features/auth/auth.thunks';
+export { authReducer, logout } from './features/auth/auth.slices';
+export { hydrateAuth, login, register, sessionRestored } from './features/auth/auth.thunks';
 // Auth feature
-export type { AuthState, AuthUser } from './features/auth/auth.types';
+export type { AuthSession, AuthState, AuthUser } from './features/auth/auth.types';
 export { errorMiddleware } from './features/errors/error-middleware';
 export { selectVisibleErrors } from './features/errors/errors.selectors';
 export { clearErrors, dismissError, errorsReducer, pushError } from './features/errors/errors.slice';

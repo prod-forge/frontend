@@ -1,6 +1,4 @@
-import { expect, test } from './fixtures';
-
-const FAKE_TOKEN = 'ZWViZWNiNTktZjMwMS00ODY5LTg3ZWQtNmFmNTY2NDEyNjY2';
+import { E2E_ACCESS_TOKEN, expect, test, unauthorizedBody, UNKNOWN_EMAIL } from './fixtures';
 
 test.describe('Auth flow', () => {
   test('unauthenticated home shows the welcome screen, not the task list', async ({ page }) => {
@@ -19,22 +17,27 @@ test.describe('Auth flow', () => {
     await expect(page.getByRole('heading', { level: 1, name: /welcome to todoai/i })).toBeVisible();
   });
 
-  test('login form stores the fake token in localStorage and unlocks the task list', async ({ page }) => {
+  test('login form sends the email to the backend, stores the issued token and unlocks the task list', async ({
+    page,
+  }) => {
     await page.goto('/login');
 
     const form = page.getByRole('form', { name: /login form/i });
     await form.getByLabel('Email').fill('user@example.com');
     await form.getByLabel('Password').fill('pwd');
+    const loginRequest = page.waitForRequest(/\/api\/v1\/auth\/login$/);
     await form.getByRole('button', { name: /^sign in$/i }).click();
+
+    expect((await loginRequest).postDataJSON()).toEqual({ email: 'user@example.com' });
 
     await expect(page).toHaveURL('/');
     await expect(page.getByRole('heading', { level: 1, name: /my tasks/i })).toBeVisible();
 
     const token = await page.evaluate(() => localStorage.getItem('auth-token'));
-    expect(token).toBe(FAKE_TOKEN);
+    expect(token).toBe(E2E_ACCESS_TOKEN);
   });
 
-  test('register form creates a user and stores the fake token', async ({ page }) => {
+  test('register form logs the existing user in and stores the issued token', async ({ page }) => {
     await page.goto('/register');
 
     await page.getByLabel('Email').fill('user@example.com');
@@ -46,7 +49,38 @@ test.describe('Auth flow', () => {
     await expect(page.getByRole('heading', { level: 1, name: /my tasks/i })).toBeVisible();
 
     const token = await page.evaluate(() => localStorage.getItem('auth-token'));
-    expect(token).toBe(FAKE_TOKEN);
+    expect(token).toBe(E2E_ACCESS_TOKEN);
+  });
+
+  test('login with an unknown email shows the error and keeps the user signed out', async ({ page }) => {
+    await page.goto('/login');
+
+    const form = page.getByRole('form', { name: /login form/i });
+    await form.getByLabel('Email').fill(UNKNOWN_EMAIL);
+    await form.getByLabel('Password').fill('pwd');
+    await form.getByRole('button', { name: /^sign in$/i }).click();
+
+    await expect(page.getByText('No account was found for this email.')).toBeVisible();
+    await expect(page).toHaveURL('/login');
+    expect(await page.evaluate(() => localStorage.getItem('auth-token'))).toBeNull();
+  });
+
+  test('an expired session answered with 401 signs the user out', async ({ page }) => {
+    await page.addInitScript(
+      ([token]) => {
+        localStorage.setItem('auth-token', token);
+        localStorage.setItem('auth-user', JSON.stringify({ email: 'tester@example.com' }));
+      },
+      ['expired-token'],
+    );
+    await page.route(/\/api\/v1\/todos/, (route) =>
+      route.fulfill({ body: unauthorizedBody, contentType: 'application/json', status: 401 }),
+    );
+    await page.goto('/');
+
+    await expect(page.getByRole('heading', { level: 1, name: /welcome to todoai/i })).toBeVisible();
+    await expect(page.getByText('Please log in to continue.')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('auth-token'))).toBeNull();
   });
 
   test('forgot password accordion opens and shows a confirmation message', async ({ page }) => {
@@ -66,7 +100,7 @@ test.describe('Auth flow', () => {
         localStorage.setItem('auth-token', token);
         localStorage.setItem('auth-user', JSON.stringify({ email: 'tester@example.com' }));
       },
-      [FAKE_TOKEN],
+      [E2E_ACCESS_TOKEN],
     );
     await page.goto('/');
 

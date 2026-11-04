@@ -101,10 +101,11 @@ packages/
 │       │   └── core-config.ts       # configureCore, getCoreConfig, CoreNotConfiguredError
 │       ├── api/
 │       │   ├── client.ts            # Fetch wrapper, auth headers, error handling
+│       │   ├── auth.api.ts          # POST /auth/login → JWT
 │       │   ├── todos.api.ts         # Todo CRUD
 │       │   └── logs.api.ts          # Client-side error logs
 │       ├── features/
-│       │   ├── auth/                # Slice, hydrateAuth thunk, persistence listeners, selectors
+│       │   ├── auth/                # Slice, login/register/hydrateAuth thunks, listeners, selectors
 │       │   ├── todos/               # Slice, selectors, schemas, utils, constants
 │       │   └── errors/              # Slice, selectors, middleware
 │       ├── errors/
@@ -251,7 +252,7 @@ store
 ├── auth        AuthState       — token, user, hydration
 ├── todos       TodosState      — items, filters, pagination, optimistic state
 ├── errors      ErrorsState     — error queue for toast notifications
-├── authListenerMiddleware      — persists auth to KeyValueStorage on login/register/logout
+├── authListenerMiddleware      — persists auth to KeyValueStorage on login/register/logout, logs out on a 401
 └── errorMiddleware             — catches rejected thunks → logs, reports 5xx/unknown, dispatches pushError
 ```
 

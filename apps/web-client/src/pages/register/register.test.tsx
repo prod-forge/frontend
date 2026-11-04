@@ -1,10 +1,10 @@
-import { authReducer, FAKE_TOKEN, login, todosReducer } from '@prod-forge-todolist-frontend/core';
+import { authReducer, sessionRestored, todosReducer } from '@prod-forge-todolist-frontend/core';
 import { configureStore } from '@reduxjs/toolkit';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Register } from './register';
 
@@ -19,7 +19,7 @@ const renderRegister = (
   const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
 
   if (authenticated) {
-    store.dispatch(login({ email: 'a@b.com' }));
+    store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
   }
 
   render(
@@ -39,10 +39,19 @@ const renderRegister = (
 describe('<Register /> page', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ data: { accessToken: 'signed.jwt.token', expiresIn: 3600 } }),
+        ok: true,
+        status: 200,
+      }),
+    );
   });
 
   afterEach(() => {
     localStorage.clear();
+    vi.unstubAllGlobals();
   });
 
   it('renders the heading and the register form', () => {
@@ -67,7 +76,7 @@ describe('<Register /> page', () => {
     await user.type(screen.getByLabelText('Password'), 'pwd');
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(store.getState().auth.token).toBe(FAKE_TOKEN);
+    await waitFor(() => expect(store.getState().auth.token).toBe('signed.jwt.token'));
     expect(store.getState().auth.user).toEqual({ email: 'a@b.com', name: 'Anna' });
   });
 
@@ -79,7 +88,7 @@ describe('<Register /> page', () => {
     await user.type(screen.getByLabelText('Password'), 'pwd');
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(store.getState().auth.user).toEqual({ email: 'a@b.com' });
+    await waitFor(() => expect(store.getState().auth.user).toEqual({ email: 'a@b.com' }));
   });
 
   it('redirects to home when the user is already authenticated', () => {

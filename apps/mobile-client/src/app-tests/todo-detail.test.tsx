@@ -1,6 +1,6 @@
 import type { AlertButton } from 'react-native';
 
-import { login, store } from '@prod-forge-todolist-frontend/core';
+import { sessionRestored, store } from '@prod-forge-todolist-frontend/core';
 import { todos } from '@prod-forge-todolist-frontend/test-data';
 import { screen, userEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
@@ -17,7 +17,7 @@ const todoUrl = `http://localhost:3000/api/v1/todos/${todo.id}`;
 
 const renderDetail = async (id: string): Promise<void> => {
   mockSearchParams.current = { id };
-  store.dispatch(login({ email: 'a@b.com' }));
+  store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
   await renderWithStore(<TodoDetailScreen />);
 };
 

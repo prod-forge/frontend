@@ -9,7 +9,8 @@ import { Button } from '../../../components/button/button';
 import { Input } from '../../../components/input/input';
 
 export type Props = {
-  onSubmit: (values: RegisterSubmitValues) => void;
+  /** A returned promise keeps the submit button disabled until it settles. */
+  onSubmit: (values: RegisterSubmitValues) => unknown;
 };
 
 type RegisterSubmitValues = {
@@ -27,10 +28,10 @@ export const RegisterForm = ({ onSubmit }: Props): ReactNode => {
     resolver: zodResolver(registerSchema),
   });
 
-  const submit = handleSubmit((data) => {
+  const submit = handleSubmit(async (data) => {
     const trimmedName = data.name.trim();
 
-    onSubmit({
+    await onSubmit({
       email: data.email,
       ...(trimmedName ? { name: trimmedName } : {}),
       password: data.password,

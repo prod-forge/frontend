@@ -1,6 +1,6 @@
 # Security
 
-The server side of security (request validation, response sanitization, headers, CORS, rate limiting) is described in [Security](https://github.com/prod-forge/backend/blob/main/docs/security.md) in the backend guide. A browser client changes the question: the code runs on a machine that the team does not control, so nothing in it can be secret, and the main enemy is script injected into the page. This chapter covers the client side, and is honest about the part that is not finished: authentication.
+The server side of security (request validation, response sanitization, headers, CORS, rate limiting) is described in [Security](https://github.com/prod-forge/backend/blob/main/docs/security.md) in the backend guide. A browser client changes the question: the code runs on a machine that the team does not control, so nothing in it can be secret, and the main enemy is script injected into the page. This chapter covers the client side, and is honest about what authentication does not do yet.
 
 ## Threat Model for an SPA
 
@@ -59,27 +59,21 @@ This client therefore uses `localStorage`, through the `KeyValueStorage` adapter
 
 On mobile the same interface is backed by `expo-secure-store` (`apps/mobile-client/src/services/secure-store-adapter.ts`), which keeps the value in the iOS Keychain and the Android Keystore. A phone has no equivalent of a page-wide XSS, and the operating system encrypts the value, so the platform-native store is the right place there. See [Mobile Client](mobile-client.md).
 
-## Authentication Is a Stub
+## Authentication
 
-This part is not production authentication, and the documentation should not suggest it is.
+The client signs in against the backend and sends the token it is given. It is real token authentication, but deliberately minimal: there is no password check and no registration on the server.
 
-**Today.** `login` and `register` in `packages/core/src/features/auth/auth.slices.ts` do not call the server. They store a constant:
+**Login.** The `login` thunk in `packages/core/src/features/auth/auth.thunks.ts` calls `authApi.login(email)` (`packages/core/src/api/auth.api.ts`), which posts `{ email }` to `POST /api/v1/auth/login`. For an email of an existing user the backend answers `200 { data: { accessToken, expiresIn } }`: `accessToken` is an HS256 JWT signed with the server's `JWT_SECRET`, and `expiresIn` is its lifetime in seconds (`JWT_TTL`, 3600 by default). The thunk stores the token in `auth.token`; the auth listener persists it under `auth-token`, and `apiRequest` sends it as `Authorization: Bearer <token>` on every request. The client never decodes or trusts the token itself: only the backend verifies the signature and expiry.
 
-```ts
-export const FAKE_TOKEN = 'ZWViZWNiNTktZjMwMS00ODY5LTg3ZWQtNmFmNTY2NDEyNjY2';
-```
+The password field on the login form is still validated for length and then ignored, because the backend has no passwords yet.
 
-`apiRequest` then sends it as `Authorization: Bearer <token>` on every request. The backend `AuthGuard` only checks the `Bearer` prefix and decodes the rest from base64 into a user id. `FAKE_TOKEN` decodes to one fixed UUID, so every visitor is the same user, and any other base64 string is accepted as another user. The login form collects an email and a password, and the password is validated for length and then ignored.
+**Failures.** An unknown email is answered with `401 USER_IS_NOT_AUTHORIZED`; the login thunk turns it into "No account was found for this email." (`UNKNOWN_EMAIL_MESSAGE`), instead of the generic "Please log in to continue." A malformed email is a `422 DTO_VALIDATION_ERROR`, and the endpoint is throttled to 5 requests per 60 seconds per IP (`429 TOO_MANY_REQUESTS`); both show the mapped backend message. All of them carry a 4xx status, so they are not reported to Sentry.
 
-What this is good for: the whole client flow (hydration from storage, logout, the `Authorization` header) is built and tested against the same shape that real authentication will have, so replacing the stub does not touch the screens.
+**Register.** The backend has no sign-up endpoint. `register` therefore calls the same `POST /auth/login` and keeps the entered name only in the client (`auth.user.name`); registering with an email the backend does not know fails exactly like a login.
 
-**Planned, not done.** The backend plan for phase 2a moves to a signed JWT (HS256) with `POST /v1/auth/login` by the email of an existing user, still without a password and without registration. After it:
+**Expired or revoked token.** When any authenticated request is rejected with a 401 while a session exists, a listener in `packages/core/src/features/auth/auth.listeners.ts` dispatches `logout()`. That removes the token and the user from storage, and the screens guarded by `selectIsAuthenticated` send the user back to sign in (the welcome screen on web, `/login` on mobile); the error toast shows "Please log in to continue." There is no refresh token, so a session ends after `expiresIn` seconds.
 
-- the login thunk calls the endpoint and stores the returned token, instead of `FAKE_TOKEN`;
-- the backend verifies the signature and expiry, and answers 401 for a missing, expired or forged token;
-- the client needs one new piece of behavior: on a 401, clear the session and send the user to `/login`.
-
-The storage and header code does not change. What stays out of scope even then: passwords, refresh tokens, and an identity provider. Until phase 2a is finished, do not deploy this application with real data.
+Out of scope: passwords, refresh tokens, sign-up and an identity provider. Until passwords exist, anyone who knows a registered email can sign in as that user, so do not deploy this application with real data.
 
 Sentry receives a SHA-256 hash of the email as `user.id`, not the email (`sendDefaultPii` is `false`), which is described in [Client Observability](client-observability.md#sentry).
 

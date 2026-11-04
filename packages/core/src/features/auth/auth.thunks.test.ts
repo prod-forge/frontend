@@ -4,10 +4,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { getCoreConfig } from '../../config/core-config';
 import { errorsReducer } from '../errors/errors.slice';
 import { todosReducer } from '../todos/todos.slices';
-import { FAKE_TOKEN, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from './auth.constants';
+import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from './auth.constants';
 import { selectIsAuthenticated } from './auth.selectors';
-import { authReducer, login } from './auth.slices';
-import { hydrateAuth } from './auth.thunks';
+import { authReducer } from './auth.slices';
+import { hydrateAuth, login } from './auth.thunks';
 
 const reducer = { auth: authReducer, errors: errorsReducer, todos: todosReducer };
 
@@ -38,7 +38,7 @@ describe('hydrateAuth', () => {
     });
 
     it('stays unauthenticated when the stored user is not valid JSON', async () => {
-      await seedStorage({ [TOKEN_STORAGE_KEY]: FAKE_TOKEN, [USER_STORAGE_KEY]: '{not json' });
+      await seedStorage({ [TOKEN_STORAGE_KEY]: 'stored-token', [USER_STORAGE_KEY]: '{not json' });
       const store = makeStore();
 
       await store.dispatch(hydrateAuth());
@@ -48,7 +48,7 @@ describe('hydrateAuth', () => {
     });
 
     it('stays unauthenticated when the stored user has no email', async () => {
-      await seedStorage({ [TOKEN_STORAGE_KEY]: FAKE_TOKEN, [USER_STORAGE_KEY]: JSON.stringify({ name: 'Anna' }) });
+      await seedStorage({ [TOKEN_STORAGE_KEY]: 'stored-token', [USER_STORAGE_KEY]: JSON.stringify({ name: 'Anna' }) });
       const store = makeStore();
 
       await store.dispatch(hydrateAuth());
@@ -85,11 +85,18 @@ describe('hydrateAuth', () => {
       });
       const store = makeStore();
 
-      const hydration = store.dispatch(hydrateAuth());
-      store.dispatch(login({ email: 'new@b.com' }));
-      await hydration;
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          json: vi.fn().mockResolvedValue({ data: { accessToken: 'fresh-token', expiresIn: 3600 } }),
+          ok: true,
+          status: 200,
+        }),
+      );
 
-      expect(store.getState().auth).toEqual({ hydration: 'done', token: FAKE_TOKEN, user: { email: 'new@b.com' } });
+      await Promise.all([store.dispatch(hydrateAuth()), store.dispatch(login({ email: 'new@b.com' }))]);
+
+      expect(store.getState().auth).toEqual({ hydration: 'done', token: 'fresh-token', user: { email: 'new@b.com' } });
     });
   });
 

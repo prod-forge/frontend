@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -30,6 +30,27 @@ describe('LoginForm', () => {
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(onSubmit).toHaveBeenCalledWith({ email: 'a@b.com', password: 'pwd' });
+  });
+
+  it('keeps the submit button disabled until the returned promise settles', async () => {
+    let finish: () => void = () => undefined;
+    const onSubmit = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const user = userEvent.setup();
+    render(<LoginForm onSubmit={onSubmit} />);
+
+    const form = getLoginForm();
+    await user.type(within(form).getByLabelText('Email'), 'a@b.com');
+    await user.type(within(form).getByLabelText('Password'), 'pwd');
+    await user.click(within(form).getByRole('button', { name: /sign in/i }));
+
+    expect(within(form).getByRole('button', { name: /sign in/i })).toBeDisabled();
+    finish();
+    await waitFor(() => expect(within(form).getByRole('button', { name: /sign in/i })).toBeEnabled());
   });
 
   it('shows an error and does not submit when email is empty', async () => {

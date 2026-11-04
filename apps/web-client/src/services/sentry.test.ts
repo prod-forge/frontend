@@ -152,6 +152,10 @@ describe('initSentry web vitals', () => {
 const createAuthStore = (): Store =>
   configureStore({ reducer: { auth: authReducer, errors: errorsReducer, todos: todosReducer } });
 
+// The fulfilled action of the login thunk, without a request to the backend.
+const loggedIn = (email: string): ReturnType<typeof login.fulfilled> =>
+  login.fulfilled({ token: 'test-token', user: { email } }, 'test-request', { email });
+
 const sha256Hex = async (value: string): Promise<string> => {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
 
@@ -165,7 +169,7 @@ describe('bindSentryUser', () => {
       const store = createAuthStore();
 
       bindSentryUser(store);
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(loggedIn('a@b.com'));
 
       expect(Sentry.setUser).not.toHaveBeenCalled();
     });
@@ -175,7 +179,7 @@ describe('bindSentryUser', () => {
       const store = createAuthStore();
 
       bindSentryUser(store);
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(loggedIn('a@b.com'));
       await vi.waitFor(() => expect(Sentry.setUser).toHaveBeenCalled());
 
       expect(JSON.stringify(vi.mocked(Sentry.setUser).mock.calls)).not.toContain('a@b.com');
@@ -186,7 +190,7 @@ describe('bindSentryUser', () => {
       const store = createAuthStore();
 
       bindSentryUser(store);
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(loggedIn('a@b.com'));
       store.dispatch(logout());
       await new Promise((resolve) => setTimeout(resolve, 20));
 
@@ -228,7 +232,7 @@ describe('bindSentryUser', () => {
       const store = createAuthStore();
 
       bindSentryUser(store);
-      store.dispatch(login({ email: 'A@B.com' }));
+      store.dispatch(loggedIn('A@B.com'));
 
       await vi.waitFor(async () => expect(Sentry.setUser).toHaveBeenCalledWith({ id: await sha256Hex('a@b.com') }));
     });
@@ -237,7 +241,7 @@ describe('bindSentryUser', () => {
       const store = createAuthStore();
 
       bindSentryUser(store);
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(loggedIn('a@b.com'));
       await vi.waitFor(() => expect(Sentry.setUser).toHaveBeenCalledTimes(1));
       store.dispatch(logout());
 

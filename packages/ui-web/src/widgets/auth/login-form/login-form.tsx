@@ -12,7 +12,8 @@ import { Input } from '../../../components/input/input';
 
 export type Props = {
   onForgotPassword?: (values: ForgotPasswordValues) => void;
-  onSubmit: (values: LoginValues) => void;
+  /** A returned promise keeps the submit button disabled until it settles. */
+  onSubmit: (values: LoginValues) => unknown;
 };
 
 const loginDefaults: LoginValues = { email: '', password: '' };
@@ -34,8 +35,8 @@ export const LoginForm = ({ onForgotPassword, onSubmit }: Props): ReactNode => {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const submitLogin = loginForm.handleSubmit((data) => {
-    onSubmit(data);
+  const submitLogin = loginForm.handleSubmit(async (data) => {
+    await onSubmit(data);
   });
 
   const submitForgot = forgotForm.handleSubmit((data) => {

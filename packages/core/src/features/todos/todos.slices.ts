@@ -57,21 +57,30 @@ export const fetchTodoById = createAsyncThunk<
   Todo,
   string,
   { rejectValue: { kind: 'error' | 'not-found'; silent?: boolean } }
->('todos/fetchById', async (id, { rejectWithValue }) => {
-  const { logger } = getCoreConfig();
-  logger.debug(`Fetching todo ${id}`, 'todos/fetchById');
-  try {
-    return await todosApi.getOne(id);
-  } catch (error) {
-    const status = (error as { status?: number }).status;
+>(
+  'todos/fetchById',
+  async (id, { rejectWithValue }) => {
+    const { logger } = getCoreConfig();
+    logger.debug(`Fetching todo ${id}`, 'todos/fetchById');
+    try {
+      return await todosApi.getOne(id);
+    } catch (error) {
+      const status = (error as { status?: number }).status;
 
-    if (status === 404) {
-      logger.debug(`Todo not found: ${id}`, 'todos/fetchById');
+      // Rethrown with its status so the auth listener can end an expired session.
+      if (status === 401) {
+        throw error;
+      }
+
+      if (status === 404) {
+        logger.debug(`Todo not found: ${id}`, 'todos/fetchById');
+      }
+
+      return rejectWithValue(status === 404 ? { kind: 'not-found', silent: true } : { kind: 'error' });
     }
-
-    return rejectWithValue(status === 404 ? { kind: 'not-found', silent: true } : { kind: 'error' });
-  }
-});
+  },
+  { serializeError: serializeApiError },
+);
 
 export const addTodo = createAsyncThunk<Todo, { description: string; title: string }>(
   'todos/add',

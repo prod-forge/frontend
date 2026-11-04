@@ -194,7 +194,7 @@ Every major technical decision is documented and explained.
   - [Threat Model for an SPA](docs/security.md#threat-model-for-an-spa)
   - [Content Security Policy](docs/security.md#content-security-policy)
   - [Token Storage](docs/security.md#token-storage)
-  - [Authentication Is a Stub](docs/security.md#authentication-is-a-stub)
+  - [Authentication](docs/security.md#authentication)
   - [XSS Surface](docs/security.md#xss-surface)
   - [Dependency Hygiene](docs/security.md#dependency-hygiene)
   - [Headers Set by CloudFront](docs/security.md#headers-set-by-cloudfront)

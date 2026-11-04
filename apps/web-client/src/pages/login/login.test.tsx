@@ -1,25 +1,47 @@
-import { authReducer, FAKE_TOKEN, login, todosReducer } from '@prod-forge-todolist-frontend/core';
+import {
+  authReducer,
+  errorMiddleware,
+  errorsReducer,
+  sessionRestored,
+  todosReducer,
+  UNKNOWN_EMAIL_MESSAGE,
+} from '@prod-forge-todolist-frontend/core';
 import { configureStore } from '@reduxjs/toolkit';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Login } from './login';
 
-const renderLogin = (
-  options: { authenticated?: boolean } = {},
-): {
-  store: ReturnType<
-    typeof configureStore<{ auth: ReturnType<typeof authReducer>; todos: ReturnType<typeof todosReducer> }>
-  >;
-} => {
+const reducer = { auth: authReducer, errors: errorsReducer, todos: todosReducer };
+
+type TestStore = ReturnType<typeof configureStore<{ [K in keyof typeof reducer]: ReturnType<(typeof reducer)[K]> }>>;
+
+const makeStore = (): TestStore =>
+  configureStore({
+    middleware: (getDefault) => getDefault().concat(errorMiddleware),
+    reducer,
+  });
+
+const mockLoginResponse = (status: number, body: unknown): void => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue(body),
+      ok: status >= 200 && status < 300,
+      status,
+    }),
+  );
+};
+
+const renderLogin = (options: { authenticated?: boolean } = {}): { store: TestStore } => {
   const { authenticated = false } = options;
-  const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
+  const store = makeStore();
 
   if (authenticated) {
-    store.dispatch(login({ email: 'a@b.com' }));
+    store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
   }
 
   render(
@@ -36,44 +58,76 @@ const renderLogin = (
   return { store };
 };
 
+const submitLogin = async (email: string): Promise<void> => {
+  const user = userEvent.setup();
+  const form = screen.getByRole('form', { name: /login form/i });
+
+  await user.type(within(form).getByLabelText('Email'), email);
+  await user.type(within(form).getByLabelText('Password'), 'pwd');
+  await user.click(within(form).getByRole('button', { name: /^sign in$/i }));
+};
+
 describe('<Login /> page', () => {
   beforeEach(() => {
     localStorage.clear();
+    mockLoginResponse(200, { data: { accessToken: 'signed.jwt.token', expiresIn: 3600 } });
   });
 
   afterEach(() => {
     localStorage.clear();
+    vi.unstubAllGlobals();
   });
 
-  it('renders the welcome heading and the login form', () => {
-    renderLogin();
+  describe('negative cases', () => {
+    it('stays on the login page and reports the unknown email when the backend answers 401', async () => {
+      mockLoginResponse(401, {
+        code: 'USER_IS_NOT_AUTHORIZED',
+        details: {},
+        message: 'User is not authorized',
+        status: 401,
+        traceId: 'test-trace-id',
+      });
+      const { store } = renderLogin();
 
-    expect(screen.getByRole('heading', { level: 1, name: /welcome back/i })).toBeInTheDocument();
-    expect(screen.getByRole('form', { name: /login form/i })).toBeInTheDocument();
+      await submitLogin('unknown@example.com');
+
+      await waitFor(() =>
+        expect(store.getState().errors.errors.map((e) => e.message)).toEqual([UNKNOWN_EMAIL_MESSAGE]),
+      );
+      expect(store.getState().auth.token).toBeNull();
+      expect(screen.queryByTestId('home')).not.toBeInTheDocument();
+    });
   });
 
-  it('renders a link to the register page', () => {
-    renderLogin();
+  describe('positive cases', () => {
+    it('renders the welcome heading and the login form', () => {
+      renderLogin();
 
-    expect(screen.getByRole('link', { name: /create one/i })).toHaveAttribute('href', '/register');
-  });
+      expect(screen.getByRole('heading', { level: 1, name: /welcome back/i })).toBeInTheDocument();
+      expect(screen.getByRole('form', { name: /login form/i })).toBeInTheDocument();
+    });
 
-  it('logs the user in on submit', async () => {
-    const user = userEvent.setup();
-    const { store } = renderLogin();
+    it('renders a link to the register page', () => {
+      renderLogin();
 
-    const form = screen.getByRole('form', { name: /login form/i });
-    await user.type(within(form).getByLabelText('Email'), 'a@b.com');
-    await user.type(within(form).getByLabelText('Password'), 'pwd');
-    await user.click(within(form).getByRole('button', { name: /^sign in$/i }));
+      expect(screen.getByRole('link', { name: /create one/i })).toHaveAttribute('href', '/register');
+    });
 
-    expect(store.getState().auth.token).toBe(FAKE_TOKEN);
-    expect(store.getState().auth.user).toEqual({ email: 'a@b.com' });
-  });
+    it('logs the user in against the backend and stores the issued token', async () => {
+      const { store } = renderLogin();
 
-  it('redirects to home when the user is already authenticated', () => {
-    renderLogin({ authenticated: true });
+      await submitLogin('a@b.com');
 
-    expect(screen.getByTestId('home')).toBeInTheDocument();
+      expect(fetch).toHaveBeenCalledWith('https://api.test/auth/login', expect.objectContaining({ method: 'POST' }));
+      await waitFor(() => expect(store.getState().auth.token).toBe('signed.jwt.token'));
+      expect(store.getState().auth.user).toEqual({ email: 'a@b.com' });
+      expect(await screen.findByTestId('home')).toBeInTheDocument();
+    });
+
+    it('redirects to home when the user is already authenticated', () => {
+      renderLogin({ authenticated: true });
+
+      expect(screen.getByTestId('home')).toBeInTheDocument();
+    });
   });
 });

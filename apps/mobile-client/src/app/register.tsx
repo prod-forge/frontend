@@ -22,6 +22,7 @@ export default function RegisterScreen(): ReactNode {
   const router = useRouter();
   const [values, setValues] = useState<RegisterValues>(emptyValues);
   const [errors, setErrors] = useState<FieldErrors<RegisterValues>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   useRedirectWhenAuthenticated();
 
@@ -35,7 +36,10 @@ export default function RegisterScreen(): ReactNode {
     }
 
     setErrors({});
-    dispatch(register({ email: result.data.email, name: result.data.name }));
+    setSubmitting(true);
+    void dispatch(register({ email: result.data.email, name: result.data.name })).finally(() => {
+      setSubmitting(false);
+    });
   };
 
   return (
@@ -69,7 +73,7 @@ export default function RegisterScreen(): ReactNode {
         secureTextEntry
         value={values.password}
       />
-      <PrimaryButton onPress={submit} title="Create account" />
+      <PrimaryButton disabled={submitting} onPress={submit} title="Create account" />
       <PrimaryButton
         onPress={() => {
           router.replace('/login');

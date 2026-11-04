@@ -1,6 +1,6 @@
 import type { TodoFilters, TodosResponse } from '@prod-forge-todolist-frontend/core';
 
-import { authReducer, login, todosApi, todosReducer } from '@prod-forge-todolist-frontend/core';
+import { authReducer, sessionRestored, todosApi, todosReducer } from '@prod-forge-todolist-frontend/core';
 import { applyTodosQuery, todos } from '@prod-forge-todolist-frontend/test-data';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, screen, waitFor, within } from '@testing-library/react';
@@ -50,7 +50,7 @@ const renderHome = async (options: { authenticated?: boolean } = {}): Promise<Re
   const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
 
   if (authenticated) {
-    store.dispatch(login({ email: 'a@b.com' }));
+    store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
   }
 
   const view = render(
@@ -324,7 +324,7 @@ describe('<Home /> page — authenticated', () => {
         }),
       );
       const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
 
       render(
         <Provider store={store}>
@@ -341,7 +341,7 @@ describe('<Home /> page — authenticated', () => {
       const user = userEvent.setup();
       vi.mocked(todosApi.getAll).mockRejectedValue(new Error('Network error'));
       const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
       const dispatchSpy = vi.spyOn(store, 'dispatch');
 
       render(
@@ -372,7 +372,7 @@ describe('<Home /> page — authenticated', () => {
       const user = userEvent.setup();
       vi.mocked(todosApi.getAll).mockRejectedValueOnce(new Error('Network error')).mockImplementation(applyFilters);
       const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
 
       render(
         <Provider store={store}>
@@ -407,7 +407,7 @@ describe('<Home /> page — authenticated', () => {
     it('shows an error message when fetching fails', async () => {
       vi.mocked(todosApi.getAll).mockRejectedValue(new Error('Network error'));
       const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
 
       render(
         <Provider store={store}>
@@ -425,7 +425,7 @@ describe('<Home /> page — authenticated', () => {
     it('shows the retry button in the error block when fetching fails', async () => {
       vi.mocked(todosApi.getAll).mockRejectedValue(new Error('Network error'));
       const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
-      store.dispatch(login({ email: 'a@b.com' }));
+      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
 
       render(
         <Provider store={store}>
