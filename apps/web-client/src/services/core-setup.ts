@@ -31,9 +31,12 @@ export const logrockLogger: CoreLogger = {
   },
 };
 
+// Served by the Vite dev proxy; production builds require VITE_API_BASE_URL (see vite.build-env.ts).
+const DEV_API_BASE_URL = '/api/v1/';
+
 export function setupCore(): void {
   configureCore({
-    apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
+    apiBaseUrl: import.meta.env.VITE_API_BASE_URL || DEV_API_BASE_URL,
     getToken: () => store.getState().auth.token,
     logger: logrockLogger,
     reportError: captureException,

@@ -34,6 +34,8 @@ The variables the web client uses are typed in `apps/web-client/src/env.d.ts`:
 | `VITE_SENTRY_DSN`      | no       | Enables Sentry when set (see [Client Observability](client-observability.md)) |
 | `VITE_APP_VERSION`     | derived  | Defined by `vite.config.ts` from `package.json`; not set by hand              |
 
+In development `VITE_API_BASE_URL` can be the relative `/api/v1/` (also the fallback when it is unset in the dev server): `server.proxy` in `apps/web-client/vite.config.ts` forwards `/api` to `http://localhost:3000`, so the browser stays on the Vite origin and the backend CORS allowlist is not involved. To log in locally, run `docker compose up` in the backend repo, then `npm run dev`, and use `user1@example.com`. The proxy exists only in the dev server; a production build still requires an absolute `VITE_API_BASE_URL`. `'self'` in the CSP covers the proxied calls; `normalizeCspOrigins` drops the relative URL.
+
 `VITE_API_BASE_URL` and `VITE_ASSETS_BASE_URL` are also substituted into `index.html` as `%VITE_API_BASE_URL%` in the Content Security Policy `connect-src`, so the browser is allowed to call exactly the configured origins. Vite leaves a `%VITE_*%` token unchanged when the variable is unset, which would put an invalid source into the policy. The `stripUnsetHtmlEnv` transform in `apps/web-client/vite.build-env.ts` removes such tokens.
 
 ## .env.example
@@ -43,7 +45,7 @@ Local values live in `.env` files, which are ignored by git (`.gitignore` lists 
 Root `.env.example` (web):
 
 ```shell
-VITE_API_BASE_URL=http://localhost:3000/api/v1/
+VITE_API_BASE_URL=/api/v1/
 VITE_ASSETS_BASE_URL=http://localhost:4000
 VITE_SENTRY_DSN=
 ```

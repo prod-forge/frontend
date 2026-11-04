@@ -93,6 +93,12 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
         '@prod-forge-todolist-frontend/ui-web': path.resolve(dirname, '../../packages/ui-web/src/index.ts'),
       },
     },
+    // Dev only: lets a browser on the Vite origin call the local backend without CORS.
+    server: {
+      proxy: {
+        '/api': { changeOrigin: true, target: 'http://localhost:3000' },
+      },
+    },
     test: {
       coverage: {
         exclude: ['src/**/*.test.{ts,tsx}', 'src/**/*.stories.{ts,tsx}', 'src/**/*.d.ts', 'src/main.tsx'],

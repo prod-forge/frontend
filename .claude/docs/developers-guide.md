@@ -20,7 +20,7 @@ cp .env.example .env
 Required env variables:
 
 ```
-VITE_API_BASE_URL=http://localhost:3000/api/v1/
+VITE_API_BASE_URL=/api/v1/   # relative: the Vite dev server proxies /api to http://localhost:3000
 VITE_ASSETS_BASE_URL=http://localhost:4000
 VITE_SENTRY_DSN=          # leave empty for local dev
 ```
@@ -28,6 +28,8 @@ VITE_SENTRY_DSN=          # leave empty for local dev
 ---
 
 ## Running the App
+
+To log in against the local backend: run `docker compose up` in the backend repo, then `npm run dev` here, and log in with `user1@example.com`. The Vite dev server proxies `/api` to `http://localhost:3000`, so the backend CORS allowlist is not involved.
 
 ```bash
 # Start web-client dev server (http://localhost:5173)
