@@ -39,7 +39,7 @@ Every directive is there for a reason:
 - `worker-src 'self' blob:` is needed by Sentry Session Replay, which compresses events in a worker created from a blob.
 - `object-src 'none'` and `base-uri 'self'` close two classic injection paths (plugins and a rewritten `<base>`).
 
-**`frame-ancestors` has no effect in a meta tag.** The browser ignores that directive when the policy is delivered through `<meta>`; it is only honored in an HTTP response header. It stays in the tag as documentation of intent, but clickjacking protection requires CloudFront to send the header (a response headers policy on the distribution). That belongs to the infrastructure and is not defined there yet, see [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/docs/frontend.md) in the Terraform guide. A header would also allow `report-to`, which a meta tag cannot do.
+**`frame-ancestors` has no effect in a meta tag.** The browser ignores that directive when the policy is delivered through `<meta>`; it is only honored in an HTTP response header. It stays in the tag as documentation of intent; the real protection is the `frame-ancestors 'none'` header that CloudFront sends (see [Headers Set by CloudFront](#headers-set-by-cloudfront)).
 
 Because the policy is built into the HTML, a change to it is a code change that goes through review and a release, like any other.
 
@@ -110,13 +110,14 @@ What is not done and is worth adding:
 
 ## Headers Set by CloudFront
 
-Security headers that a meta tag cannot carry are the job of the CDN. In this setup the distribution is described in the Terraform repository: [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/docs/frontend.md). The recommended set for a response headers policy is:
+Security headers that a meta tag cannot carry are the job of the CDN. In this setup the distribution is described in the Terraform repository: [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/docs/frontend.md). The distribution attaches a response headers policy (`aws_cloudfront_response_headers_policy.security`) to every cache behavior:
 
 | Header                                           | Value                                 | Purpose                                     |
 | ------------------------------------------------ | ------------------------------------- | ------------------------------------------- |
 | `Content-Security-Policy` with `frame-ancestors` | `frame-ancestors 'none'`              | clickjacking, the part the meta tag ignores |
-| `Strict-Transport-Security`                      | `max-age=31536000; includeSubDomains` | HTTPS only                                  |
+| `Strict-Transport-Security`                      | `max-age=63072000; includeSubDomains` | HTTPS only                                  |
+| `X-Frame-Options`                                | `DENY`                                | clickjacking, for older browsers            |
 | `X-Content-Type-Options`                         | `nosniff`                             | no MIME sniffing                            |
 | `Referrer-Policy`                                | `strict-origin-when-cross-origin`     | do not leak paths to other sites            |
 
-This table is a recommendation, not a description. The Terraform repository defines no response headers policy for the distribution today (a search for `response_headers_policy`, `frame-ancestors` and `Strict-Transport-Security` finds nothing), so these headers are **not set**, and clickjacking protection is currently missing. Adding the policy is an infrastructure task; after it, check the deployed response with `curl -I`. The backend headers (Helmet, CORS) are separate and are covered in the [backend chapter](https://github.com/prod-forge/backend/blob/main/docs/security.md#security-headers).
+This tabThe header CSP carries only `frame-ancestors`: the full policy stays in the meta tag because it needs the build-time API URL, and the browser enforces every CSP it receives. Check the deployed response with `curl -I`. end headers (Helmet, CORS) are separate and are covered in the [backend chapter](https://github.com/prod-forge/backend/blob/main/docs/security.md#security-headers).
