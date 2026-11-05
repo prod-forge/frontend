@@ -5,3 +5,6 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 document.documentElement.dataset.theme =
   stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light';
+
+// A module, so that TypeScript and the unit test can import it.
+export {};
