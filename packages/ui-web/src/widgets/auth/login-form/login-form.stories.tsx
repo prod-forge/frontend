@@ -6,7 +6,6 @@ import { LoginForm } from './login-form';
 
 const meta = {
   args: {
-    onForgotPassword: fn(),
     onSubmit: fn(),
   },
   component: LoginForm,

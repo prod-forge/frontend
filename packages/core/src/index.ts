@@ -14,14 +14,8 @@ export { BackendError, isBackendErrorResponse } from './errors/backend-error';
 export { NETWORK_ERROR_MESSAGES, NetworkError } from './errors/network-error';
 export { TOKEN_STORAGE_KEY, UNKNOWN_EMAIL_MESSAGE, USER_STORAGE_KEY } from './features/auth/auth.constants';
 
-export {
-  forgotPasswordSchema,
-  loginSchema,
-  NAME_MAX_LENGTH,
-  PASSWORD_MAX_LENGTH,
-  registerSchema,
-} from './features/auth/auth.schemas';
-export type { ForgotPasswordValues, LoginValues, RegisterValues } from './features/auth/auth.schemas';
+export { loginSchema, NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, registerSchema } from './features/auth/auth.schemas';
+export type { LoginValues, RegisterValues } from './features/auth/auth.schemas';
 export { selectAuthToken, selectAuthUser, selectIsAuthenticated } from './features/auth/auth.selectors';
 
 export { authReducer, logout } from './features/auth/auth.slices';

@@ -83,17 +83,6 @@ test.describe('Auth flow', () => {
     await expect.poll(() => page.evaluate(() => localStorage.getItem('auth-token'))).toBeNull();
   });
 
-  test('forgot password accordion opens and shows a confirmation message', async ({ page }) => {
-    await page.goto('/login');
-
-    await page.getByRole('button', { name: /forgot password\?/i }).click();
-    const forgotForm = page.getByRole('form', { name: /forgot password form/i });
-    await forgotForm.getByLabel('Email').fill('user@example.com');
-    await forgotForm.getByRole('button', { name: /send reset link/i }).click();
-
-    await expect(forgotForm).toContainText(/if an account exists for user@example\.com/i);
-  });
-
   test('logout removes the token and returns to the welcome screen', async ({ page }) => {
     await page.addInitScript(
       ([token]) => {
