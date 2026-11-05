@@ -15,6 +15,10 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#11](https://github.com/prod-forge/frontend/issues/11) — Generate Linux visual snapshots for the Playwright suite.
 - [#12](https://github.com/prod-forge/frontend/issues/12) — Deploy Storybook as a static site.
 
+## Without an issue
+
+- [e2e-coverage-below-threshold.md](e2e-coverage-below-threshold.md) — `test:e2e:cov` reports about 71% against the 80% threshold; predates the 2026-11-05 dependency upgrade.
+
 ## Format
 
 One line per problem: the issue link, its title and, when the docs already describe it, a link to that note. A problem without an issue gets a short file in this folder: what is wrong, where, why it is deferred, and what a fix needs.

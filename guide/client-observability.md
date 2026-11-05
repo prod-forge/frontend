@@ -78,7 +78,7 @@ Sentry.init({
 });
 ```
 
-- **No default PII.** `dataCollection` turns off every category Sentry would otherwise collect on its own: user details, cookies, headers, bodies and query parameters. It replaces `sendDefaultPii`, which Sentry 10.78 deprecated.
+- **No default PII.** `dataCollection` turns off every category Sentry would otherwise collect on its own: user details, cookies, headers, bodies and query parameters. It replaces `sendDefaultPii`, which Sentry 10.78 deprecated and Sentry 11 removed.
 - **Replay: 10% of sessions, 100% of sessions with an error.** Recording everything is expensive and mostly useless; recording every failure is cheap and is exactly what is needed. `maskAllText: false` is acceptable here because the application shows no sensitive text beyond the user's own todos; an application that does must turn masking on.
 - **Traces: 20% in production, 100% elsewhere.** Sampling keeps the quota under control while production stays representative.
 - **Release is the package version.** `vite.config.ts` defines `import.meta.env.VITE_APP_VERSION` from `apps/web-client/package.json`. The same value is used as the release name when source maps are uploaded, so an issue in `v1.2.2` resolves to the original source lines of `v1.2.2`.

@@ -27,3 +27,11 @@
 - **Where:** `apps/mobile-client/src/test-utils/expo-router-mock.tsx`.
 - **Why:** the mock mirrors the expo-router hook names (comment in the file).
 - **If cleaned up:** renamed mocks no longer replace the real hooks.
+
+## `tailwindcss` declared in the workspaces, not the root
+
+- **What:** `tailwindcss` is a devDependency of `apps/web-client` and `packages/ui-web`, while `@tailwindcss/vite` stays in the root.
+- **Where:** `apps/web-client/package.json`, `packages/ui-web/package.json`.
+- **Why:** knip registers its CSS compiler per workspace, only when that workspace depends on `tailwindcss`. With the dependency in the root, knip 6.44 no longer followed `@import 'tailwindcss'` and `@import '@prod-forge-todolist-frontend/styles-web/theme.css'` in `src/styles.css` and `.storybook/styles.css`, and reported both packages as unused. npm still installs one hoisted copy.
+- **If cleaned up:** moving it back to the root brings back three false "unused dependency" reports from knip.
+
