@@ -43,3 +43,10 @@
 - **Where:** `apps/mobile-client/src/services/console-logger.ts`.
 - **Why:** this adapter is the single place where core's log calls reach the device console (Metro, Android Logcat, Xcode) (comment in the file).
 - **If cleaned up:** removing the disable fails lint.
+
+## `sendDefaultPii` with a deprecation disable
+
+- **What:** `// eslint-disable-next-line @typescript-eslint/no-deprecated` above `sendDefaultPii: false` in `Sentry.init`.
+- **Where:** `apps/mobile-client/src/services/sentry.ts`.
+- **Why:** `@sentry/react-native` 8.28.0 (the version Expo SDK 58 expects) builds its options from `@sentry/core` 10.75, which deprecates `sendDefaultPii` in favour of `dataCollection`, but `ReactNativeOptions` omits `dataCollection`, and the native client still reads `sendDefaultPii` (for example to decide IP inference). So the option is the only way to state the setting explicitly.
+- **If cleaned up:** removing the disable fails lint; removing the option keeps the same default (`false`) but hides the decision. Switch to `dataCollection` when the React Native SDK accepts it.

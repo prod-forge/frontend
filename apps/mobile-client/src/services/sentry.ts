@@ -19,6 +19,8 @@ export function initSentry(): void {
   Sentry.init({
     dsn,
     environment: __DEV__ ? 'development' : 'production',
+    // The React Native options omit dataCollection; the deprecation comes from the core type it extends
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     sendDefaultPii: false,
     tracesSampleRate: __DEV__ ? 1.0 : 0.2,
   });
