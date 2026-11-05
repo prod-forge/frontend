@@ -9,6 +9,42 @@ export type Props = {
   title: string;
 };
 
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+// Keeps Tab and Shift+Tab inside the dialog, so the page behind an aria-modal dialog is not reachable
+const trapFocus = (event: KeyboardEvent, dialog: HTMLElement): void => {
+  const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+  const first = focusable.at(0);
+  const last = focusable.at(-1);
+  const active = document.activeElement;
+
+  if (!first || !last) {
+    event.preventDefault();
+    dialog.focus();
+
+    return;
+  }
+
+  if (event.shiftKey && (active === first || active === dialog || !dialog.contains(active))) {
+    event.preventDefault();
+    last.focus();
+
+    return;
+  }
+
+  if (!event.shiftKey && (active === last || !dialog.contains(active))) {
+    event.preventDefault();
+    first.focus();
+  }
+};
+
 export const Modal = ({ children, isOpen, onClose, title }: Props): ReactNode => {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -17,6 +53,12 @@ export const Modal = ({ children, isOpen, onClose, title }: Props): ReactNode =>
     if (event.key === 'Escape') {
       event.preventDefault();
       onClose();
+
+      return;
+    }
+
+    if (event.key === 'Tab' && dialogRef.current) {
+      trapFocus(event, dialogRef.current);
     }
   });
 
@@ -25,10 +67,17 @@ export const Modal = ({ children, isOpen, onClose, title }: Props): ReactNode =>
       return;
     }
 
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.addEventListener('keydown', onKeyDown);
     dialogRef.current?.focus();
 
-    return (): void => document.removeEventListener('keydown', onKeyDown);
+    return (): void => {
+      document.removeEventListener('keydown', onKeyDown);
+      // Returns the keyboard user to the control that opened the dialog, unless it left the page
+      if (opener?.isConnected) {
+        opener.focus();
+      }
+    };
   }, [isOpen]);
 
   if (!isOpen) {
