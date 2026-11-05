@@ -283,7 +283,7 @@ describe('useTheme', () => {
 
 **Setup:**
 
-- Shared mocks (Sentry, logger) are configured in `vitest.setup.ts` — do not repeat them in individual test files.
+- Shared mocks are configured in each project's `vitest.setup.ts` (in `apps/web-client`: Sentry and the logger) — do not repeat them in individual test files; a test that needs a different mock overrides it with its own `vi.mock` and says why.
 - `vitest.setup.ts` also calls `cleanup()` and `vi.clearAllMocks()` after each test; a test file resets its own state (localStorage, spies) in `beforeEach` / `afterEach`.
 - Render helpers are defined per test file as a typed function (e.g., `renderHome(options)`).
 - Use `userEvent.setup()` for simulating user interactions, not `fireEvent`.
