@@ -153,5 +153,7 @@ The human guide in `guide/` is updated when the behaviour it describes changes.
 ## Planning
 
 - Before writing a new plan, read `docs/goal.md`, `docs/architecture/` and `docs/restrictions/`
-- Plans go to `docs/plans/`, name their target version and keep a status per task
+- Plans follow `docs/plans/README.md`: a global plan (`NNN-<name>/` with `readme.md` and `00-design.md`), plans inside it, one file per step; every level carries status, version, date and modules
+- The design ends with open questions, the user's decisions and your own calls to check; implement only approved plans
+- A plan is done when its conclusions are written and the user has looked at its result
 - Shortcuts go to `docs/hacks/`, deferred problems to `docs/open-issues/`, failed attempts to `docs/postmortem/`

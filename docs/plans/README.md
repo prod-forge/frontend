@@ -1,36 +1,41 @@
 # Plans
 
-What is being implemented now. A plan contains sub-plans and tasks, their priorities, an overall status and a status per task, and the version it ships in. Before writing a plan, read [goal.md](../goal.md), [architecture/](../architecture/) and [restrictions/](../restrictions/). No plan is open at the moment.
+Every plan of the repository lives here. Before writing a plan, read [goal.md](../goal.md),
+[architecture/](../architecture/) and [restrictions/](../restrictions/).
 
-## File name
+## Format
 
-`<version>-<topic>.md`, for example `1.1.0-notifications.md`. A sub-plan adds a suffix: `1.1.0-notifications-mobile.md`.
+- A **global plan** is a numbered folder `NNN-<name>/` with `readme.md` (header, goal, its plans in order,
+  conclusions) and `00-design.md` (the design it argues from).
+- Inside it, each **plan** is a folder `NN-<name>/` with `readme.md` (header, its steps in order, conclusions) and one
+  file per **step**: `NN-<name>.md`.
+- Every global plan, plan and step opens with the same header:
 
-## Template
+  ```
+  **Status:** <status> · **Version:** <target version> · **Date:** YYYY-MM-DD · **Modules:** <what it touches>
+  ```
 
-```markdown
-# <Title>
+- Statuses: 📝 draft · ✅ approved · 🔨 in progress · ⏸ hold · ✔️ done · 🔒 closed (stopped, with the reason) ·
+  ❌ failed (tried, did not work; linked to `../postmortem/`).
+- A step is small enough for one session and one commit: the files, the interfaces it produces for later steps, the
+  tests that prove it is done.
 
-Version: <target version>
-Status: <todo | in progress (N/M tasks done) | done>
+## Design
 
-## Goal
+`00-design.md` covers the intent (the user's task in their words), goals, non-goals, the design itself, and ends with:
 
-<One or two sentences: what the user gets.>
+- **Open questions** — what cannot be decided without the user.
+- **Decisions** — the user's answers, dated. Not revisited.
+- **Agent's calls (to check)** — choices made without the user, each waiting for a confirm or an overrule.
 
-## Tasks
+Only ✅ approved plans are implemented. A plan is ✔️ done when its **Conclusions** section is written (what was
+measured, decided, learned) and the user has looked at its result.
 
-| #   | Task   | Priority | Status |
-| --- | ------ | -------- | ------ |
-| 1   | <task> | P0       | todo   |
+## Priority list
 
-## Sub-plans
+Rows are in priority order: the order they are implemented in.
 
-- `<version>-<topic>-<part>.md`: <what it covers>.
+| #   | Global plan | Status | Version | Modules |
+| --- | ----------- | ------ | ------- | ------- |
 
-## Notes
-
-- Restrictions, hacks or open issues the plan depends on, with links.
-```
-
-Priorities: P0 (required for the version), P1, P2. Task statuses: `todo`, `in work`, `done`.
+No global plan is open at the moment.

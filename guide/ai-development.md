@@ -118,7 +118,8 @@ For example:
 ## Planning
 
 Before writing a new plan, read `docs/goal.md`, `docs/architecture/` and `docs/restrictions/`.
-Every plan goes to `docs/plans/`, names its target version and keeps a status per task.
+Plans follow `docs/plans/README.md`: a global plan with a design, plans and steps, each with a status.
+End the design with open questions and your own calls to check; implement only approved plans.
 
 ## Documentation Rules
 
@@ -152,8 +153,8 @@ Start small: a single file is fine until it grows, then turn it into a folder.
   example below.
 - **restrictions** — every project has its constraints: a dependency that cannot be upgraded, an API that must stay
   backward compatible, a platform that is not supported. Write them down once instead of running into them every time.
-- **plans** — the most important folder: what you are implementing. A plan contains sub-plans and tasks, their
-  priorities, an overall status and a status per task, and ideally the version it ships in. See the example below.
+- **plans** — the most important folder: what you are implementing. A global plan contains a design, plans and steps,
+  each with its status, and ideally the version it ships in. See [Task Decomposition](#task-decomposition).
 - **ideas** — your ideas at a very high level, while they are not ready for work.
 - **roadmap** — ideas that have been worked out. Here you shape future versions and decide which features they include.
 - **benchmarks** — useful when the project has metrics. Save the results before every release, and later you can see
@@ -194,36 +195,6 @@ npm run full-check     # everything CI would run; use before a release
 - Never run `npm run release` without an explicit request.
 ````
 
-Example plan, `docs/plans/1.2.0-notifications.md`:
-
-```markdown
-# Notifications
-
-Version: 1.2.0
-Status: in progress (2/4 tasks done)
-
-## Goal
-
-Show success and error toasts after API operations.
-
-## Tasks
-
-| #   | Task                                 | Priority | Status  |
-| --- | ------------------------------------ | -------- | ------- |
-| 1   | Notifications slice and selectors    | P0       | done    |
-| 2   | Toast component with Storybook story | P0       | done    |
-| 3   | Dispatch toasts from todo thunks     | P1       | in work |
-| 4   | Auto-dismiss timing and a11y review  | P2       | todo    |
-
-## Sub-plans
-
-- `1.2.0-notifications-mobile.md`: the same feature for the Expo client.
-
-## Notes
-
-- Restriction: no new dependencies (`docs/restrictions/dependencies.md`).
-```
-
 This repository follows the layout above in [docs/](../docs/). It omits `benchmarks/`, and the public roadmap stays in
 [roadmap.md](../roadmap.md).
 
@@ -237,16 +208,6 @@ guarantee.
 Repeated actions can also become skills or custom commands of your agent: define them once, invoke them by name. Good
 candidates are commits in the project's convention, running a specific test suite or scaffolding a new feature.
 
-### Plan, then implement
-
-For anything beyond a trivial change, plan first:
-
-1. Write the task with enough context: goal, constraints, the reference implementation to follow.
-2. Let a strong model produce the plan. Review every point and add what is missing by hand.
-3. Save the plan to `docs/plans/` and commit it, linked to the ticket.
-4. Implement from the saved plan, task by task, updating the status as you go. A cheaper model is usually enough for
-   implementation when the plan is good.
-
 ## Pre-Hooks
 
 Agent-side hooks run before the agent uses a tool and can block the action. This repository has Claude Code hooks in
@@ -258,37 +219,73 @@ belongs in the git hooks described in [Quality Gates First](#quality-gates-first
 
 ## Task Decomposition
 
-Bad prompt:
+Before the agent writes any code, it gets a high-level task and turns it into a plan. You do not write detailed prompts
+for every step: the project context comes from `AGENTS.md` and `docs/`, the details come from the plan.
+
+Small changes (a typo, a one-line fix) do not need this. Anything that touches more than one module or needs a
+decision does.
+
+### 1. State the task at a high level
+
+Describe what you want and why, in your own words: the intent, the goals, what is out of scope, the target version.
+Do not prescribe files and functions; that is what the plan is for.
 
 ```text
-Add notifications to the app
+Add in-app notifications: after every API operation the user sees a success or an error toast, on web and on mobile.
+Target version 1.2.0. Push notifications are out of scope.
 ```
 
-Good prompt[^prompt-context]:
+### 2. Let the agent write the plan
 
-```text
-Task:
-Implement task 1 of docs/plans/1.2.0-notifications.md: the notifications state in packages/core.
+The agent writes a global plan with plans and steps inside it, three levels deep:
 
-Details:
-- src/features/notifications/notifications.types.ts — Notification type (id, message, type: 'success' | 'error')
-- src/features/notifications/notifications.slices.ts — slice with add/remove actions
-- src/features/notifications/notifications.selectors.ts — selectNotifications selector
-- Unit tests next to each file
-
-Pattern:
-Use packages/core/src/features/todos/ as the structural reference.
-
-Outcome:
-Any app can dispatch add/remove and read selectNotifications; task 1 is marked done in the plan.
+```
+docs/plans/
+├── README.md                      # all global plans in priority order, with their statuses
+└── 003-notifications/             # global plan
+    ├── readme.md                  # status, version, goal, its plans in order, conclusions
+    ├── 00-design.md               # intent, goals, non-goals, the design, open questions, decisions
+    ├── 01-state/                  # plan
+    │   ├── readme.md              # status, its steps in order, conclusions
+    │   ├── 01-types-and-slice.md  # step
+    │   └── 02-selectors.md        # step
+    └── 02-toast/                  # plan
+        ├── readme.md
+        └── 01-component-and-story.md
 ```
 
-The more specific the task, the better the result. Decompose large tasks into smaller isolated steps whenever possible.
+Every global plan, plan and step opens with the same header:
 
-[^prompt-context]:
-    The prompt has no Context or Constraints section on purpose. The agent reads the project context and the general
-    constraints from `AGENTS.md` and `docs/` (`goal.md`, `architecture/`, `restrictions/`) in every session, so the
-    prompt carries only what is specific to this task.
+```markdown
+**Status:** 📝 draft · **Version:** 1.2.0 · **Date:** 2026-11-05 · **Modules:** packages/core, packages/ui-web
+```
+
+Statuses: 📝 draft · ✅ approved · 🔨 in progress · ⏸ hold · ✔️ done · 🔒 closed (stopped, with the reason) · ❌ failed
+(tried and did not work, linked to `docs/postmortem/`).
+
+A step is small enough for one agent session and one commit. It names the files, the interfaces it produces for the
+next steps and the tests that prove it is done.
+
+### 3. Answer the questions
+
+The design ends with three lists:
+
+- **Open questions** — what the agent cannot decide on its own.
+- **Decisions** — your answers, dated. They are not revisited later.
+- **Agent's calls (to check)** — choices the agent made itself; confirm or overrule each one.
+
+Answer in the file, not only in the chat. The next session reads the plan, not the conversation.
+
+### 4. Validate and approve
+
+Check the design against `docs/goal.md`, `docs/architecture/` and `docs/restrictions/`, read every plan and step, and
+fix what is wrong or missing. Only then move the plan from 📝 draft to ✅ approved. Only approved plans are implemented.
+
+### 5. Close with conclusions
+
+Every global plan and plan keeps a **Conclusions** section, filled in as the work is done: what was measured, what you
+decided, what was learned. A plan is done when its conclusions are written and you have looked at its result. An
+attempt that did not work becomes ❌ failed with a note in `docs/postmortem/`, so nobody repeats it.
 
 ## Common AI Problems
 
@@ -339,7 +336,7 @@ complex solutions. AI assistance does not remove engineering responsibility.
 
 ### Commit Frequently
 
-Each completed task of a plan should become a separate commit. Small commits make it easy to roll back a problematic
+Each completed step of a plan should become a separate commit. Small commits make it easy to roll back a problematic
 change, find where a regression came from and review generated code incrementally.
 
 ### Validate Edge Cases
@@ -378,12 +375,13 @@ and the team.
 ## Recommended Workflow
 
 1. Capture the idea in `docs/ideas/`; when it is worked out, move it to `docs/roadmap/` and assign a version.
-2. Write a plan in `docs/plans/` with tasks, priorities, statuses and the target version.
-3. Review the plan against `docs/goal.md`, `docs/architecture/` and `docs/restrictions/`, then commit it.
-4. Implement task by task; each task ends with a commit that passes the git hooks.
-5. Review the generated code after each task and update the task status in the plan.
-6. Record what you learned: shortcuts in `docs/hacks/`, deferred problems in `docs/open-issues/`, failed attempts in
-   `docs/postmortem/`.
+2. Give the agent the task at a high level and let it write a global plan with plans and steps in `docs/plans/`.
+3. Answer the open questions, check the agent's calls, validate the plan against `docs/goal.md`,
+   `docs/architecture/` and `docs/restrictions/`, then approve and commit it.
+4. Implement step by step; each step ends with a commit that passes the git hooks.
+5. Review the generated code after each step and update the statuses in the plan.
+6. Record what you learned: conclusions in the plan, shortcuts in `docs/hacks/`, deferred problems in
+   `docs/open-issues/`, failed attempts in `docs/postmortem/`.
 7. Run the full checks and review all changes before opening a pull request.
 
 AI coding agents are most effective when used as controlled engineering accelerators, not autonomous developers.
