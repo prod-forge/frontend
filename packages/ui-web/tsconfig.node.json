@@ -7,7 +7,7 @@
     "types": ["node"]
   },
   "include": [
-    "vite.config.ts",
+    "vite.config.mts",
     "vitest.setup.ts",
     "vitest.shims.d.ts",
     "playwright.a11y.config.ts",

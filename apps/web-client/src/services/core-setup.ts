@@ -31,7 +31,7 @@ export const logrockLogger: CoreLogger = {
   },
 };
 
-// Served by the Vite dev proxy; production builds require VITE_API_BASE_URL (see vite.build-env.ts).
+// Served by the Vite dev proxy; production builds require VITE_API_BASE_URL (see vite.build-env.mts).
 const DEV_API_BASE_URL = '/api/v1/';
 
 export function setupCore(): void {

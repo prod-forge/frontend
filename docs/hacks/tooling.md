@@ -35,3 +35,9 @@
 - **Why:** knip registers its CSS compiler per workspace, only when that workspace depends on `tailwindcss`. With the dependency in the root, knip 6.44 no longer followed `@import 'tailwindcss'` and `@import '@prod-forge-todolist-frontend/styles-web/theme.css'` in `src/styles.css` and `.storybook/styles.css`, and reported both packages as unused. npm still installs one hoisted copy.
 - **If cleaned up:** moving it back to the root brings back three false "unused dependency" reports from knip.
 
+
+## Vite and Vitest configs are `.mts` files
+
+- **What:** `apps/web-client/vite.config.mts`, `apps/web-client/vite.build-env.mts`, `packages/ui-web/vite.config.mts`, `packages/core/vitest.config.mts` and `packages/test-data/vitest.config.mts` use the `.mts` extension; the configs take their folder from `import.meta.dirname`, and `vite.config.mts` imports `./vite.build-env.mts` with its extension (`allowImportingTsExtensions` in `apps/web-client/tsconfig.node.json`).
+- **Why:** the packages have no `"type": "module"`, so Vite loaded the `.ts` configs as CommonJS and printed a warning on every run: `configLoader: 'native'`, planned as the default in a future Vite major, rejects ESM syntax in a CommonJS file, `__dirname` and extensionless imports. `"type": "module"` was not used because it changes how Node treats every `.js` file of a package (`test-data` builds CommonJS into `dist`).
+- **If cleaned up:** renaming them back to `.ts` brings back the warning, and a Vite major that makes the native loader the default fails to load the configs.

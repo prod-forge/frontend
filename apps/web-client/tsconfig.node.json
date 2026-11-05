@@ -3,13 +3,14 @@
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
     "noEmit": true,
     "types": ["node", "vite/client", "vitest/globals"]
   },
   "include": [
     "e2e/**/*",
-    "vite.config.ts",
-    "vite.build-env.ts",
+    "vite.config.mts",
+    "vite.build-env.mts",
     "vite.build-env.test.ts",
     "index-csp.test.ts",
     "vitest.setup.ts",

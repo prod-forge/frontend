@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { normalizeCspOrigins, stripUnsetHtmlEnv } from './vite.build-env';
+import { normalizeCspOrigins, stripUnsetHtmlEnv } from './vite.build-env.mts';
 
 // Keep in sync with the CSP assertion in the terraform repo (infrastructure/environments/prod/tests/edge.tftest.hcl).
 const EXPECTED_CSP =

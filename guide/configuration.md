@@ -36,11 +36,11 @@ The variables the web client uses are typed in `apps/web-client/src/env.d.ts`:
 | `VITE_API_BASE_URL`    | build    | Base URL of the backend; must end with `/`; also allowed in the CSP           |
 | `VITE_ASSETS_BASE_URL` | no       | Origin of the assets CDN; empty means "use local paths"                       |
 | `VITE_SENTRY_DSN`      | no       | Enables Sentry when set (see [Client Observability](client-observability.md)) |
-| `VITE_APP_VERSION`     | derived  | Defined by `vite.config.ts` from `package.json`; not set by hand              |
+| `VITE_APP_VERSION`     | derived  | Defined by `vite.config.mts` from `package.json`; not set by hand             |
 
-In development `VITE_API_BASE_URL` can be the relative `/api/v1/` (also the fallback when it is unset in the dev server): `server.proxy` in `apps/web-client/vite.config.ts` forwards `/api` to `http://localhost:3000`, so the browser stays on the Vite origin and the backend CORS allowlist is not involved. To log in locally, follow the backend README "Getting started" (`npm run db:generate`, a `.env` with `DATABASE_PORT` and `JWT_SECRET` appended via `>>`, `docker compose up -d database cache`, `npm run db:migration:deploy`, `npm run db:seed`, `npm run start:dev`), then run `npm run dev` here and log in with `user1@example.com`. The proxy exists only in the dev server; a production build still requires an absolute `VITE_API_BASE_URL`. `'self'` in the CSP covers the proxied calls; `normalizeCspOrigins` drops the relative URL.
+In development `VITE_API_BASE_URL` can be the relative `/api/v1/` (also the fallback when it is unset in the dev server): `server.proxy` in `apps/web-client/vite.config.mts` forwards `/api` to `http://localhost:3000`, so the browser stays on the Vite origin and the backend CORS allowlist is not involved. To log in locally, follow the backend README "Getting started" (`npm run db:generate`, a `.env` with `DATABASE_PORT` and `JWT_SECRET` appended via `>>`, `docker compose up -d database cache`, `npm run db:migration:deploy`, `npm run db:seed`, `npm run start:dev`), then run `npm run dev` here and log in with `user1@example.com`. The proxy exists only in the dev server; a production build still requires an absolute `VITE_API_BASE_URL`. `'self'` in the CSP covers the proxied calls; `normalizeCspOrigins` drops the relative URL.
 
-`VITE_API_BASE_URL` and `VITE_ASSETS_BASE_URL` are also substituted into `index.html` as `%VITE_API_BASE_URL%` in the Content Security Policy `connect-src`, so the browser is allowed to call exactly the configured origins. Vite leaves a `%VITE_*%` token unchanged when the variable is unset, which would put an invalid source into the policy. The `stripUnsetHtmlEnv` transform in `apps/web-client/vite.build-env.ts` removes such tokens.
+`VITE_API_BASE_URL` and `VITE_ASSETS_BASE_URL` are also substituted into `index.html` as `%VITE_API_BASE_URL%` in the Content Security Policy `connect-src`, so the browser is allowed to call exactly the configured origins. Vite leaves a `%VITE_*%` token unchanged when the variable is unset, which would put an invalid source into the policy. The `stripUnsetHtmlEnv` transform in `apps/web-client/vite.build-env.mts` removes such tokens.
 
 ## .env.example
 
@@ -67,7 +67,7 @@ Nx loads the root `.env` into the environment of its tasks. That detail matters 
 
 ## assertBuildEnv
 
-A build without an API URL is the worst kind of failure: it succeeds, ships, and then every request goes to a URL that starts with the literal text `undefined`. `assertBuildEnv` in `apps/web-client/vite.build-env.ts` makes it fail at build time instead:
+A build without an API URL is the worst kind of failure: it succeeds, ships, and then every request goes to a URL that starts with the literal text `undefined`. `assertBuildEnv` in `apps/web-client/vite.build-env.mts` makes it fail at build time instead:
 
 ```ts
 export function assertBuildEnv(env: Record<string, string | undefined>, isBuild: boolean): void {
@@ -91,7 +91,7 @@ export function assertBuildEnv(env: Record<string, string | undefined>, isBuild:
 }
 ```
 
-It is wired as the `buildEnvGuard` plugin with `apply: 'build'`, so it runs on `vite build` only. The dev server, Vitest and tools that merely load `vite.config.ts` (such as knip) are not affected. The tests are in `vite.build-env.test.ts`.
+It is wired as the `buildEnvGuard` plugin with `apply: 'build'`, so it runs on `vite build` only. The dev server, Vitest and tools that merely load `vite.config.mts` (such as knip) are not affected. The tests are in `vite.build-env.test.ts`.
 
 The guard reads `process.env`, not Vite's own `.env` loading. Locally this works because Nx puts the root `.env` into the environment. A consequence to know: a `VITE_API_BASE_URL` set **only** in `apps/web-client/.env` is read by Vite for the bundle but not seen by the guard, so the build can fail with "required" even though the file has the value. Put the value in the root `.env` or export it in the shell.
 

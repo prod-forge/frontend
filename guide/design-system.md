@@ -182,7 +182,7 @@ Storybook is configured in `packages/ui-web/.storybook/`:
 Two things run on the stories inside Storybook tooling:
 
 - **addon-a11y** runs axe on each story in the Storybook UI. `parameters.a11y.test` is `'error'`, so a violation fails instead of warning.
-- **addon-vitest** turns every story into a Vitest test in a real Chromium browser. It is the `storybook` project in `packages/ui-web/vite.config.ts`, run with `npm run test:storybook`. A story that throws during render fails the test.
+- **addon-vitest** turns every story into a Vitest test in a real Chromium browser. It is the `storybook` project in `packages/ui-web/vite.config.mts`, run with `npm run test:storybook`. A story that throws during render fails the test.
 
 The `unit` project in the same config runs the `*.test.tsx` files in jsdom (`npm run test`). Two projects, two jobs: jsdom for logic, a browser for rendering.
 

@@ -27,6 +27,6 @@ const getTscCommands = (files) => {
 
 module.exports = {
   '*.md': ['prettier --write'],
-  '*.{ts,tsx,json}': ['prettier --write', 'eslint --fix'],
-  '*.{ts,tsx}': [getTscCommands],
+  '*.{ts,tsx,mts,json}': ['prettier --write', 'eslint --fix'],
+  '*.{ts,tsx,mts}': [getTscCommands],
 };

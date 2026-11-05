@@ -1,4 +1,4 @@
-import { assertBuildEnv, buildEnvGuard, stripUnsetHtmlEnv } from './vite.build-env';
+import { assertBuildEnv, buildEnvGuard, stripUnsetHtmlEnv } from './vite.build-env.mts';
 
 describe('assertBuildEnv', () => {
   describe('negative cases', () => {

@@ -14,7 +14,7 @@ A bundle grows quietly. One import of a large library is enough to double the do
 npm run build:analyze --workspace @prod-forge-todolist-frontend/web-client
 ```
 
-The script is `tsc -b && ANALYZE=true vite build`. When `ANALYZE` is `true`, `vite.config.ts` adds `rollup-plugin-visualizer`, which writes `apps/web-client/dist/stats.html` and opens it:
+The script is `tsc -b && ANALYZE=true vite build`. When `ANALYZE` is `true`, `vite.config.mts` adds `rollup-plugin-visualizer`, which writes `apps/web-client/dist/stats.html` and opens it:
 
 ```ts
 visualizer({
@@ -47,7 +47,7 @@ What is not split: the Redux store, `packages/core` and the design system styles
 
 ## Caching Strategy
 
-The build writes content-hashed files into `dist/static/` (`assetsDir: 'static'` in `vite.config.ts`). A file name changes when its content changes, so a hashed file can be cached forever. `index.html` is the opposite: it is the only file that points to the current hashes, so it must never be cached.
+The build writes content-hashed files into `dist/static/` (`assetsDir: 'static'` in `vite.config.mts`). A file name changes when its content changes, so a hashed file can be cached forever. `index.html` is the opposite: it is the only file that points to the current hashes, so it must never be cached.
 
 `cd.yml` sets exactly this:
 

@@ -23,7 +23,7 @@ Then `.release-it.json` takes over:
 1. `before:init` runs `npm run lint`. A release does not start from a broken tree.
 2. The git check requires a clean working directory and the `main` branch.
 3. `@release-it/conventional-changelog` (preset `angular`) reads the commits since the last tag, decides the next version (`fix` is a patch, `feat` is a minor, a breaking change is a major) and writes `CHANGELOG.md`. This is why commit messages are validated by commitlint: the history is the input of the release. See [Development Workflow](development-workflow.md).
-4. `@release-it/bumper` writes the new version into `apps/*/package.json`. `VITE_APP_VERSION` and the Sentry release name are read from the `web-client` one (`vite.config.ts`), so the version in the bundle, in Sentry and in the git tag is the same.
+4. `@release-it/bumper` writes the new version into `apps/*/package.json`. `VITE_APP_VERSION` and the Sentry release name are read from the `web-client` one (`vite.config.mts`), so the version in the bundle, in Sentry and in the git tag is the same.
 5. `after:bump` runs `npm run build`, which is `nx run-many -t build`. The web build needs `VITE_API_BASE_URL` (see [Configuration](configuration.md)), so a local release needs it in the shell or in an `.env` file, or the build guard stops the release.
 6. release-it commits `chore(release): v<version>`, creates the annotated tag `v<version>`, pushes both and creates a GitHub release. `npm.publish` is `false`: the packages are internal.
 

@@ -20,7 +20,7 @@ export function assertBuildEnv(env: Record<string, string | undefined>, isBuild:
   }
 }
 
-// Runs the guard only when `vite build` resolves its config; tools that merely load vite.config.ts (knip) are unaffected.
+// Runs the guard only when `vite build` resolves its config; tools that merely load vite.config.mts (knip) are unaffected.
 export function buildEnvGuard(env: Record<string, string | undefined>): Plugin {
   return {
     apply: 'build',

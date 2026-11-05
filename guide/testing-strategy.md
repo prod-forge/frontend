@@ -82,12 +82,12 @@ Every project has the same threshold: 80% for branches, functions, lines and sta
 
 | Scope                  | Tool          | Where                                      |
 | ---------------------- | ------------- | ------------------------------------------ |
-| `apps/web-client` unit | Vitest, v8    | `vite.config.ts`                           |
+| `apps/web-client` unit | Vitest, v8    | `vite.config.mts`                          |
 | `apps/web-client` e2e  | nyc, istanbul | root `.nycrc.json` (run by `test:e2e:cov`) |
 | `apps/mobile-client`   | Jest          | `jest.config.ts` (`coverageThreshold`)     |
-| `packages/core`        | Vitest, v8    | `vitest.config.ts`                         |
-| `packages/ui-web`      | Vitest, v8    | `vite.config.ts` (unit project)            |
-| `packages/test-data`   | Vitest, v8    | `vitest.config.ts`                         |
+| `packages/core`        | Vitest, v8    | `vitest.config.mts`                        |
+| `packages/ui-web`      | Vitest, v8    | `vite.config.mts` (unit project)           |
+| `packages/test-data`   | Vitest, v8    | `vitest.config.mts`                        |
 
 Coverage is measured over all of `src/`, not only the files the tests happen to import, so an untested file counts as 0% instead of disappearing from the report. It excludes tests, stories, Playwright specs, type declarations, barrel `index.ts` files, `main.tsx` and the mobile test helpers. `ui-web` is also covered by the story, visual and a11y layers, which a line count does not show.
 

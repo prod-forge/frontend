@@ -5,14 +5,13 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-import { buildEnvGuard, normalizeCspOrigins, stripUnsetHtmlEnv } from './vite.build-env';
+import { buildEnvGuard, normalizeCspOrigins, stripUnsetHtmlEnv } from './vite.build-env.mts';
 
 const require = createRequire(import.meta.url);
 const { version } = require('./package.json') as { version: string };
-const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+const dirname = import.meta.dirname;
 
 export default defineConfig(async ({ command }): Promise<UserConfig> => {
   const extraPlugins: PluginOption[] = [];

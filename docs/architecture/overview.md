@@ -222,9 +222,9 @@ worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'no
 
 `script-src 'self'` forbids inline scripts, so the theme bootstrap that used to be inline in `index.html` now lives in `src/theme-init.ts`, loaded as a module before `main.tsx`. Vite bundles both module scripts into one entry and evaluates `theme-init.ts` first, so `data-theme` is set before React renders and dark mode does not flash light (covered by `e2e/theme.spec.ts`). The alternative, a per-response nonce, needs a server that rewrites HTML, which a static S3/CloudFront site does not have. `style-src` keeps `'unsafe-inline'` so that `style` attributes set at runtime (by React or third-party code) are not blocked.
 
-The CloudFront response headers policy (terraform repo) serves the full policy as a header (enforced in production). The meta tag is shipped too and kept identical: identical when `VITE_ASSETS_BASE_URL` is unset or same-origin, otherwise the meta tag adds the assets origin, both policies are enforced and the stricter header wins. `index-csp.test.ts` asserts the rendered meta policy against the string the terraform edge test asserts. `normalizeCspOrigins` (`vite.build-env.ts`) reduces the API URL to its origin and drops relative URLs so the two stay identical.
+The CloudFront response headers policy (terraform repo) serves the full policy as a header (enforced in production). The meta tag is shipped too and kept identical: identical when `VITE_ASSETS_BASE_URL` is unset or same-origin, otherwise the meta tag adds the assets origin, both policies are enforced and the stricter header wins. `index-csp.test.ts` asserts the rendered meta policy against the string the terraform edge test asserts. `normalizeCspOrigins` (`vite.build-env.mts`) reduces the API URL to its origin and drops relative URLs so the two stay identical.
 
-Vite replaces `%VITE_*%` placeholders in `index.html` at build and dev time, but it leaves the token untouched when the variable is unset. `VITE_ASSETS_BASE_URL` is optional, so `vite.config.ts` runs `stripUnsetHtmlEnv` (`vite.build-env.ts`) as a `transformIndexHtml` hook: it drops any leftover `%VITE_*%` token instead of shipping an invalid CSP source.
+Vite replaces `%VITE_*%` placeholders in `index.html` at build and dev time, but it leaves the token untouched when the variable is unset. `VITE_ASSETS_BASE_URL` is optional, so `vite.config.mts` runs `stripUnsetHtmlEnv` (`vite.build-env.mts`) as a `transformIndexHtml` hook: it drops any leftover `%VITE_*%` token instead of shipping an invalid CSP source.
 
 Two limits of a `<meta>` CSP: browsers ignore `frame-ancestors` there (it only works as an HTTP header), and a relative `VITE_API_BASE_URL` such as `/api/v1/` (used by the e2e dev server) would be an invalid source, so `normalizeCspOrigins` drops it; `'self'` already covers it. Clickjacking protection therefore needs a `Content-Security-Policy` or `X-Frame-Options` response header on the CDN.
 
@@ -290,9 +290,9 @@ Pages are containers scoped to a route. They orchestrate state and compose layou
 | `EXPO_PUBLIC_SENTRY_DSN`   | mobile `src/services/sentry.ts`     | Sentry React Native DSN; Sentry stays off when empty                                                         |
 | `VITE_ASSETS_BASE_URL`     | `ui-web` TodoItem, `index.html` CSP | Base URL for S3-hosted static assets (optional)                                                              |
 | `VITE_SENTRY_DSN`          | `services/sentry.ts`                | Sentry project DSN                                                                                           |
-| `SENTRY_ORG`               | `vite.config.ts`                    | Sentry org for source map upload                                                                             |
-| `SENTRY_PROJECT`           | `vite.config.ts`                    | Sentry project for source map upload                                                                         |
-| `SENTRY_AUTH_TOKEN`        | `vite.config.ts`                    | Auth token for Sentry CLI                                                                                    |
+| `SENTRY_ORG`               | `vite.config.mts`                    | Sentry org for source map upload                                                                             |
+| `SENTRY_PROJECT`           | `vite.config.mts`                    | Sentry project for source map upload                                                                         |
+| `SENTRY_AUTH_TOKEN`        | `vite.config.mts`                    | Auth token for Sentry CLI                                                                                    |
 
 ---
 
@@ -306,7 +306,7 @@ dist/
 └── static/             # Hashed JS, CSS, assets; one JS chunk per lazy route
 ```
 
-A build without a valid `VITE_API_BASE_URL` (missing, not an absolute `http(s)://` URL, or without a trailing `/`) fails with a clear message instead of producing a bundle whose requests go to a URL starting with `undefined`. The check is `assertBuildEnv` in `vite.build-env.ts`, run by the `buildEnvGuard` plugin (`apply: 'build'`, `configResolved` hook). It runs only during `vite build`, not when the config file is merely evaluated, so the dev server and tools that load `vite.config.ts` (knip) work without the variable.
+A build without a valid `VITE_API_BASE_URL` (missing, not an absolute `http(s)://` URL, or without a trailing `/`) fails with a clear message instead of producing a bundle whose requests go to a URL starting with `undefined`. The check is `assertBuildEnv` in `vite.build-env.mts`, run by the `buildEnvGuard` plugin (`apply: 'build'`, `configResolved` hook). It runs only during `vite build`, not when the config file is merely evaluated, so the dev server and tools that load `vite.config.mts` (knip) work without the variable.
 
 Sentry source maps are uploaded automatically when `SENTRY_AUTH_TOKEN` is set. Bundle analysis via `dist/stats.html` when `ANALYZE=true`.
 
