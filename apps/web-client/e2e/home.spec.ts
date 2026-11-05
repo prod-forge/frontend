@@ -42,7 +42,7 @@ test.describe('Home page', () => {
     await page.getByRole('button', { name: 'Page 2' }).click();
     await expect(page.getByRole('button', { name: 'Page 2' })).toHaveAttribute('aria-current', 'page');
 
-    await page.getByRole('button', { name: /previous page/i }).click();
+    await page.getByRole('button', { name: /prev page/i }).click();
     await expect(page.getByRole('button', { name: 'Page 1' })).toHaveAttribute('aria-current', 'page');
   });
 

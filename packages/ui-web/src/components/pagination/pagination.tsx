@@ -46,7 +46,7 @@ export const Pagination = ({ limit, offset, onOffsetChange, total }: Props): Rea
   return (
     <nav aria-label="Pagination" className="flex items-center justify-center gap-2 max-[480px]:gap-3">
       <button
-        aria-label="Previous page"
+        aria-label="Prev page"
         className={btnClass}
         disabled={currentPage === 1}
         onClick={() => goTo(currentPage - 1)}

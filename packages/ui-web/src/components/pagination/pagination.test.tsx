@@ -32,7 +32,7 @@ describe('Pagination', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: /previous page/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /prev page/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /next page/i })).toBeInTheDocument();
   });
 
@@ -48,7 +48,7 @@ describe('Pagination', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: /previous page/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /prev page/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /next page/i })).toBeEnabled();
   });
 
@@ -65,7 +65,7 @@ describe('Pagination', () => {
     );
 
     expect(screen.getByRole('button', { name: /next page/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /previous page/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /prev page/i })).toBeEnabled();
   });
 
   it('marks the current page with aria-current="page"', () => {
@@ -119,7 +119,7 @@ describe('Pagination', () => {
     const user = userEvent.setup();
     render(<Pagination limit={10} offset={20} onOffsetChange={onOffsetChange} total={50} />);
 
-    await user.click(screen.getByRole('button', { name: /previous page/i }));
+    await user.click(screen.getByRole('button', { name: /prev page/i }));
 
     expect(onOffsetChange).toHaveBeenCalledWith(10);
   });

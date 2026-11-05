@@ -54,7 +54,7 @@ describe('TodoStatusToggle', () => {
         }}
       />,
     );
-    expect(screen.getByRole('button')).toHaveAccessibleName('Mark as done');
+    expect(screen.getByRole('button')).toHaveAccessibleName('To do, mark as done');
 
     rerender(
       <TodoStatusToggle
@@ -64,6 +64,6 @@ describe('TodoStatusToggle', () => {
         }}
       />,
     );
-    expect(screen.getByRole('button')).toHaveAccessibleName('Mark as to do');
+    expect(screen.getByRole('button')).toHaveAccessibleName('Done, mark as to do');
   });
 });

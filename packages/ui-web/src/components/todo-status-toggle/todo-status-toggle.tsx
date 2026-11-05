@@ -9,7 +9,8 @@ export type Props = {
 
 export const TodoStatusToggle = ({ completed, onToggle }: Props): ReactNode => (
   <button
-    aria-label={completed ? 'Mark as to do' : 'Mark as done'}
+    // The name starts with the visible status (WCAG 2.5.3, label in name), then says what a press does
+    aria-label={completed ? 'Done, mark as to do' : 'To do, mark as done'}
     aria-pressed={completed}
     className={cn(
       'group/toggle inline-flex cursor-pointer items-center gap-2 rounded-full border border-transparent px-[10px] py-[3px] text-xs font-semibold tracking-[0.06em] uppercase transition duration-[120ms] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
