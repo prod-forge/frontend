@@ -37,7 +37,7 @@ const Home = lazy(() => import('./pages/home/home').then((module) => ({ default:
 const Login = lazy(() => import('./pages/login/login').then((module) => ({ default: module.Login })));
 ```
 
-Home, Login, Register and TodoDetail each become their own chunk. A visitor who opens `/login` does not download the todo list page. The routes are wrapped in one `Suspense` with the `Preloader` component as the fallback, placed on a layout route, so the header and the page frame stay on screen while a chunk loads.
+Home, Login, Register, TodoDetail and NotFound each become their own chunk. A visitor who opens `/login` does not download the todo list page. The routes are wrapped in one `Suspense` with the `Preloader` component as the fallback, placed on a layout route, so the header and the page frame stay on screen while a chunk loads.
 
 The `.then((module) => ({ default: module.Home }))` part exists because the project forbids default exports (the `@import-lite/no-default-export` rule), while `React.lazy` expects a module with a default export.
 

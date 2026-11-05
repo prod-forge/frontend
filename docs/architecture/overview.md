@@ -69,6 +69,7 @@ apps/
 │       └── pages/
 │           ├── home/                # Todo list, filters, search, delete with confirmation
 │           ├── login/
+│           ├── not-found/           # Catch-all route for unknown paths
 │           ├── register/
 │           └── todo-detail/         # Single todo view (by :id)
 └── mobile-client/
@@ -200,11 +201,12 @@ app.tsx
                       /login      → <Login />       (React.lazy)
                       /register   → <Register />    (React.lazy)
                       /todo/:id   → <TodoDetail />  (React.lazy)
+                      *           → <NotFound />    (React.lazy)
 ```
 
 ### Route-level code splitting
 
-Every page is loaded with `React.lazy`, so the build emits one chunk per route (`home-*.js`, `login-*.js`, `register-*.js`, `todo-detail-*.js` in `dist/static`) and the first visit downloads only the page that was opened. Pages keep their named exports; `app.tsx` adapts them with `import('./pages/home/home').then((module) => ({ default: module.Home }))`.
+Every page is loaded with `React.lazy`, so the build emits one chunk per route (`home-*.js`, `login-*.js`, `not-found-*.js`, `register-*.js`, `todo-detail-*.js` in `dist/static`) and the first visit downloads only the page that was opened. Pages keep their named exports; `app.tsx` adapts them with `import('./pages/home/home').then((module) => ({ default: module.Home }))`.
 
 The `Suspense` boundary sits in a pathless route inside `LayoutContainer`, not around `<Routes>`. That way the header stays on screen and only the page area shows the `Preloader` while a chunk is loading. React Router runs navigations in a transition, so on client-side navigation React keeps the previous page visible until the next chunk arrives; the fallback is mostly seen on a direct load or reload. `app.test.tsx` pins this behaviour: `/todo/1` renders the `Preloader` first, then the page.
 

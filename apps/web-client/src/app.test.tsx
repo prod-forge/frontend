@@ -25,6 +25,12 @@ describe('<App /> route code splitting', () => {
   });
 
   describe('positive cases', () => {
+    it('renders the not found page for an unknown path', async () => {
+      renderAt('/no-such-page');
+
+      expect(await screen.findByRole('heading', { level: 1, name: /page not found/i })).toBeInTheDocument();
+    });
+
     it('renders the Preloader at /todo/1 until the lazy route chunk resolves', async () => {
       renderAt('/todo/1');
 

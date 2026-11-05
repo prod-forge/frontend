@@ -18,6 +18,7 @@ import { captureException } from './services/sentry';
 // One chunk per route: the first paint only downloads the page the user opened.
 const Home = lazy(() => import('./pages/home/home').then((module) => ({ default: module.Home })));
 const Login = lazy(() => import('./pages/login/login').then((module) => ({ default: module.Login })));
+const NotFound = lazy(() => import('./pages/not-found/not-found').then((module) => ({ default: module.NotFound })));
 const Register = lazy(() => import('./pages/register/register').then((module) => ({ default: module.Register })));
 const TodoDetail = lazy(() =>
   import('./pages/todo-detail/todo-detail').then((module) => ({ default: module.TodoDetail })),
@@ -58,6 +59,7 @@ export const App = (): ReactNode => {
                     <Route element={<Login />} path="/login" />
                     <Route element={<Register />} path="/register" />
                     <Route element={<TodoDetail />} path="/todo/:id" />
+                    <Route element={<NotFound />} path="*" />
                   </Route>
                 </Route>
               </Routes>
