@@ -51,6 +51,12 @@ This repository uses Husky with three hooks:
 The `commit-msg` hook is a good example of a rule that belongs in a gate, not in instructions: an agent may forget a
 line in `AGENTS.md`, but it cannot commit a message the hook rejects.
 
+Tests are part of the gate, not an extra. Set a coverage threshold of at least 80% that fails the run, so code without
+tests cannot pass. Agents write tests readily when asked; the threshold makes it non-optional, and a good test suite is
+what lets you accept a large AI-generated change with confidence. In this repository the web client's Vitest
+configuration sets 80% for branches, functions, lines and statements, and `npm run test:cov` fails below it; the
+`pre-push` hook runs the unit tests of every project.
+
 Your CI pipeline should validate:
 
 - linting
@@ -301,6 +307,25 @@ fix what is wrong or missing. Only then move the plan from 📝 draft to ✅ app
 Every global plan and plan keeps a **Conclusions** section, filled in as the work is done: what was measured, what you
 decided, what was learned. A plan is done when its conclusions are written and you have looked at its result. An
 attempt that did not work becomes ❌ failed with a note in `docs/postmortem/`, so nobody repeats it.
+
+## Legacy Projects
+
+If your project was developed before AI agents came in, prepare it first. An agent dropped into an undocumented
+codebase copies whatever it finds, including the inconsistencies. To start using agents effectively:
+
+1. **Analyze the project.** Let the agent walk through the code with you: layers, modules, data flow, conventions, and
+   where the code does not follow them.
+2. **Create `docs/` and describe the current architecture** in `docs/architecture/`: how the project is built today,
+   not how it should be.
+3. **Introduce `AGENTS.md`** with the quality bar, the conventions and the rules for working with `docs/`, and make
+   `CLAUDE.md` point to it.
+4. **Complete the style guides and raise test coverage to at least 80%.** Lint rules and tests are what keep generated
+   code in line (see [Quality Gates First](#quality-gates-first)). Without tests, every AI change to legacy code is a
+   gamble.
+5. **Write `docs/goal.md`:** what the project is for and where it is going.
+6. **Find the restrictions and the hacks** and write them down in `docs/restrictions/` and `docs/hacks/`. Legacy code
+   is full of decisions nobody remembers the reason for; this is where the agent learns not to "fix" them.
+7. **Continue development through planning** (see [Task Decomposition](#task-decomposition)).
 
 ## Common AI Problems
 
