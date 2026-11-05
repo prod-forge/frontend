@@ -8,8 +8,7 @@
     "format:css": "stylelint \"src/**/*.css\" --fix",
     "format:prettier": "prettier --write \"src/**/*.css\"",
     "lint": "npm run lint:css",
-    "lint:css": "stylelint \"src/**/*.css\"",
-    "lint:commit": "commitlint --config .commitlintrc.cjs --edit"
+    "lint:css": "stylelint \"src/**/*.css\""
   },
   "exports": {
     "./theme.css": "./src/theme.css"

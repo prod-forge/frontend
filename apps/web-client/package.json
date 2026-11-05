@@ -21,7 +21,6 @@
     "format:prettier": "prettier --write \"src/**/*.{ts,json}\"",
     "lint": "npm run lint:ts && npm run lint:code",
     "lint:code": "eslint .",
-    "lint:commit": "commitlint --config .commitlintrc.cjs --edit",
     "lint:ts": "tsc --noEmit"
   },
   "dependencies": {
