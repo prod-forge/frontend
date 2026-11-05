@@ -2,7 +2,7 @@
 
 ## One React version, pinned to the Expo SDK
 
-- **Rule:** `apps/web-client`, `packages/ui-web` and `apps/mobile-client` pin the same `react` (19.3.0), the one the Expo SDK requires, and the root `devDependencies` pin the same `react` and `react-dom`. An Expo SDK upgrade bumps all four together; a newer React patch is not taken before the Expo SDK asks for it.
+- **Rule:** `apps/web-client`, `packages/ui-web` and `apps/mobile-client` pin the same `react` (19.3.0), the one the Expo SDK requires, and the root `devDependencies` pin the same `react` and `react-dom` (`react-dom` is also pinned in `web-client` and `ui-web`). An Expo SDK upgrade bumps all four together; a newer React patch is not taken before the Expo SDK asks for it.
 - **Reason:** two copies of React break hooks with "Invalid hook call" when one copy's hooks run inside the other's renderer. Aligned versions let npm hoist one copy (`guide/mobile-client.md`).
 - **Where:** `react` in `apps/web-client/package.json`, `packages/ui-web/package.json`, `apps/mobile-client/package.json` and the root `package.json`. The root pin exists because root test tooling (`@testing-library/react`) takes React as a peer: without it npm hoisted the newest React (19.3.1) to the root and nested 19.3.0 in every workspace. Check with `npm ls react`: one version only.
 

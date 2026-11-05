@@ -49,6 +49,6 @@ The checks described here exist as `.github/workflows/ci.yml`, but the `verify` 
 
 Exact versions are enforced for every package in the workspace: the root, `apps/*` and `packages/*` all use pinned versions, and the one `package-lock.json` at the root is the source of truth. Workspace packages refer to each other with `*`, which npm resolves to the local folder.
 
-The one frontend-specific rule: **React must resolve to a single copy.** The web and mobile apps declare the same `react` version, so npm hoists one package and Metro does not bundle two (see [Mobile Client](mobile-client.md#metro-in-a-monorepo)). When you upgrade React, upgrade it in both applications in the same change.
+The one frontend-specific rule: **React must resolve to a single copy.** The web and mobile apps declare the same `react` version, so npm hoists one package and Metro does not bundle two (see [Mobile Client](mobile-client.md#metro-in-a-monorepo)). When you upgrade React, upgrade `react` in all four `package.json` files that pin it (`apps/web-client`, `packages/ui-web`, `apps/mobile-client` and the root) and `react-dom` in the three that have it, in the same change; `npm ls react` must show one version.
 
 An additional check is `react-doctor` (`npm run doctor`), which scans the React code for common problems; its settings are in `react-doctor.config.json`.

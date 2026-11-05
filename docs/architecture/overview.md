@@ -246,7 +246,7 @@ ES imports run in order, so splitting the side effects into `bootstrap.ts` guara
 
 ### React and Metro in the monorepo
 
-Web and mobile pin the same `react` version (19.3.0, the one Expo SDK 58 requires), so npm hoists a single copy to the root `node_modules`. Two copies would break hooks: `react-redux` is hoisted and would load a different React than the screens. Metro resolves the app's own `node_modules` first, then the root (`nodeModulesPaths`), and keeps hierarchical lookup on, as `expo-doctor` requires since SDK 58. Upgrading the Expo SDK therefore means bumping `react`/`react-dom` in `web-client` and `ui-web` in the same change.
+Web and mobile pin the same `react` version (19.3.0, the one Expo SDK 58 requires), so npm hoists a single copy to the root `node_modules`. Two copies would break hooks: `react-redux` is hoisted and would load a different React than the screens. Metro resolves the app's own `node_modules` first, then the root (`nodeModulesPaths`), and keeps hierarchical lookup on, as `expo-doctor` requires since SDK 58. Upgrading the Expo SDK therefore means bumping `react` in `web-client`, `ui-web`, `mobile-client` and the root `package.json`, and `react-dom` in `web-client`, `ui-web` and the root, in the same change (see `docs/restrictions/dependencies.md`).
 
 ---
 

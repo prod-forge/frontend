@@ -4,11 +4,15 @@ How to add a component, a feature, a mobile screen or a page, and the convention
 
 ## Adding a New Component
 
-1. Create a folder under `packages/ui-web/src/components/{name}/`
+1. Create a folder under `packages/ui-web/src/components/{name}/` (a widget goes under `src/widgets/`)
 2. Add `{name}.tsx` — named export, `ReactNode` return type
 3. Add `{name}.test.tsx` — negative cases first, then positive
 4. Add `{name}.stories.tsx` — at minimum one default story
-5. Export from `packages/ui-web/src/index.ts`
+5. Add `{name}.a11y-spec.ts` — one `checkStoryA11y` test per story (`npm run test:a11y`)
+6. Add `{name}.visual-spec.ts` — one `matchStorySnapshot` test per story and theme, then create the snapshots with `npm run test:visual:update` (`npm run test:visual`)
+7. Export from `packages/ui-web/src/index.ts`
+
+Every component and widget folder has these five files (`guide/design-system.md`, "Component Anatomy"). A new story adds a line to both spec files.
 
 Components must be stateless — no Redux, no API calls.
 
@@ -57,5 +61,5 @@ Pages are containers: they select state with `useAppSelector`, dispatch with `us
 - **Typed Redux hooks only** — use `useAppDispatch` / `useAppSelector` from `apps/web-client/src/hooks/redux/redux.ts` (mobile: `src/hooks/use-app-dispatch.ts`, `use-app-selector.ts`), never raw `useDispatch` / `useSelector`.
 - **Optimistic updates** — `addTodo`, `deleteTodo`, `toggleTodo`, `updateTodo` all apply changes before the server responds. Rollback happens automatically in `rejected` handler.
 - **Error handling** — never catch and swallow Redux thunk errors. Let them propagate to `errorMiddleware`, which dispatches `pushError` and reports 5xx and status-less errors through `getCoreConfig().reportError` (Sentry on web). Pass `serializeError: serializeApiError` to new thunks that call the API so the HTTP status reaches the middleware.
-- **One React version** — `web-client`, `ui-web` and `mobile-client` pin the same `react` (the one the Expo SDK requires). An Expo SDK upgrade bumps all three together; do not add root `overrides`.
+- **One React version** — `web-client`, `ui-web`, `mobile-client` and the root `package.json` pin the same `react` (the one the Expo SDK requires), and `web-client`, `ui-web` and the root pin the same `react-dom`. An Expo SDK upgrade bumps all four together; do not add root `overrides`. The rule is in [dependencies.md](../restrictions/dependencies.md).
 - **Core configuration** — every app calls `configureCore` in its entry point before dispatching or rendering (web: `setupCore()` in `main.tsx`; mobile: `src/bootstrap.ts`), then dispatches `hydrateAuth()`. Missing configuration throws `CoreNotConfiguredError` on the first request.

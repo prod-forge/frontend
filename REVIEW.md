@@ -42,19 +42,21 @@ export function formatDate(date: Date) { ... }
 
 All files and folders in `src/` use `kebab-case`. Enforced by `eslint-plugin-check-file`.
 
-| Content   | Pattern               | Example                  |
-| --------- | --------------------- | ------------------------ |
-| Component | `{name}.tsx`          | `login-form.tsx`         |
-| Hook      | `use-{name}.ts`       | `use-theme.ts`           |
-| Slice     | `{name}.slices.ts`    | `todos.slices.ts`        |
-| Selectors | `{name}.selectors.ts` | `todos.selectors.ts`     |
-| API       | `{name}.api.ts`       | `todos.api.ts`           |
-| Types     | `{name}.types.ts`     | `todos.types.ts`         |
-| Schemas   | `{name}.schemas.ts`   | `auth.schemas.ts`        |
-| Utils     | `{name}.utils.ts`     | `todos.utils.ts`         |
-| Constants | `{name}.constants.ts` | `todos.constants.ts`     |
-| Unit test | `{name}.test.ts(x)`   | `login-form.test.tsx`    |
-| Story     | `{name}.stories.tsx`  | `login-form.stories.tsx` |
+| Content   | Pattern                 | Example                  |
+| --------- | ----------------------- | ------------------------ |
+| Component | `{name}.tsx`            | `login-form.tsx`         |
+| Hook      | `use-{name}.ts`         | `use-theme.ts`           |
+| Slice     | `{name}.slices.ts`      | `todos.slices.ts`        |
+| Selectors | `{name}.selectors.ts`   | `todos.selectors.ts`     |
+| API       | `{name}.api.ts`         | `todos.api.ts`           |
+| Types     | `{name}.types.ts`       | `todos.types.ts`         |
+| Schemas   | `{name}.schemas.ts`     | `auth.schemas.ts`        |
+| Utils     | `{name}.utils.ts`       | `todos.utils.ts`         |
+| Constants | `{name}.constants.ts`   | `todos.constants.ts`     |
+| Unit test | `{name}.test.ts(x)`     | `login-form.test.tsx`    |
+| Story     | `{name}.stories.tsx`    | `login-form.stories.tsx` |
+| A11y spec | `{name}.a11y-spec.ts`   | `button.a11y-spec.ts`    |
+| Visual    | `{name}.visual-spec.ts` | `button.visual-spec.ts`  |
 
 Each component lives in its own folder with the same name as the file:
 
@@ -63,7 +65,11 @@ button/
   button.tsx
   button.test.tsx
   button.stories.tsx
+  button.a11y-spec.ts
+  button.visual-spec.ts
 ```
+
+In `packages/ui-web`, every component and widget folder has these five files: the a11y and visual specs run against each story, so a new story adds a line to both.
 
 ---
 
@@ -315,6 +321,7 @@ clean.
 - [ ] File and folder names are `kebab-case` ⚙️
 - [ ] No default exports ⚙️
 - [ ] Each component lives in its own folder with a matching file name
+- [ ] A `ui-web` component or widget has all five files (`.tsx`, `.test.tsx`, `.stories.tsx`, `.a11y-spec.ts`, `.visual-spec.ts`), and a new story is listed in both specs
 - [ ] New files follow the naming pattern for their role (`.slices.ts`, `.selectors.ts`, `.api.ts`, etc.)
 
 ### React Components
