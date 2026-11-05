@@ -21,7 +21,7 @@
   "dependencies": {
     "@prod-forge-todolist-frontend/core": "*",
     "@prod-forge-todolist-frontend/design-tokens": "*",
-    "@sentry/react-native": "8.28.0",
+    "@sentry/react-native": "8.34.0",
     "expo": "58.0.23",
     "expo-constants": "58.0.15",
     "expo-crypto": "58.0.7",
@@ -34,7 +34,7 @@
     "react-native": "0.88.1",
     "react-native-safe-area-context": "5.11.1",
     "react-native-screens": "4.30.1",
-    "react-redux": "9.2.0"
+    "react-redux": "9.3.1"
   },
   "devDependencies": {
     "@prod-forge-todolist-frontend/test-data": "*",
@@ -45,6 +45,6 @@
     "babel-preset-expo": "58.0.24",
     "jest": "30.5.2",
     "jest-expo": "58.0.14",
-    "test-renderer": "1.3.0"
+    "test-renderer": "1.3.1"
   }
 }

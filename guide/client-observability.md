@@ -56,6 +56,15 @@ Sentry is initialized in `initSentry`:
 
 ```ts
 Sentry.init({
+  dataCollection: {
+    cookies: false,
+    databaseQueryData: false,
+    genAI: { inputs: false, outputs: false },
+    httpBodies: [],
+    httpHeaders: false,
+    urlQueryParams: false,
+    userInfo: false,
+  },
   dsn,
   environment: import.meta.env.MODE,
   integrations: [
@@ -65,11 +74,11 @@ Sentry.init({
   release: import.meta.env.VITE_APP_VERSION,
   replaysOnErrorSampleRate: 1.0,
   replaysSessionSampleRate: 0.1,
-  sendDefaultPii: false,
   tracesSampleRate: import.meta.env.MODE === 'production' ? 0.2 : 1.0,
 });
 ```
 
+- **No default PII.** `dataCollection` turns off every category Sentry would otherwise collect on its own: user details, cookies, headers, bodies and query parameters. It replaces `sendDefaultPii`, which Sentry 10.78 deprecated.
 - **Replay: 10% of sessions, 100% of sessions with an error.** Recording everything is expensive and mostly useless; recording every failure is cheap and is exactly what is needed. `maskAllText: false` is acceptable here because the application shows no sensitive text beyond the user's own todos; an application that does must turn masking on.
 - **Traces: 20% in production, 100% elsewhere.** Sampling keeps the quota under control while production stays representative.
 - **Release is the package version.** `vite.config.ts` defines `import.meta.env.VITE_APP_VERSION` from `apps/web-client/package.json`. The same value is used as the release name when source maps are uploaded, so an issue in `v1.2.2` resolves to the original source lines of `v1.2.2`.
@@ -81,7 +90,7 @@ What gets reported:
 - the **error boundary** reports render exceptions with the component stack as context;
 - unhandled errors and rejections are captured by the Sentry SDK itself.
 
-Mobile has its own `initSentry` in `apps/mobile-client/src/services/sentry.ts` with `@sentry/react-native`, the same `sendDefaultPii: false`, the same `trace_id` tag and the same traces sampling (no replay), and reads `EXPO_PUBLIC_SENTRY_DSN`.
+Mobile has its own `initSentry` in `apps/mobile-client/src/services/sentry.ts` with `@sentry/react-native`, `sendDefaultPii: false` (the React Native SDK has no `dataCollection` option yet), the same `trace_id` tag and the same traces sampling (no replay), and reads `EXPO_PUBLIC_SENTRY_DSN`.
 
 ## Web Vitals
 
@@ -129,7 +138,7 @@ Not collected:
 
 - passwords and tokens (the logger writes the request path, method, status and codes, never headers or bodies);
 - the content of requests and responses;
-- IP address and other default PII: `sendDefaultPii` is `false` in web and mobile;
+- IP address and other default PII: `dataCollection` turns it off on web, `sendDefaultPii: false` on mobile;
 - cookies and local storage contents.
 
 Collected on purpose:

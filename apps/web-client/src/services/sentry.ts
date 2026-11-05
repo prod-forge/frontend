@@ -52,6 +52,16 @@ export function initSentry(): void {
   if (!dsn) return;
 
   Sentry.init({
+    // No user details, cookies, headers, bodies or query params; only the hashed user id that bindSentryUser sets
+    dataCollection: {
+      cookies: false,
+      databaseQueryData: false,
+      genAI: { inputs: false, outputs: false },
+      httpBodies: [],
+      httpHeaders: false,
+      urlQueryParams: false,
+      userInfo: false,
+    },
     dsn,
     environment: import.meta.env.MODE,
     integrations: [
@@ -64,7 +74,6 @@ export function initSentry(): void {
     release: import.meta.env.VITE_APP_VERSION,
     replaysOnErrorSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
-    sendDefaultPii: false,
     tracesSampleRate: import.meta.env.MODE === 'production' ? 0.2 : 1.0,
   });
 

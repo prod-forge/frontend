@@ -53,7 +53,6 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
   if (isAnalyze) {
     const { visualizer } = await import('rollup-plugin-visualizer');
     plugins.push(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       visualizer({
         filename: 'dist/stats.html',
         gzipSize: true,
