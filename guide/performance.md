@@ -1,5 +1,9 @@
 # Performance
 
+<p align="center">
+  <img alt="Performance" src="assets/performance.jpg" width="701px" height="561px">
+</p>
+
 How the backend keeps responses small and fast (pagination, indexes, compression) is described in [Performance](https://github.com/prod-forge/backend/blob/main/guide/performance.md) in the backend guide. On the client the cost is different: the user pays for every byte that is downloaded, parsed and executed before the first paint. This chapter explains how the bundle is measured, split and cached.
 
 ## Bundle Analysis

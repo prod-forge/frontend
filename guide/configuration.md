@@ -1,5 +1,9 @@
 # Configuration
 
+<p align="center">
+  <img alt="Configuration" src="assets/configuration.jpg" width="701px" height="561px">
+</p>
+
 How the backend manages environments and secrets is described in [Configuration Management](https://github.com/prod-forge/backend/blob/main/guide/configuration-management.md). The client has a different problem: it has no server process that reads variables at startup. This chapter explains what that changes.
 
 ## Build-Time Configuration

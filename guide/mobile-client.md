@@ -1,5 +1,9 @@
 # Mobile Client
 
+<p align="center">
+  <img alt="Mobile Client" src="assets/mobile-client.jpg" width="701px" height="561px">
+</p>
+
 `apps/mobile-client` is the second client of the same backend. It exists to prove the reason for the monorepo (see [Repository Strategy](repository-strategy.md)): the store, the API layer and the design tokens are written once and used by two applications. This chapter explains what is shared, what is not, and the Metro and Expo details that are easy to get wrong in a monorepo.
 
 ## Why Expo
