@@ -21,6 +21,13 @@
 - **Why:** the asserted elements have no accessible role: the geometry of a decorative SVG, a decorative spinner, an `aria-live` region (comments in the files; `todo-list.test.tsx` has no comment).
 - **If cleaned up:** there is no role query to replace them with.
 
+## Inferred return type of the todos test store
+
+- **What:** `@typescript-eslint/explicit-function-return-type` disabled on `makeTodosStore`.
+- **Where:** `packages/core/src/features/todos/todos.slices.test.ts` (the line above `export const makeTodosStore`).
+- **Why:** the helper returns `configureStore(...)` with the thunk middleware, and the tests dispatch thunks through it; the inferred store type carries the thunk dispatch, which a hand-written type would have to repeat in full.
+- **If cleaned up:** an explicit `EnhancedStore<...>` without the middleware types makes `store.dispatch(thunk)` fail to type-check.
+
 ## Hook names in the expo-router mock
 
 - **What:** `@eslint-react/no-unnecessary-use-prefix` disabled on two mock functions.

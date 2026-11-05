@@ -64,19 +64,19 @@ cd frontend
 
 ### 3. Create a branch
 
-Follow the branch naming convention used in the project:
+Follow the branch naming convention used in the project, `type/ID-short-description`, where `ID` is the issue number (see [Development Workflow](guide/development-workflow.md)):
 
 ```shell
-feat/short-description
-fix/short-description
-docs/short-description
+feat/42-short-description
+fix/42-short-description
+docs/42-short-description
 ```
 
 ### 4. Make your changes
 
 Keep changes focused. One pull request should address one thing.
 
-If you are adding a new section to the README, follow the existing writing style:
+If you are adding or changing a chapter of the guide (`guide/`), follow the existing writing style:
 
 - short paragraphs
 - plain language
