@@ -74,7 +74,7 @@ describe('initSentry', () => {
       initSentry();
 
       expect(Sentry.browserTracingIntegration).toHaveBeenCalled();
-      expect(Sentry.replayIntegration).toHaveBeenCalled();
+      expect(Sentry.replayIntegration).toHaveBeenCalledWith(expect.objectContaining({ maskAllText: true }));
     });
 
     it('sets trace_id tag with value from traceId', () => {

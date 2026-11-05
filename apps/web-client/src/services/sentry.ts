@@ -67,8 +67,9 @@ export function initSentry(): void {
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({
+        // Media is only the public status icons; text holds the user's name, email and todos
         blockAllMedia: false,
-        maskAllText: false,
+        maskAllText: true,
       }),
     ],
     release: import.meta.env.VITE_APP_VERSION,

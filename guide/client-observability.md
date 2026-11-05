@@ -69,7 +69,7 @@ Sentry.init({
   environment: import.meta.env.MODE,
   integrations: [
     Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration({ blockAllMedia: false, maskAllText: false }),
+    Sentry.replayIntegration({ blockAllMedia: false, maskAllText: true }),
   ],
   release: import.meta.env.VITE_APP_VERSION,
   replaysOnErrorSampleRate: 1.0,
@@ -79,7 +79,7 @@ Sentry.init({
 ```
 
 - **No default PII.** `dataCollection` turns off every category Sentry would otherwise collect on its own: user details, cookies, headers, bodies and query parameters. It replaces `sendDefaultPii`, which Sentry 10.78 deprecated and Sentry 11 removed.
-- **Replay: 10% of sessions, 100% of sessions with an error.** Recording everything is expensive and mostly useless; recording every failure is cheap and is exactly what is needed. `maskAllText: false` is acceptable here because the application shows no sensitive text beyond the user's own todos; an application that does must turn masking on.
+- **Replay: 10% of sessions, 100% of sessions with an error.** Recording everything is expensive and mostly useless; recording every failure is cheap and is exactly what is needed. `maskAllText: true` replaces every text node with asterisks in the recording, because the header shows the user's name or email and the pages show the user's own todos; inputs are masked by default as well. Replay still shows the layout, clicks and navigation, which is what reproducing an error needs. `blockAllMedia: false` keeps images visible: the only media are the public status icons from `assets/`.
 - **Traces: 20% in production, 100% elsewhere.** Sampling keeps the quota under control while production stays representative.
 - **Release is the package version.** `vite.config.ts` defines `import.meta.env.VITE_APP_VERSION` from `apps/web-client/package.json`. The same value is used as the release name when source maps are uploaded, so an issue in `v1.2.2` resolves to the original source lines of `v1.2.2`.
 - **Source maps are hidden and private.** `build.sourcemap: 'hidden'` produces `.map` files without the `sourceMappingURL` comment. When `SENTRY_AUTH_TOKEN` is set at build time, `sentryVitePlugin` uploads them to Sentry and deletes them after upload (`filesToDeleteAfterUpload`); `cd.yml` also excludes `*.map` from the S3 sync as a second guard (configuration is in [Configuration](configuration.md)). Without the token the build still succeeds and stack traces in Sentry stay minified.
@@ -145,7 +145,7 @@ Collected on purpose:
 
 - error stacks, component stacks, the `trace_id` tag, release and environment;
 - performance metrics without user identity;
-- session replay of 10% of sessions and of every session with an error. Text is not masked (see above), so what the user types or sees in those sessions is visible in the replay.
+- session replay of 10% of sessions and of every session with an error. Text and inputs are masked (see above), so the replay shows the layout and the interactions, not what the user types or reads.
 
 What the current code **does** send as user context: `bindSentryUser` mirrors the signed-in user into Sentry as a hashed id:
 

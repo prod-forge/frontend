@@ -81,7 +81,7 @@ The password field on the login form is still validated for length and then igno
 
 Out of scope: passwords, refresh tokens, sign-up and an identity provider. Until passwords exist, anyone who knows a registered email can sign in as that user, so do not deploy this application with real data.
 
-Sentry receives a SHA-256 hash of the email as `user.id`, not the email (default PII collection is off: `dataCollection` on web, `sendDefaultPii: false` on mobile), which is described in [Client Observability](client-observability.md#sentry).
+Sentry receives a SHA-256 hash of the email as `user.id`, not the email (default PII collection is off: `dataCollection` on web, `sendDefaultPii: false` on mobile), which is described in [Client Observability](client-observability.md#sentry). Session Replay masks all text and inputs (`maskAllText: true`), so the email shown in the header does not reach the recording either.
 
 ## XSS Surface
 
