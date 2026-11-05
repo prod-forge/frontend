@@ -32,6 +32,7 @@ export const CircularProgress = ({ children, progress, size = 'md' }: Props): Re
       <svg aria-hidden fill="none" height={px} viewBox={`0 0 ${px} ${px}`} width={px}>
         <circle cx={center} cy={center} r={r} stroke="currentColor" strokeOpacity={0.25} strokeWidth={stroke} />
         <circle
+          className="transition-[stroke-dashoffset] duration-[40ms] ease-linear"
           cx={center}
           cy={center}
           r={r}
@@ -40,7 +41,6 @@ export const CircularProgress = ({ children, progress, size = 'md' }: Props): Re
           strokeDashoffset={offset}
           strokeLinecap="round"
           strokeWidth={stroke}
-          style={{ transition: 'stroke-dashoffset 40ms linear' }}
           transform={`rotate(-90 ${center} ${center})`}
         />
       </svg>
