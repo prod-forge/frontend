@@ -1,5 +1,9 @@
 # Release and Deployment
 
+<p align="center">
+  <img alt="Release and Deployment" src="assets/release-and-deployment.jpg" width="701px" height="561px">
+</p>
+
 The release process of the backend (versioning, the checklist, migrations, revisions) is described in [Release Management](https://github.com/prod-forge/backend/blob/main/guide/release-management.md). A web client is simpler in one respect and harder in another. There is no database and no running process to restart: a release is a set of static files. But the files are cached by browsers and by a CDN, so the order of the steps and the cache headers decide whether users see a working application. The infrastructure behind this chapter (buckets, CloudFront, the IAM role) is in [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/guide/frontend.md) in the Terraform guide.
 
 **Status.** The pipeline described here is written and complete, but nothing is deployed. That is an owner decision for this reference repository, see [Why Not Deploy on Every Merge](#why-not-deploy-on-every-merge).

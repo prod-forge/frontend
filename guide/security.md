@@ -1,5 +1,9 @@
 # Security
 
+<p align="center">
+  <img alt="Security" src="assets/security.jpg" width="701px" height="467px">
+</p>
+
 The server side of security (request validation, response sanitization, headers, CORS, rate limiting) is described in [Security](https://github.com/prod-forge/backend/blob/main/guide/security.md) in the backend guide. A browser client changes the question: the code runs on a machine that the team does not control, so nothing in it can be secret, and the main enemy is script injected into the page. This chapter covers the client side, and is honest about what authentication does not do yet.
 
 ## Threat Model for an SPA
