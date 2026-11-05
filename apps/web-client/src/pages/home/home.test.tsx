@@ -99,6 +99,15 @@ afterEach(() => {
 });
 
 describe('<Home /> page — unauthenticated', () => {
+  describe('negative cases', () => {
+    it('does not render the todo list when unauthenticated', async () => {
+      await renderHome({ authenticated: false });
+
+      expect(screen.queryByRole('article')).not.toBeInTheDocument();
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    });
+  });
+
   describe('positive cases', () => {
     it('shows the welcome heading and asks the user to sign in or create an account', async () => {
       await renderHome({ authenticated: false });
@@ -107,17 +116,58 @@ describe('<Home /> page — unauthenticated', () => {
       expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/login');
       expect(screen.getByRole('link', { name: /create account/i })).toHaveAttribute('href', '/register');
     });
-
-    it('does not render the todo list when unauthenticated', async () => {
-      await renderHome({ authenticated: false });
-
-      expect(screen.queryByRole('article')).not.toBeInTheDocument();
-      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-    });
   });
 });
 
 describe('<Home /> page — authenticated', () => {
+  describe('negative cases', () => {
+    it('rejects an empty title and does not add a todo', async () => {
+      const user = userEvent.setup();
+      await renderHome();
+
+      await user.click(screen.getByRole('button', { name: /add task/i }));
+
+      expect(screen.getByRole('alert')).toHaveTextContent(/title is required/i);
+      expect(screen.getByText(new RegExp(`${completedCount} of ${totalCount} completed`))).toBeInTheDocument();
+    });
+
+    it('shows an error message when fetching fails', async () => {
+      vi.mocked(todosApi.getAll).mockRejectedValue(new Error('Network error'));
+      const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
+      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
+
+      render(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>
+        </Provider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Please refresh the page/i)).toBeInTheDocument();
+      });
+    });
+
+    it('shows the retry button in the error block when fetching fails', async () => {
+      vi.mocked(todosApi.getAll).mockRejectedValue(new Error('Network error'));
+      const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
+      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
+
+      render(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>
+        </Provider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('positive cases', () => {
     it('renders the heading and the "X of Y completed" summary', async () => {
       await renderHome();
@@ -392,54 +442,6 @@ describe('<Home /> page — authenticated', () => {
       expect(screen.queryByText(/Please refresh the page/i)).not.toBeInTheDocument();
     });
   });
-
-  describe('negative cases', () => {
-    it('rejects an empty title and does not add a todo', async () => {
-      const user = userEvent.setup();
-      await renderHome();
-
-      await user.click(screen.getByRole('button', { name: /add task/i }));
-
-      expect(screen.getByRole('alert')).toHaveTextContent(/title is required/i);
-      expect(screen.getByText(new RegExp(`${completedCount} of ${totalCount} completed`))).toBeInTheDocument();
-    });
-
-    it('shows an error message when fetching fails', async () => {
-      vi.mocked(todosApi.getAll).mockRejectedValue(new Error('Network error'));
-      const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
-      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
-
-      render(
-        <Provider store={store}>
-          <MemoryRouter>
-            <Home />
-          </MemoryRouter>
-        </Provider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText(/Please refresh the page/i)).toBeInTheDocument();
-      });
-    });
-
-    it('shows the retry button in the error block when fetching fails', async () => {
-      vi.mocked(todosApi.getAll).mockRejectedValue(new Error('Network error'));
-      const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
-      store.dispatch(sessionRestored({ token: 'test-token', user: { email: 'a@b.com' } }));
-
-      render(
-        <Provider store={store}>
-          <MemoryRouter>
-            <Home />
-          </MemoryRouter>
-        </Provider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
-      });
-    });
-  });
 });
 
 describe('<Home /> page — delete from the list', () => {
@@ -473,6 +475,7 @@ describe('<Home /> page — delete from the list', () => {
 
       expect(todosApi.delete).not.toHaveBeenCalled();
     });
+
     it('does not refetch the list when the delete request fails', async () => {
       const user = userEvent.setup();
       vi.mocked(todosApi.delete).mockRejectedValue(new Error('Network error'));

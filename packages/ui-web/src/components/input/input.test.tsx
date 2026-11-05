@@ -5,82 +5,86 @@ import { describe, expect, it, vi } from 'vitest';
 import { Input } from './input';
 
 describe('Input', () => {
-  it('renders an input element', () => {
-    render(<Input id="x" />);
+  describe('negative cases', () => {
+    it('renders without a label when none is provided', () => {
+      render(<Input id="anon" />);
 
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
+      expect(screen.queryByText(/./)).not.toBeInTheDocument();
+    });
+
+    it('does not render an alert when there is no error', () => {
+      render(<Input id="t" />);
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.getByRole('textbox')).not.toHaveAttribute('aria-invalid');
+    });
+
+    it('applies default classes when no error', () => {
+      render(<Input id="t" />);
+
+      expect(screen.getByRole('textbox')).toHaveClass('border-line');
+    });
   });
 
-  it('associates the label with the input via htmlFor/id', () => {
-    render(<Input id="title" label="Title" />);
+  describe('positive cases', () => {
+    it('renders an input element', () => {
+      render(<Input id="x" />);
 
-    expect(screen.getByLabelText('Title')).toHaveAttribute('id', 'title');
-  });
+      expect(screen.getByRole('textbox')).toBeInTheDocument();
+    });
 
-  it('renders without a label when none is provided', () => {
-    render(<Input id="anon" />);
+    it('associates the label with the input via htmlFor/id', () => {
+      render(<Input id="title" label="Title" />);
 
-    expect(screen.queryByText(/./)).not.toBeInTheDocument();
-  });
+      expect(screen.getByLabelText('Title')).toHaveAttribute('id', 'title');
+    });
 
-  it('exposes the error message via role="alert" and links it via aria-describedby', () => {
-    render(<Input error="Required field" id="t" />);
+    it('exposes the error message via role="alert" and links it via aria-describedby', () => {
+      render(<Input error="Required field" id="t" />);
 
-    const input = screen.getByRole('textbox');
-    expect(input).toHaveAttribute('aria-invalid', 'true');
-    const alert = screen.getByRole('alert');
-    expect(alert).toHaveTextContent('Required field');
-    expect(input).toHaveAttribute('aria-describedby', alert.id);
-  });
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveAttribute('aria-invalid', 'true');
+      const alert = screen.getByRole('alert');
+      expect(alert).toHaveTextContent('Required field');
+      expect(input).toHaveAttribute('aria-describedby', alert.id);
+    });
 
-  it('does not render an alert when there is no error', () => {
-    render(<Input id="t" />);
+    it('forwards typing events to onChange', async () => {
+      const onChange = vi.fn();
+      const user = userEvent.setup();
+      render(<Input id="t" onChange={onChange} />);
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByRole('textbox')).not.toHaveAttribute('aria-invalid');
-  });
+      await user.type(screen.getByRole('textbox'), 'ab');
 
-  it('forwards typing events to onChange', async () => {
-    const onChange = vi.fn();
-    const user = userEvent.setup();
-    render(<Input id="t" onChange={onChange} />);
+      expect(onChange).toHaveBeenCalledTimes(2);
+    });
 
-    await user.type(screen.getByRole('textbox'), 'ab');
+    it('forwards refs to the underlying input element', () => {
+      let element: HTMLInputElement | null = null;
+      render(
+        <Input
+          id="t"
+          ref={(node) => {
+            element = node;
+          }}
+        />,
+      );
 
-    expect(onChange).toHaveBeenCalledTimes(2);
-  });
+      expect(element).toBeInstanceOf(HTMLInputElement);
+    });
 
-  it('forwards refs to the underlying input element', () => {
-    let element: HTMLInputElement | null = null;
-    render(
-      <Input
-        id="t"
-        ref={(node) => {
-          element = node;
-        }}
-      />,
-    );
+    it('applies error-styled classes when an error is present', () => {
+      render(<Input error="Bad" id="t" />);
 
-    expect(element).toBeInstanceOf(HTMLInputElement);
-  });
+      expect(screen.getByRole('textbox')).toHaveClass('border-err');
+    });
 
-  it('applies error-styled classes when an error is present', () => {
-    render(<Input error="Bad" id="t" />);
+    it('passes through arbitrary HTML attributes (placeholder, name, type)', () => {
+      render(<Input id="t" name="email" placeholder="you@example.com" type="email" />);
 
-    expect(screen.getByRole('textbox')).toHaveClass('border-err');
-  });
-
-  it('applies default classes when no error', () => {
-    render(<Input id="t" />);
-
-    expect(screen.getByRole('textbox')).toHaveClass('border-line');
-  });
-
-  it('passes through arbitrary HTML attributes (placeholder, name, type)', () => {
-    render(<Input id="t" name="email" placeholder="you@example.com" type="email" />);
-
-    const input = screen.getByPlaceholderText('you@example.com');
-    expect(input).toHaveAttribute('name', 'email');
-    expect(input).toHaveAttribute('type', 'email');
+      const input = screen.getByPlaceholderText('you@example.com');
+      expect(input).toHaveAttribute('name', 'email');
+      expect(input).toHaveAttribute('type', 'email');
+    });
   });
 });

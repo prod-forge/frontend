@@ -42,8 +42,10 @@ beforeEach(() => {
 });
 
 describe('auth slice — initial state', () => {
-  it('starts with no token, no user and hydration not started', () => {
-    expect(init()).toEqual({ hydration: 'idle', token: null, user: null });
+  describe('positive cases', () => {
+    it('starts with no token, no user and hydration not started', () => {
+      expect(init()).toEqual({ hydration: 'idle', token: null, user: null });
+    });
   });
 });
 
@@ -121,12 +123,14 @@ describe('auth slice — register', () => {
 });
 
 describe('auth slice — logout', () => {
-  it('clears token and user', async () => {
-    const store = makeStore();
-    await store.dispatch(login({ email: 'a@b.com' }));
+  describe('positive cases', () => {
+    it('clears token and user', async () => {
+      const store = makeStore();
+      await store.dispatch(login({ email: 'a@b.com' }));
 
-    store.dispatch(logout());
+      store.dispatch(logout());
 
-    expect(store.getState().auth).toEqual({ hydration: 'idle', token: null, user: null });
+      expect(store.getState().auth).toEqual({ hydration: 'idle', token: null, user: null });
+    });
   });
 });

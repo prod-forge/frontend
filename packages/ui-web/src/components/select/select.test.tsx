@@ -11,77 +11,81 @@ const options = [
 ];
 
 describe('Select', () => {
-  it('renders all options', () => {
-    render(
-      <Select
-        id="filter"
-        onChange={() => {
-          /* empty */
-        }}
-        options={options}
-        value="all"
-      />,
-    );
+  describe('negative cases', () => {
+    it('omits the label when not provided', () => {
+      render(
+        <Select
+          id="filter"
+          onChange={() => {
+            /* empty */
+          }}
+          options={options}
+          value="all"
+        />,
+      );
 
-    expect(screen.getAllByRole('option')).toHaveLength(3);
-    expect(screen.getByRole('option', { name: 'All' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Active' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Done' })).toBeInTheDocument();
+      expect(screen.queryByText('Status')).not.toBeInTheDocument();
+    });
   });
 
-  it('reflects the selected value', () => {
-    render(
-      <Select
-        id="filter"
-        onChange={() => {
-          /* empty */
-        }}
-        options={options}
-        value="active"
-      />,
-    );
+  describe('positive cases', () => {
+    it('renders all options', () => {
+      render(
+        <Select
+          id="filter"
+          onChange={() => {
+            /* empty */
+          }}
+          options={options}
+          value="all"
+        />,
+      );
 
-    expect(screen.getByRole('combobox')).toHaveValue('active');
-  });
+      expect(screen.getAllByRole('option')).toHaveLength(3);
+      expect(screen.getByRole('option', { name: 'All' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Active' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Done' })).toBeInTheDocument();
+    });
 
-  it('renders a label when provided and links it to the select', () => {
-    render(
-      <Select
-        id="filter"
-        label="Status"
-        onChange={() => {
-          /* empty */
-        }}
-        options={options}
-        value="all"
-      />,
-    );
+    it('reflects the selected value', () => {
+      render(
+        <Select
+          id="filter"
+          onChange={() => {
+            /* empty */
+          }}
+          options={options}
+          value="active"
+        />,
+      );
 
-    expect(screen.getByLabelText('Status')).toBe(screen.getByRole('combobox'));
-  });
+      expect(screen.getByRole('combobox')).toHaveValue('active');
+    });
 
-  it('omits the label when not provided', () => {
-    render(
-      <Select
-        id="filter"
-        onChange={() => {
-          /* empty */
-        }}
-        options={options}
-        value="all"
-      />,
-    );
+    it('renders a label when provided and links it to the select', () => {
+      render(
+        <Select
+          id="filter"
+          label="Status"
+          onChange={() => {
+            /* empty */
+          }}
+          options={options}
+          value="all"
+        />,
+      );
 
-    expect(screen.queryByText('Status')).not.toBeInTheDocument();
-  });
+      expect(screen.getByLabelText('Status')).toBe(screen.getByRole('combobox'));
+    });
 
-  it('calls onChange with the new value when a different option is selected', async () => {
-    const onChange = vi.fn();
-    const user = userEvent.setup();
-    render(<Select id="filter" onChange={onChange} options={options} value="all" />);
+    it('calls onChange with the new value when a different option is selected', async () => {
+      const onChange = vi.fn();
+      const user = userEvent.setup();
+      render(<Select id="filter" onChange={onChange} options={options} value="all" />);
 
-    await user.selectOptions(screen.getByRole('combobox'), 'done');
+      await user.selectOptions(screen.getByRole('combobox'), 'done');
 
-    expect(onChange).toHaveBeenCalledWith('done');
+      expect(onChange).toHaveBeenCalledWith('done');
+    });
   });
 });

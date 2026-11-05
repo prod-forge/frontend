@@ -16,63 +16,67 @@ const renderHeader = (props: Partial<ComponentProps<typeof Header>> = {}): Rende
   );
 
 describe('Header', () => {
-  it('renders the brand name', () => {
-    renderHeader();
+  describe('negative cases', () => {
+    it('shows Sign in / Sign up links when unauthenticated', () => {
+      renderHeader();
 
-    expect(screen.getByRole('banner')).toHaveTextContent('TodoAI');
+      expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/login');
+      expect(screen.getByRole('link', { name: /sign up/i })).toHaveAttribute('href', '/register');
+      expect(screen.queryByRole('button', { name: /sign out/i })).not.toBeInTheDocument();
+    });
+
+    it('falls back to email when user has no name', () => {
+      renderHeader({ isAuthenticated: true, user: { email: 'a@b.com' } });
+
+      expect(screen.getByTestId('header-user')).toHaveTextContent('a@b.com');
+    });
   });
 
-  it('shows "Switch to dark mode" label when current theme is light', () => {
-    renderHeader({ theme: 'light' });
+  describe('positive cases', () => {
+    it('renders the brand name', () => {
+      renderHeader();
 
-    expect(screen.getByRole('button', { name: /switch to dark mode/i })).toBeInTheDocument();
-  });
+      expect(screen.getByRole('banner')).toHaveTextContent('TodoAI');
+    });
 
-  it('shows "Switch to light mode" label when current theme is dark', () => {
-    renderHeader({ theme: 'dark' });
+    it('shows "Switch to dark mode" label when current theme is light', () => {
+      renderHeader({ theme: 'light' });
 
-    expect(screen.getByRole('button', { name: /switch to light mode/i })).toBeInTheDocument();
-  });
+      expect(screen.getByRole('button', { name: /switch to dark mode/i })).toBeInTheDocument();
+    });
 
-  it('calls onToggle when the theme button is clicked', async () => {
-    const onToggle = vi.fn();
-    const user = userEvent.setup();
-    renderHeader({ onToggle });
+    it('shows "Switch to light mode" label when current theme is dark', () => {
+      renderHeader({ theme: 'dark' });
 
-    await user.click(screen.getByRole('button', { name: /switch to dark mode/i }));
+      expect(screen.getByRole('button', { name: /switch to light mode/i })).toBeInTheDocument();
+    });
 
-    expect(onToggle).toHaveBeenCalledTimes(1);
-  });
+    it('calls onToggle when the theme button is clicked', async () => {
+      const onToggle = vi.fn();
+      const user = userEvent.setup();
+      renderHeader({ onToggle });
 
-  it('shows Sign in / Sign up links when unauthenticated', () => {
-    renderHeader();
+      await user.click(screen.getByRole('button', { name: /switch to dark mode/i }));
 
-    expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/login');
-    expect(screen.getByRole('link', { name: /sign up/i })).toHaveAttribute('href', '/register');
-    expect(screen.queryByRole('button', { name: /sign out/i })).not.toBeInTheDocument();
-  });
+      expect(onToggle).toHaveBeenCalledTimes(1);
+    });
 
-  it('shows the user identifier and a Sign out button when authenticated', () => {
-    renderHeader({ isAuthenticated: true, user: { email: 'a@b.com', name: 'Anna' } });
+    it('shows the user identifier and a Sign out button when authenticated', () => {
+      renderHeader({ isAuthenticated: true, user: { email: 'a@b.com', name: 'Anna' } });
 
-    expect(screen.getByTestId('header-user')).toHaveTextContent('Anna');
-    expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /sign in/i })).not.toBeInTheDocument();
-  });
+      expect(screen.getByTestId('header-user')).toHaveTextContent('Anna');
+      expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: /sign in/i })).not.toBeInTheDocument();
+    });
 
-  it('falls back to email when user has no name', () => {
-    renderHeader({ isAuthenticated: true, user: { email: 'a@b.com' } });
+    it('calls onLogout when Sign out is clicked', async () => {
+      const onLogout = vi.fn();
+      const user = userEvent.setup();
+      renderHeader({ isAuthenticated: true, onLogout, user: { email: 'a@b.com' } });
 
-    expect(screen.getByTestId('header-user')).toHaveTextContent('a@b.com');
-  });
+      await user.click(screen.getByRole('button', { name: /sign out/i }));
 
-  it('calls onLogout when Sign out is clicked', async () => {
-    const onLogout = vi.fn();
-    const user = userEvent.setup();
-    renderHeader({ isAuthenticated: true, onLogout, user: { email: 'a@b.com' } });
-
-    await user.click(screen.getByRole('button', { name: /sign out/i }));
-
-    expect(onLogout).toHaveBeenCalledTimes(1);
+      expect(onLogout).toHaveBeenCalledTimes(1);
+    });
   });
 });

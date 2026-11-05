@@ -54,46 +54,50 @@ describe('<Register /> page', () => {
     vi.unstubAllGlobals();
   });
 
-  it('renders the heading and the register form', () => {
-    renderRegister();
+  describe('negative cases', () => {
+    it('redirects to home when the user is already authenticated', () => {
+      renderRegister({ authenticated: true });
 
-    expect(screen.getByRole('heading', { level: 1, name: /create your account/i })).toBeInTheDocument();
-    expect(screen.getByRole('form', { name: /register form/i })).toBeInTheDocument();
+      expect(screen.getByTestId('home')).toBeInTheDocument();
+    });
   });
 
-  it('renders a link back to the login page', () => {
-    renderRegister();
+  describe('positive cases', () => {
+    it('renders the heading and the register form', () => {
+      renderRegister();
 
-    expect(screen.getByRole('link', { name: /^sign in$/i })).toHaveAttribute('href', '/login');
-  });
+      expect(screen.getByRole('heading', { level: 1, name: /create your account/i })).toBeInTheDocument();
+      expect(screen.getByRole('form', { name: /register form/i })).toBeInTheDocument();
+    });
 
-  it('registers the user and stores the token on submit', async () => {
-    const user = userEvent.setup();
-    const { store } = renderRegister();
+    it('renders a link back to the login page', () => {
+      renderRegister();
 
-    await user.type(screen.getByLabelText('Email'), 'a@b.com');
-    await user.type(screen.getByLabelText(/name/i), 'Anna');
-    await user.type(screen.getByLabelText('Password'), 'pwd');
-    await user.click(screen.getByRole('button', { name: /create account/i }));
+      expect(screen.getByRole('link', { name: /^sign in$/i })).toHaveAttribute('href', '/login');
+    });
 
-    await waitFor(() => expect(store.getState().auth.token).toBe('signed.jwt.token'));
-    expect(store.getState().auth.user).toEqual({ email: 'a@b.com', name: 'Anna' });
-  });
+    it('registers the user and stores the token on submit', async () => {
+      const user = userEvent.setup();
+      const { store } = renderRegister();
 
-  it('registers without a name when none is provided', async () => {
-    const user = userEvent.setup();
-    const { store } = renderRegister();
+      await user.type(screen.getByLabelText('Email'), 'a@b.com');
+      await user.type(screen.getByLabelText(/name/i), 'Anna');
+      await user.type(screen.getByLabelText('Password'), 'pwd');
+      await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    await user.type(screen.getByLabelText('Email'), 'a@b.com');
-    await user.type(screen.getByLabelText('Password'), 'pwd');
-    await user.click(screen.getByRole('button', { name: /create account/i }));
+      await waitFor(() => expect(store.getState().auth.token).toBe('signed.jwt.token'));
+      expect(store.getState().auth.user).toEqual({ email: 'a@b.com', name: 'Anna' });
+    });
 
-    await waitFor(() => expect(store.getState().auth.user).toEqual({ email: 'a@b.com' }));
-  });
+    it('registers without a name when none is provided', async () => {
+      const user = userEvent.setup();
+      const { store } = renderRegister();
 
-  it('redirects to home when the user is already authenticated', () => {
-    renderRegister({ authenticated: true });
+      await user.type(screen.getByLabelText('Email'), 'a@b.com');
+      await user.type(screen.getByLabelText('Password'), 'pwd');
+      await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(screen.getByTestId('home')).toBeInTheDocument();
+      await waitFor(() => expect(store.getState().auth.user).toEqual({ email: 'a@b.com' }));
+    });
   });
 });

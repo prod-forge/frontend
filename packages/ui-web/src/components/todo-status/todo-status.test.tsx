@@ -4,27 +4,29 @@ import { describe, expect, it } from 'vitest';
 import { TodoStatus } from './todo-status';
 
 describe('TodoStatus', () => {
-  it('renders "Done" when completed', () => {
-    render(<TodoStatus completed />);
+  describe('positive cases', () => {
+    it('renders "Done" when completed', () => {
+      render(<TodoStatus completed />);
 
-    expect(screen.getByText('Done')).toBeInTheDocument();
-  });
+      expect(screen.getByText('Done')).toBeInTheDocument();
+    });
 
-  it('renders "To Do" when not completed', () => {
-    render(<TodoStatus completed={false} />);
+    it('renders "To Do" when not completed', () => {
+      render(<TodoStatus completed={false} />);
 
-    expect(screen.getByText('To Do')).toBeInTheDocument();
-  });
+      expect(screen.getByText('To Do')).toBeInTheDocument();
+    });
 
-  it('applies the ok styling when completed', () => {
-    render(<TodoStatus completed />);
+    it('applies the ok styling when completed', () => {
+      render(<TodoStatus completed />);
 
-    expect(screen.getByText('Done')).toHaveClass('bg-ok-soft');
-  });
+      expect(screen.getByText('Done')).toHaveClass('bg-ok-soft');
+    });
 
-  it('applies the muted styling when not completed', () => {
-    render(<TodoStatus completed={false} />);
+    it('applies the muted styling when not completed', () => {
+      render(<TodoStatus completed={false} />);
 
-    expect(screen.getByText('To Do')).toHaveClass('bg-page-soft');
+      expect(screen.getByText('To Do')).toHaveClass('bg-page-soft');
+    });
   });
 });

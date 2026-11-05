@@ -6,87 +6,91 @@ import { describe, expect, it, vi } from 'vitest';
 import { AddTodoForm } from './add-todo-form';
 
 describe('AddTodoForm', () => {
-  it('renders title and description inputs and an "Add task" submit button', () => {
-    render(<AddTodoForm onSubmit={vi.fn()} />);
+  describe('negative cases', () => {
+    it('shows an error and does not submit when the title is empty', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(<AddTodoForm onSubmit={onSubmit} />);
 
-    expect(screen.getByLabelText('Title')).toBeInTheDocument();
-    expect(screen.getByLabelText('Description')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /add task/i })).toHaveAttribute('type', 'submit');
+      await user.click(screen.getByRole('button', { name: /add task/i }));
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByRole('alert')).toHaveTextContent(/title is required/i);
+    });
+
+    it('shows an error when the title exceeds the max length', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(<AddTodoForm onSubmit={onSubmit} />);
+
+      await user.type(screen.getByLabelText('Title'), 'a'.repeat(TITLE_MAX_LENGTH + 1));
+      await user.click(screen.getByRole('button', { name: /add task/i }));
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByRole('alert')).toHaveTextContent(new RegExp(`${TITLE_MAX_LENGTH} characters or fewer`, 'i'));
+    });
+
+    it('shows an error when the description exceeds the max length', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(<AddTodoForm onSubmit={onSubmit} />);
+
+      await user.type(screen.getByLabelText('Title'), 'Valid title');
+      await user.click(screen.getByLabelText('Description'));
+      await user.paste('a'.repeat(DESCRIPTION_MAX_LENGTH + 1));
+      await user.click(screen.getByRole('button', { name: /add task/i }));
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        new RegExp(`${DESCRIPTION_MAX_LENGTH} characters or fewer`, 'i'),
+      );
+    });
   });
 
-  it('submits the form with both fields', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    render(<AddTodoForm onSubmit={onSubmit} />);
+  describe('positive cases', () => {
+    it('renders title and description inputs and an "Add task" submit button', () => {
+      render(<AddTodoForm onSubmit={vi.fn()} />);
 
-    await user.type(screen.getByLabelText('Title'), 'Buy milk');
-    await user.type(screen.getByLabelText('Description'), 'Pick up 2 liters');
-    await user.click(screen.getByRole('button', { name: /add task/i }));
+      expect(screen.getByLabelText('Title')).toBeInTheDocument();
+      expect(screen.getByLabelText('Description')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /add task/i })).toHaveAttribute('type', 'submit');
+    });
 
-    expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(onSubmit).toHaveBeenCalledWith({ description: 'Pick up 2 liters', title: 'Buy milk' });
-  });
+    it('submits the form with both fields', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(<AddTodoForm onSubmit={onSubmit} />);
 
-  it('submits with an empty description (optional field)', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    render(<AddTodoForm onSubmit={onSubmit} />);
+      await user.type(screen.getByLabelText('Title'), 'Buy milk');
+      await user.type(screen.getByLabelText('Description'), 'Pick up 2 liters');
+      await user.click(screen.getByRole('button', { name: /add task/i }));
 
-    await user.type(screen.getByLabelText('Title'), 'Buy milk');
-    await user.click(screen.getByRole('button', { name: /add task/i }));
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+      expect(onSubmit).toHaveBeenCalledWith({ description: 'Pick up 2 liters', title: 'Buy milk' });
+    });
 
-    expect(onSubmit).toHaveBeenCalledWith({ description: '', title: 'Buy milk' });
-  });
+    it('submits with an empty description (optional field)', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(<AddTodoForm onSubmit={onSubmit} />);
 
-  it('shows an error and does not submit when the title is empty', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    render(<AddTodoForm onSubmit={onSubmit} />);
+      await user.type(screen.getByLabelText('Title'), 'Buy milk');
+      await user.click(screen.getByRole('button', { name: /add task/i }));
 
-    await user.click(screen.getByRole('button', { name: /add task/i }));
+      expect(onSubmit).toHaveBeenCalledWith({ description: '', title: 'Buy milk' });
+    });
 
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert')).toHaveTextContent(/title is required/i);
-  });
+    it('resets fields after a successful submit', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(<AddTodoForm onSubmit={onSubmit} />);
 
-  it('shows an error when the title exceeds the max length', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    render(<AddTodoForm onSubmit={onSubmit} />);
+      await user.type(screen.getByLabelText('Title'), 'Buy milk');
+      await user.type(screen.getByLabelText('Description'), 'desc');
+      await user.click(screen.getByRole('button', { name: /add task/i }));
 
-    await user.type(screen.getByLabelText('Title'), 'a'.repeat(TITLE_MAX_LENGTH + 1));
-    await user.click(screen.getByRole('button', { name: /add task/i }));
-
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert')).toHaveTextContent(new RegExp(`${TITLE_MAX_LENGTH} characters or fewer`, 'i'));
-  });
-
-  it('shows an error when the description exceeds the max length', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    render(<AddTodoForm onSubmit={onSubmit} />);
-
-    await user.type(screen.getByLabelText('Title'), 'Valid title');
-    await user.click(screen.getByLabelText('Description'));
-    await user.paste('a'.repeat(DESCRIPTION_MAX_LENGTH + 1));
-    await user.click(screen.getByRole('button', { name: /add task/i }));
-
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      new RegExp(`${DESCRIPTION_MAX_LENGTH} characters or fewer`, 'i'),
-    );
-  });
-
-  it('resets fields after a successful submit', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    render(<AddTodoForm onSubmit={onSubmit} />);
-
-    await user.type(screen.getByLabelText('Title'), 'Buy milk');
-    await user.type(screen.getByLabelText('Description'), 'desc');
-    await user.click(screen.getByRole('button', { name: /add task/i }));
-
-    expect(screen.getByLabelText('Title')).toHaveValue('');
-    expect(screen.getByLabelText('Description')).toHaveValue('');
+      expect(screen.getByLabelText('Title')).toHaveValue('');
+      expect(screen.getByLabelText('Description')).toHaveValue('');
+    });
   });
 });

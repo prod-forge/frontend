@@ -5,92 +5,96 @@ import { describe, expect, it, vi } from 'vitest';
 import { Button } from './button';
 
 describe('Button', () => {
-  it('renders its children', () => {
-    render(<Button>Click me</Button>);
+  describe('negative cases', () => {
+    it('defaults to type="button" so it does not submit forms unintentionally', () => {
+      render(<Button>Default</Button>);
 
-    expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();
+      expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
+    });
+
+    it('does not fire onClick when disabled', async () => {
+      const onClick = vi.fn();
+      const user = userEvent.setup();
+      render(
+        <Button disabled onClick={onClick}>
+          Disabled
+        </Button>,
+      );
+
+      await user.click(screen.getByRole('button'));
+
+      expect(onClick).not.toHaveBeenCalled();
+    });
   });
 
-  it('defaults to type="button" so it does not submit forms unintentionally', () => {
-    render(<Button>Default</Button>);
+  describe('positive cases', () => {
+    it('renders its children', () => {
+      render(<Button>Click me</Button>);
 
-    expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
-  });
+      expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();
+    });
 
-  it('uses the provided type when specified', () => {
-    render(<Button type="submit">Submit</Button>);
+    it('uses the provided type when specified', () => {
+      render(<Button type="submit">Submit</Button>);
 
-    expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
-  });
+      expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
+    });
 
-  it('fires onClick when clicked', async () => {
-    const onClick = vi.fn();
-    const user = userEvent.setup();
-    render(<Button onClick={onClick}>Go</Button>);
+    it('fires onClick when clicked', async () => {
+      const onClick = vi.fn();
+      const user = userEvent.setup();
+      render(<Button onClick={onClick}>Go</Button>);
 
-    await user.click(screen.getByRole('button'));
+      await user.click(screen.getByRole('button'));
 
-    expect(onClick).toHaveBeenCalledTimes(1);
-  });
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
 
-  it('does not fire onClick when disabled', async () => {
-    const onClick = vi.fn();
-    const user = userEvent.setup();
-    render(
-      <Button disabled onClick={onClick}>
-        Disabled
-      </Button>,
-    );
+    it('applies the correct classes for the primary variant', () => {
+      render(<Button variant="primary">P</Button>);
 
-    await user.click(screen.getByRole('button'));
+      expect(screen.getByRole('button')).toHaveClass('bg-brand');
+    });
 
-    expect(onClick).not.toHaveBeenCalled();
-  });
+    it('applies the correct classes for the secondary variant', () => {
+      render(<Button variant="secondary">S</Button>);
 
-  it('applies the correct classes for the primary variant', () => {
-    render(<Button variant="primary">P</Button>);
+      expect(screen.getByRole('button')).toHaveClass('bg-card');
+    });
 
-    expect(screen.getByRole('button')).toHaveClass('bg-brand');
-  });
+    it('applies the correct classes for the danger variant', () => {
+      render(<Button variant="danger">D</Button>);
 
-  it('applies the correct classes for the secondary variant', () => {
-    render(<Button variant="secondary">S</Button>);
+      expect(screen.getByRole('button')).toHaveClass('bg-err');
+    });
 
-    expect(screen.getByRole('button')).toHaveClass('bg-card');
-  });
+    it('applies size-specific classes', () => {
+      const { rerender } = render(<Button size="sm">Sm</Button>);
+      expect(screen.getByRole('button')).toHaveClass('min-h-8');
 
-  it('applies the correct classes for the danger variant', () => {
-    render(<Button variant="danger">D</Button>);
+      rerender(<Button size="lg">Lg</Button>);
+      expect(screen.getByRole('button')).toHaveClass('min-h-11');
+    });
 
-    expect(screen.getByRole('button')).toHaveClass('bg-err');
-  });
+    it('merges custom className with built-in classes', () => {
+      render(<Button className="custom-class">X</Button>);
 
-  it('applies size-specific classes', () => {
-    const { rerender } = render(<Button size="sm">Sm</Button>);
-    expect(screen.getByRole('button')).toHaveClass('min-h-8');
+      expect(screen.getByRole('button')).toHaveClass('custom-class');
+    });
 
-    rerender(<Button size="lg">Lg</Button>);
-    expect(screen.getByRole('button')).toHaveClass('min-h-11');
-  });
+    it('forwards refs to the underlying button element', () => {
+      let element: HTMLButtonElement | null = null;
+      render(
+        <Button
+          ref={(node) => {
+            element = node;
+          }}
+        >
+          R
+        </Button>,
+      );
 
-  it('merges custom className with built-in classes', () => {
-    render(<Button className="custom-class">X</Button>);
-
-    expect(screen.getByRole('button')).toHaveClass('custom-class');
-  });
-
-  it('forwards refs to the underlying button element', () => {
-    let element: HTMLButtonElement | null = null;
-    render(
-      <Button
-        ref={(node) => {
-          element = node;
-        }}
-      >
-        R
-      </Button>,
-    );
-
-    expect(element).toBeInstanceOf(HTMLButtonElement);
+      expect(element).toBeInstanceOf(HTMLButtonElement);
+    });
   });
 });

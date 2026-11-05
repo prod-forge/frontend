@@ -12,131 +12,135 @@ const renderTitle = (overrides: Partial<ComponentProps<typeof EditableTitle>> = 
   render(<EditableTitle onSubmit={vi.fn()} schema={titleSchema} value="Buy milk" {...overrides} />);
 
 describe('EditableTitle', () => {
-  it('renders the value as a heading by default', () => {
-    renderTitle();
+  describe('negative cases', () => {
+    it('shows an error and stays in edit mode when the title exceeds the max length', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      renderTitle({ onSubmit });
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Buy milk' })).toBeInTheDocument();
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
+      const input = screen.getByRole('textbox', { name: /title/i });
+      await user.clear(input);
+      await user.type(input, 'a'.repeat(TITLE_MAX_LENGTH + 1));
+      await user.keyboard('{Enter}');
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument();
+      expect(screen.getByRole('alert')).toHaveTextContent(new RegExp(`${TITLE_MAX_LENGTH} characters or fewer`, 'i'));
+    });
+
+    it('shows an error and stays in edit mode for an empty title', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      renderTitle({ onSubmit });
+
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
+      const input = screen.getByRole('textbox', { name: /title/i });
+      await user.clear(input);
+      await user.keyboard('{Enter}');
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByRole('alert')).toHaveTextContent(/title is required/i);
+    });
+
+    it('cancels editing on Escape and reverts to the original value', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      renderTitle({ onSubmit });
+
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
+      const input = screen.getByRole('textbox', { name: /title/i });
+      await user.clear(input);
+      await user.type(input, 'Buy bread{Escape}');
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: 'Buy milk' })).toBeInTheDocument();
+    });
   });
 
-  it('exposes an "Edit title" button', () => {
-    renderTitle();
+  describe('positive cases', () => {
+    it('renders the value as a heading by default', () => {
+      renderTitle();
 
-    expect(screen.getByRole('button', { name: /edit title/i })).toBeInTheDocument();
-  });
+      expect(screen.getByRole('heading', { level: 1, name: 'Buy milk' })).toBeInTheDocument();
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    });
 
-  it('switches to an input when the edit button is clicked', async () => {
-    const user = userEvent.setup();
-    renderTitle();
+    it('exposes an "Edit title" button', () => {
+      renderTitle();
 
-    await user.click(screen.getByRole('button', { name: /edit title/i }));
+      expect(screen.getByRole('button', { name: /edit title/i })).toBeInTheDocument();
+    });
 
-    const input = screen.getByRole('textbox', { name: /title/i });
-    expect(input).toBeInTheDocument();
-    expect(input).toHaveValue('Buy milk');
-    expect(screen.queryByRole('button', { name: /edit title/i })).not.toBeInTheDocument();
-  });
+    it('switches to an input when the edit button is clicked', async () => {
+      const user = userEvent.setup();
+      renderTitle();
 
-  it('submits the trimmed value on Enter and exits edit mode', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    renderTitle({ onSubmit });
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
 
-    await user.click(screen.getByRole('button', { name: /edit title/i }));
-    const input = screen.getByRole('textbox', { name: /title/i });
-    await user.clear(input);
-    await user.type(input, '  Buy bread  {Enter}');
+      const input = screen.getByRole('textbox', { name: /title/i });
+      expect(input).toBeInTheDocument();
+      expect(input).toHaveValue('Buy milk');
+      expect(screen.queryByRole('button', { name: /edit title/i })).not.toBeInTheDocument();
+    });
 
-    expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(onSubmit).toHaveBeenCalledWith('Buy bread');
-    expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument();
-  });
+    it('submits the trimmed value on Enter and exits edit mode', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      renderTitle({ onSubmit });
 
-  it('submits on blur (unfocus)', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    render(
-      <div>
-        <EditableTitle onSubmit={onSubmit} schema={titleSchema} value="Buy milk" />
-        <button type="button">Outside</button>
-      </div>,
-    );
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
+      const input = screen.getByRole('textbox', { name: /title/i });
+      await user.clear(input);
+      await user.type(input, '  Buy bread  {Enter}');
 
-    await user.click(screen.getByRole('button', { name: /edit title/i }));
-    const input = screen.getByRole('textbox', { name: /title/i });
-    await user.clear(input);
-    await user.type(input, 'Buy bread');
-    await user.click(screen.getByRole('button', { name: 'Outside' }));
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+      expect(onSubmit).toHaveBeenCalledWith('Buy bread');
+      expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument();
+    });
 
-    expect(onSubmit).toHaveBeenCalledWith('Buy bread');
-  });
+    it('submits on blur (unfocus)', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(
+        <div>
+          <EditableTitle onSubmit={onSubmit} schema={titleSchema} value="Buy milk" />
+          <button type="button">Outside</button>
+        </div>,
+      );
 
-  it('shows an error and stays in edit mode when the title exceeds the max length', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    renderTitle({ onSubmit });
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
+      const input = screen.getByRole('textbox', { name: /title/i });
+      await user.clear(input);
+      await user.type(input, 'Buy bread');
+      await user.click(screen.getByRole('button', { name: 'Outside' }));
 
-    await user.click(screen.getByRole('button', { name: /edit title/i }));
-    const input = screen.getByRole('textbox', { name: /title/i });
-    await user.clear(input);
-    await user.type(input, 'a'.repeat(TITLE_MAX_LENGTH + 1));
-    await user.keyboard('{Enter}');
+      expect(onSubmit).toHaveBeenCalledWith('Buy bread');
+    });
 
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveTextContent(new RegExp(`${TITLE_MAX_LENGTH} characters or fewer`, 'i'));
-  });
+    it('honors a custom schema passed via props', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      const customSchema = z.string().trim().min(1, 'Required').max(5, 'Max 5 characters');
+      renderTitle({ onSubmit, schema: customSchema, value: 'short' });
 
-  it('shows an error and stays in edit mode for an empty title', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    renderTitle({ onSubmit });
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
+      const input = screen.getByRole('textbox', { name: /title/i });
+      await user.clear(input);
+      await user.type(input, 'too long{Enter}');
 
-    await user.click(screen.getByRole('button', { name: /edit title/i }));
-    const input = screen.getByRole('textbox', { name: /title/i });
-    await user.clear(input);
-    await user.keyboard('{Enter}');
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByRole('alert')).toHaveTextContent(/max 5 characters/i);
+    });
 
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert')).toHaveTextContent(/title is required/i);
-  });
+    it('applies the maxLength attribute to the input when provided', async () => {
+      const user = userEvent.setup();
+      renderTitle({ maxLength: 100 });
 
-  it('cancels editing on Escape and reverts to the original value', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    renderTitle({ onSubmit });
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
 
-    await user.click(screen.getByRole('button', { name: /edit title/i }));
-    const input = screen.getByRole('textbox', { name: /title/i });
-    await user.clear(input);
-    await user.type(input, 'Buy bread{Escape}');
-
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 1, name: 'Buy milk' })).toBeInTheDocument();
-  });
-
-  it('honors a custom schema passed via props', async () => {
-    const onSubmit = vi.fn();
-    const user = userEvent.setup();
-    const customSchema = z.string().trim().min(1, 'Required').max(5, 'Max 5 characters');
-    renderTitle({ onSubmit, schema: customSchema, value: 'short' });
-
-    await user.click(screen.getByRole('button', { name: /edit title/i }));
-    const input = screen.getByRole('textbox', { name: /title/i });
-    await user.clear(input);
-    await user.type(input, 'too long{Enter}');
-
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert')).toHaveTextContent(/max 5 characters/i);
-  });
-
-  it('applies the maxLength attribute to the input when provided', async () => {
-    const user = userEvent.setup();
-    renderTitle({ maxLength: 100 });
-
-    await user.click(screen.getByRole('button', { name: /edit title/i }));
-
-    expect(screen.getByRole('textbox', { name: /title/i })).toHaveAttribute('maxLength', '100');
+      expect(screen.getByRole('textbox', { name: /title/i })).toHaveAttribute('maxLength', '100');
+    });
   });
 });

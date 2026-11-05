@@ -19,62 +19,70 @@ const items: Todo[] = [
 ];
 
 describe('filterTodos', () => {
-  it('returns the original list when query is empty', () => {
-    expect(filterTodos(items, '')).toEqual(items);
+  describe('negative cases', () => {
+    it('returns the original list when query is empty', () => {
+      expect(filterTodos(items, '')).toEqual(items);
+    });
+
+    it('returns the original list when query is whitespace only', () => {
+      expect(filterTodos(items, '   ')).toEqual(items);
+    });
+
+    it('does not match on the description', () => {
+      expect(filterTodos(items, 'milk')).toEqual([]);
+    });
+
+    it('returns an empty array when nothing matches', () => {
+      expect(filterTodos(items, 'definitely-not-there')).toEqual([]);
+    });
+
+    it('does not mutate the input array', () => {
+      const snapshot = [...items];
+      filterTodos(items, 'a');
+      expect(items).toEqual(snapshot);
+    });
   });
 
-  it('returns the original list when query is whitespace only', () => {
-    expect(filterTodos(items, '   ')).toEqual(items);
-  });
+  describe('positive cases', () => {
+    it('filters by title (case-insensitive)', () => {
+      expect(filterTodos(items, 'WORK')).toEqual([items[2]]);
+    });
 
-  it('filters by title (case-insensitive)', () => {
-    expect(filterTodos(items, 'WORK')).toEqual([items[2]]);
-  });
-
-  it('does not match on the description', () => {
-    expect(filterTodos(items, 'milk')).toEqual([]);
-  });
-
-  it('trims surrounding whitespace from the query', () => {
-    expect(filterTodos(items, '   work   ')).toEqual([items[2]]);
-  });
-
-  it('returns an empty array when nothing matches', () => {
-    expect(filterTodos(items, 'definitely-not-there')).toEqual([]);
-  });
-
-  it('does not mutate the input array', () => {
-    const snapshot = [...items];
-    filterTodos(items, 'a');
-    expect(items).toEqual(snapshot);
+    it('trims surrounding whitespace from the query', () => {
+      expect(filterTodos(items, '   work   ')).toEqual([items[2]]);
+    });
   });
 });
 
 describe('sortTodos', () => {
-  it('sorts by title ascending', () => {
-    const result = sortTodos(items, 'title', 'asc');
-    expect(result.map((t) => t.id)).toEqual(['a', 'b', 'c']);
+  describe('negative cases', () => {
+    it('returns a new array without mutating the input', () => {
+      const snapshot = [...items];
+      const result = sortTodos(items, 'title', 'desc');
+      expect(items).toEqual(snapshot);
+      expect(result).not.toBe(items);
+    });
   });
 
-  it('sorts by title descending', () => {
-    const result = sortTodos(items, 'title', 'desc');
-    expect(result.map((t) => t.id)).toEqual(['c', 'b', 'a']);
-  });
+  describe('positive cases', () => {
+    it('sorts by title ascending', () => {
+      const result = sortTodos(items, 'title', 'asc');
+      expect(result.map((t) => t.id)).toEqual(['a', 'b', 'c']);
+    });
 
-  it('sorts by completion status ascending — incomplete first', () => {
-    const result = sortTodos(items, 'completed', 'asc');
-    expect(result[result.length - 1].id).toBe('b');
-  });
+    it('sorts by title descending', () => {
+      const result = sortTodos(items, 'title', 'desc');
+      expect(result.map((t) => t.id)).toEqual(['c', 'b', 'a']);
+    });
 
-  it('sorts by completion status descending — completed first', () => {
-    const result = sortTodos(items, 'completed', 'desc');
-    expect(result[0].id).toBe('b');
-  });
+    it('sorts by completion status ascending — incomplete first', () => {
+      const result = sortTodos(items, 'completed', 'asc');
+      expect(result[result.length - 1].id).toBe('b');
+    });
 
-  it('returns a new array without mutating the input', () => {
-    const snapshot = [...items];
-    const result = sortTodos(items, 'title', 'desc');
-    expect(items).toEqual(snapshot);
-    expect(result).not.toBe(items);
+    it('sorts by completion status descending — completed first', () => {
+      const result = sortTodos(items, 'completed', 'desc');
+      expect(result[0].id).toBe('b');
+    });
   });
 });

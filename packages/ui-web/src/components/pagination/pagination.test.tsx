@@ -5,137 +5,141 @@ import { describe, expect, it, vi } from 'vitest';
 import { Pagination } from './pagination';
 
 describe('Pagination', () => {
-  it('renders nothing when there is only one page', () => {
-    const { container } = render(
-      <Pagination
-        limit={10}
-        offset={0}
-        onOffsetChange={() => {
-          /* empty */
-        }}
-        total={5}
-      />,
-    );
+  describe('negative cases', () => {
+    it('renders nothing when there is only one page', () => {
+      const { container } = render(
+        <Pagination
+          limit={10}
+          offset={0}
+          onOffsetChange={() => {
+            /* empty */
+          }}
+          total={5}
+        />,
+      );
 
-    expect(container).toBeEmptyDOMElement();
+      expect(container).toBeEmptyDOMElement();
+    });
+
+    it('disables Prev on the first page', () => {
+      render(
+        <Pagination
+          limit={10}
+          offset={0}
+          onOffsetChange={() => {
+            /* empty */
+          }}
+          total={50}
+        />,
+      );
+
+      expect(screen.getByRole('button', { name: /prev page/i })).toBeDisabled();
+      expect(screen.getByRole('button', { name: /next page/i })).toBeEnabled();
+    });
+
+    it('disables Next on the last page', () => {
+      render(
+        <Pagination
+          limit={10}
+          offset={40}
+          onOffsetChange={() => {
+            /* empty */
+          }}
+          total={50}
+        />,
+      );
+
+      expect(screen.getByRole('button', { name: /next page/i })).toBeDisabled();
+      expect(screen.getByRole('button', { name: /prev page/i })).toBeEnabled();
+    });
   });
 
-  it('renders prev/next when there are multiple pages', () => {
-    render(
-      <Pagination
-        limit={10}
-        offset={0}
-        onOffsetChange={() => {
-          /* empty */
-        }}
-        total={50}
-      />,
-    );
+  describe('positive cases', () => {
+    it('renders prev/next when there are multiple pages', () => {
+      render(
+        <Pagination
+          limit={10}
+          offset={0}
+          onOffsetChange={() => {
+            /* empty */
+          }}
+          total={50}
+        />,
+      );
 
-    expect(screen.getByRole('button', { name: /prev page/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /next page/i })).toBeInTheDocument();
-  });
+      expect(screen.getByRole('button', { name: /prev page/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /next page/i })).toBeInTheDocument();
+    });
 
-  it('disables Prev on the first page', () => {
-    render(
-      <Pagination
-        limit={10}
-        offset={0}
-        onOffsetChange={() => {
-          /* empty */
-        }}
-        total={50}
-      />,
-    );
+    it('marks the current page with aria-current="page"', () => {
+      render(
+        <Pagination
+          limit={10}
+          offset={20}
+          onOffsetChange={() => {
+            /* empty */
+          }}
+          total={50}
+        />,
+      );
 
-    expect(screen.getByRole('button', { name: /prev page/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /next page/i })).toBeEnabled();
-  });
+      expect(screen.getByRole('button', { name: 'Page 3' })).toHaveAttribute('aria-current', 'page');
+      expect(screen.getByRole('button', { name: 'Page 1' })).not.toHaveAttribute('aria-current');
+    });
 
-  it('disables Next on the last page', () => {
-    render(
-      <Pagination
-        limit={10}
-        offset={40}
-        onOffsetChange={() => {
-          /* empty */
-        }}
-        total={50}
-      />,
-    );
+    it('calls onOffsetChange with the new offset when a page button is clicked', async () => {
+      const onOffsetChange = vi.fn();
+      const user = userEvent.setup();
+      render(<Pagination limit={10} offset={0} onOffsetChange={onOffsetChange} total={50} />);
 
-    expect(screen.getByRole('button', { name: /next page/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /prev page/i })).toBeEnabled();
-  });
+      await user.click(screen.getByRole('button', { name: 'Page 2' }));
 
-  it('marks the current page with aria-current="page"', () => {
-    render(
-      <Pagination
-        limit={10}
-        offset={20}
-        onOffsetChange={() => {
-          /* empty */
-        }}
-        total={50}
-      />,
-    );
+      expect(onOffsetChange).toHaveBeenCalledWith(10);
+    });
 
-    expect(screen.getByRole('button', { name: 'Page 3' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('button', { name: 'Page 1' })).not.toHaveAttribute('aria-current');
-  });
+    it('requests offset 0 for the first page', async () => {
+      const onOffsetChange = vi.fn();
+      const user = userEvent.setup();
+      render(<Pagination limit={10} offset={20} onOffsetChange={onOffsetChange} total={50} />);
 
-  it('calls onOffsetChange with the new offset when a page button is clicked', async () => {
-    const onOffsetChange = vi.fn();
-    const user = userEvent.setup();
-    render(<Pagination limit={10} offset={0} onOffsetChange={onOffsetChange} total={50} />);
+      await user.click(screen.getByRole('button', { name: 'Page 1' }));
 
-    await user.click(screen.getByRole('button', { name: 'Page 2' }));
+      expect(onOffsetChange).toHaveBeenCalledWith(0);
+    });
 
-    expect(onOffsetChange).toHaveBeenCalledWith(10);
-  });
+    it('moves to the next page when Next is clicked', async () => {
+      const onOffsetChange = vi.fn();
+      const user = userEvent.setup();
+      render(<Pagination limit={10} offset={0} onOffsetChange={onOffsetChange} total={50} />);
 
-  it('requests offset 0 for the first page', async () => {
-    const onOffsetChange = vi.fn();
-    const user = userEvent.setup();
-    render(<Pagination limit={10} offset={20} onOffsetChange={onOffsetChange} total={50} />);
+      await user.click(screen.getByRole('button', { name: /next page/i }));
 
-    await user.click(screen.getByRole('button', { name: 'Page 1' }));
+      expect(onOffsetChange).toHaveBeenCalledWith(10);
+    });
 
-    expect(onOffsetChange).toHaveBeenCalledWith(0);
-  });
+    it('moves to the previous page when Prev is clicked', async () => {
+      const onOffsetChange = vi.fn();
+      const user = userEvent.setup();
+      render(<Pagination limit={10} offset={20} onOffsetChange={onOffsetChange} total={50} />);
 
-  it('moves to the next page when Next is clicked', async () => {
-    const onOffsetChange = vi.fn();
-    const user = userEvent.setup();
-    render(<Pagination limit={10} offset={0} onOffsetChange={onOffsetChange} total={50} />);
+      await user.click(screen.getByRole('button', { name: /prev page/i }));
 
-    await user.click(screen.getByRole('button', { name: /next page/i }));
+      expect(onOffsetChange).toHaveBeenCalledWith(10);
+    });
 
-    expect(onOffsetChange).toHaveBeenCalledWith(10);
-  });
+    it('renders an ellipsis when there is a gap between pages', () => {
+      render(
+        <Pagination
+          limit={10}
+          offset={50}
+          onOffsetChange={() => {
+            /* empty */
+          }}
+          total={200}
+        />,
+      );
 
-  it('moves to the previous page when Prev is clicked', async () => {
-    const onOffsetChange = vi.fn();
-    const user = userEvent.setup();
-    render(<Pagination limit={10} offset={20} onOffsetChange={onOffsetChange} total={50} />);
-
-    await user.click(screen.getByRole('button', { name: /prev page/i }));
-
-    expect(onOffsetChange).toHaveBeenCalledWith(10);
-  });
-
-  it('renders an ellipsis when there is a gap between pages', () => {
-    render(
-      <Pagination
-        limit={10}
-        offset={50}
-        onOffsetChange={() => {
-          /* empty */
-        }}
-        total={200}
-      />,
-    );
-
-    expect(screen.getAllByText('…').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('…').length).toBeGreaterThan(0);
+    });
   });
 });

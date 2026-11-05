@@ -8,7 +8,7 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#4](https://github.com/prod-forge/frontend/issues/4) — Set `displayName` on the remaining `ui-web` components.
 - [#5](https://github.com/prod-forge/frontend/issues/5) — Rename `errors.slice.ts` to `errors.slices.ts` to match the other feature files.
 - [#6](https://github.com/prod-forge/frontend/issues/6) — Enforce the 254 character email limit in the auth schema.
-- [#7](https://github.com/prod-forge/frontend/issues/7) — Order describe blocks negative-first in three test files.
+- [#7](https://github.com/prod-forge/frontend/issues/7) — Order describe blocks negative-first in test files. The issue names three files; two were already fixed, and `home.test.tsx` plus 22 more unit test files without `negative cases` / `positive cases` blocks were restructured on 2026-11-05 (branch `fix/review-2026-11-05`). Close the issue and remove this line once that branch is merged.
 - [#8](https://github.com/prod-forge/frontend/issues/8) — Verify the format of deploy variables in the CD workflow, not only their presence.
 - [#9](https://github.com/prod-forge/frontend/issues/9) — Show the `Retry-After` wait to the user when the API answers 429.
 - [#10](https://github.com/prod-forge/frontend/issues/10) — Add a `size-limit` performance budget for the web client.

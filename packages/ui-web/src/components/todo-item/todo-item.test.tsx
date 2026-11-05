@@ -39,53 +39,55 @@ describe('TodoItem', () => {
     vi.unstubAllEnvs();
   });
 
-  it('renders the title', () => {
-    renderItem(baseTodo);
+  describe('positive cases', () => {
+    it('renders the title', () => {
+      renderItem(baseTodo);
 
-    expect(screen.getByRole('link', { name: 'Buy milk' })).toBeInTheDocument();
-  });
+      expect(screen.getByRole('link', { name: 'Buy milk' })).toBeInTheDocument();
+    });
 
-  it('links the title and the open arrow to the todo detail page', () => {
-    renderItem(baseTodo);
+    it('links the title and the open arrow to the todo detail page', () => {
+      renderItem(baseTodo);
 
-    expect(screen.getByRole('link', { name: 'Buy milk' })).toHaveAttribute('href', '/todo/abc-123');
-    expect(screen.getByRole('link', { name: /open buy milk/i })).toHaveAttribute('href', '/todo/abc-123');
-  });
+      expect(screen.getByRole('link', { name: 'Buy milk' })).toHaveAttribute('href', '/todo/abc-123');
+      expect(screen.getByRole('link', { name: /open buy milk/i })).toHaveAttribute('href', '/todo/abc-123');
+    });
 
-  it('shows the "To Do" toggle when not completed', () => {
-    renderItem(baseTodo);
+    it('shows the "To Do" toggle when not completed', () => {
+      renderItem(baseTodo);
 
-    expect(screen.getByRole('button', { name: /mark as done/i })).toHaveTextContent('To Do');
-  });
+      expect(screen.getByRole('button', { name: /mark as done/i })).toHaveTextContent('To Do');
+    });
 
-  it('shows the "Done" toggle when completed', () => {
-    renderItem({ ...baseTodo, completed: true });
+    it('shows the "Done" toggle when completed', () => {
+      renderItem({ ...baseTodo, completed: true });
 
-    expect(screen.getByRole('button', { name: /mark as to do/i })).toHaveTextContent('Done');
-  });
+      expect(screen.getByRole('button', { name: /mark as to do/i })).toHaveTextContent('Done');
+    });
 
-  it('calls onToggle with the todo id when the toggle is clicked', async () => {
-    const onToggle = vi.fn();
-    const user = userEvent.setup();
-    renderItem(baseTodo, onToggle);
+    it('calls onToggle with the todo id when the toggle is clicked', async () => {
+      const onToggle = vi.fn();
+      const user = userEvent.setup();
+      renderItem(baseTodo, onToggle);
 
-    await user.click(screen.getByRole('button', { name: /mark as done/i }));
+      await user.click(screen.getByRole('button', { name: /mark as done/i }));
 
-    expect(onToggle).toHaveBeenCalledWith('abc-123');
-  });
+      expect(onToggle).toHaveBeenCalledWith('abc-123');
+    });
 
-  it('shows the todo icon for an incomplete todo', () => {
-    renderItem(baseTodo);
+    it('shows the todo icon for an incomplete todo', () => {
+      renderItem(baseTodo);
 
-    const icon = screen.getByRole('img', { name: 'Todo' });
-    expect(icon).toHaveAttribute('src', `${TEST_ASSETS_URL}/todo.svg`);
-  });
+      const icon = screen.getByRole('img', { name: 'Todo' });
+      expect(icon).toHaveAttribute('src', `${TEST_ASSETS_URL}/todo.svg`);
+    });
 
-  it('shows the completed icon for a completed todo', () => {
-    renderItem({ ...baseTodo, completed: true });
+    it('shows the completed icon for a completed todo', () => {
+      renderItem({ ...baseTodo, completed: true });
 
-    const icon = screen.getByRole('img', { name: 'Completed' });
-    expect(icon).toHaveAttribute('src', `${TEST_ASSETS_URL}/completed.svg`);
+      const icon = screen.getByRole('img', { name: 'Completed' });
+      expect(icon).toHaveAttribute('src', `${TEST_ASSETS_URL}/completed.svg`);
+    });
   });
 
   describe('delete button', () => {
