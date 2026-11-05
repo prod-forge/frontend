@@ -1,6 +1,6 @@
 # Client Observability
 
-The backend side of observability (structured logs, Promtail, Loki, Grafana, Prometheus) is described in [Logging and Observability](https://github.com/prod-forge/backend/blob/main/docs/logging-observability.md). This chapter covers what the browser adds, and how the two halves meet.
+The backend side of observability (structured logs, Promtail, Loki, Grafana, Prometheus) is described in [Logging and Observability](https://github.com/prod-forge/backend/blob/main/guide/logging-observability.md). This chapter covers what the browser adds, and how the two halves meet.
 
 ## Why Observability Starts in the Browser
 

@@ -1,6 +1,6 @@
 # Testing Strategy
 
-How tests are written, mocked and organized on the server is described in [Testing](https://github.com/prod-forge/backend/blob/main/docs/testing.md) in the backend guide. The principles are the same: most tests are small, they run fast, and each has a negative and a positive side. This chapter covers what is different for a client.
+How tests are written, mocked and organized on the server is described in [Testing](https://github.com/prod-forge/backend/blob/main/guide/testing.md) in the backend guide. The principles are the same: most tests are small, they run fast, and each has a negative and a positive side. This chapter covers what is different for a client.
 
 ## The Pyramid for a Frontend
 
@@ -54,11 +54,11 @@ Reasons for mocking:
 
 The price is that the mock can lie: if the backend changes a response, the client tests stay green. The boundary is as follows.
 
-| Question                                         | Who checks it                                                                                                         |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| Does the client behave correctly for response X? | Client tests (e2e, unit), with X from `test-data`                                                                     |
-| Does the backend really return X?                | Backend e2e tests, see the [backend testing chapter](https://github.com/prod-forge/backend/blob/main/docs/testing.md) |
-| Do X on both sides match?                        | Nothing automated today                                                                                               |
+| Question                                         | Who checks it                                                                                                          |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Does the client behave correctly for response X? | Client tests (e2e, unit), with X from `test-data`                                                                      |
+| Does the backend really return X?                | Backend e2e tests, see the [backend testing chapter](https://github.com/prod-forge/backend/blob/main/guide/testing.md) |
+| Do X on both sides match?                        | Nothing automated today                                                                                                |
 
 The last row is the honest gap. Adding a contract check (the backend OpenAPI document against the client fixtures and types) would close it; it is not implemented. A full-stack smoke test against a deployed environment is the other option and is out of scope here.
 

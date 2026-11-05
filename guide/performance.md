@@ -1,6 +1,6 @@
 # Performance
 
-How the backend keeps responses small and fast (pagination, indexes, compression) is described in [Performance](https://github.com/prod-forge/backend/blob/main/docs/performance.md) in the backend guide. On the client the cost is different: the user pays for every byte that is downloaded, parsed and executed before the first paint. This chapter explains how the bundle is measured, split and cached.
+How the backend keeps responses small and fast (pagination, indexes, compression) is described in [Performance](https://github.com/prod-forge/backend/blob/main/guide/performance.md) in the backend guide. On the client the cost is different: the user pays for every byte that is downloaded, parsed and executed before the first paint. This chapter explains how the bundle is measured, split and cached.
 
 ## Bundle Analysis
 
@@ -53,7 +53,7 @@ The build writes content-hashed files into `dist/static/` (`assetsDir: 'static'`
 | `index.html`              | `no-cache, no-store, must-revalidate` | a new release must be visible on the next visit |
 | media from `assets/` (S3) | `max-age=31536000,immutable`          | see the next section                            |
 
-The result is that a returning visitor downloads one small HTML file and reuses everything else from the disk cache. A release changes the hashes of only the chunks that changed. CloudFront serves the same headers; the details of the distribution, the 403 to `index.html` rule and the invalidation are in [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/docs/frontend.md#cache-strategy) in the Terraform guide.
+The result is that a returning visitor downloads one small HTML file and reuses everything else from the disk cache. A release changes the hashes of only the chunks that changed. CloudFront serves the same headers; the details of the distribution, the 403 to `index.html` rule and the invalidation are in [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/guide/frontend.md#cache-strategy) in the Terraform guide.
 
 One caveat. The root sync in `cd.yml` applies the immutable header to every file in `dist/` first, and then overrides only `index.html`. Files from `apps/web-client/public/` that have no hash in the name (`favicon.svg`) are therefore also cached for a year. That is fine while they never change. If one has to change, give it a versioned name.
 

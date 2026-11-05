@@ -1,6 +1,6 @@
 # Security
 
-The server side of security (request validation, response sanitization, headers, CORS, rate limiting) is described in [Security](https://github.com/prod-forge/backend/blob/main/docs/security.md) in the backend guide. A browser client changes the question: the code runs on a machine that the team does not control, so nothing in it can be secret, and the main enemy is script injected into the page. This chapter covers the client side, and is honest about what authentication does not do yet.
+The server side of security (request validation, response sanitization, headers, CORS, rate limiting) is described in [Security](https://github.com/prod-forge/backend/blob/main/guide/security.md) in the backend guide. A browser client changes the question: the code runs on a machine that the team does not control, so nothing in it can be secret, and the main enemy is script injected into the page. This chapter covers the client side, and is honest about what authentication does not do yet.
 
 ## Threat Model for an SPA
 
@@ -106,7 +106,7 @@ What is not done and is worth adding:
 
 ## Headers Set by CloudFront
 
-Security headers that a meta tag cannot carry are the job of the CDN. In this setup the distribution is described in the Terraform repository: [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/docs/frontend.md). The distribution attaches a response headers policy (`aws_cloudfront_response_headers_policy.security`) to every cache behavior:
+Security headers that a meta tag cannot carry are the job of the CDN. In this setup the distribution is described in the Terraform repository: [Frontend Deployment](https://github.com/prod-forge/terraform/blob/main/guide/frontend.md). The distribution attaches a response headers policy (`aws_cloudfront_response_headers_policy.security`) to every cache behavior:
 
 | Header                      | Value                                 | Purpose                               |
 | --------------------------- | ------------------------------------- | ------------------------------------- |
@@ -116,4 +116,4 @@ Security headers that a meta tag cannot carry are the job of the CDN. In this se
 | `X-Content-Type-Options`    | `nosniff`                             | no MIME sniffing                      |
 | `Referrer-Policy`           | `strict-origin-when-cross-origin`     | do not leak paths to other sites      |
 
-The header enforces the full policy in production, including `frame-ancestors 'none'`, which a meta tag cannot carry. The meta tag is shipped too and kept identical: the two match when `VITE_ASSETS_BASE_URL` is unset or same-origin; otherwise the meta tag adds the assets origin, both policies are enforced and the stricter one (the header) wins. Check the deployed response with `curl -I`. The backend headers (Helmet, CORS) are separate and are covered in the [backend chapter](https://github.com/prod-forge/backend/blob/main/docs/security.md#security-headers).
+The header enforces the full policy in production, including `frame-ancestors 'none'`, which a meta tag cannot carry. The meta tag is shipped too and kept identical: the two match when `VITE_ASSETS_BASE_URL` is unset or same-origin; otherwise the meta tag adds the assets origin, both policies are enforced and the stricter one (the header) wins. Check the deployed response with `curl -I`. The backend headers (Helmet, CORS) are separate and are covered in the [backend chapter](https://github.com/prod-forge/backend/blob/main/guide/security.md#security-headers).

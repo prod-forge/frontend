@@ -1,6 +1,6 @@
 # API Client and Errors
 
-This chapter is about the client side of the contract. How the backend produces errors, filters exceptions and logs them is in [Error Handling](https://github.com/prod-forge/backend/blob/main/docs/error-handling.md) in the backend guide.
+This chapter is about the client side of the contract. How the backend produces errors, filters exceptions and logs them is in [Error Handling](https://github.com/prod-forge/backend/blob/main/guide/error-handling.md) in the backend guide.
 
 ## The Client Contract
 
@@ -127,7 +127,7 @@ Mobile shows load failures with `ErrorBanner` (`apps/mobile-client/src/component
 Input is validated twice, for different purposes.
 
 - **On the client**, zod schemas in `packages/core` (`todos.schemas.ts`, `auth.schemas.ts`) give the user immediate feedback while typing: title required and at most 200 characters, description at most 2000, search at most 100, password 3 to 20 characters, name at most 50 (registration), email format. The limits are exported constants (`TITLE_MAX_LENGTH`, `DESCRIPTION_MAX_LENGTH`, `SEARCH_MAX_LENGTH`, `PASSWORD_MAX_LENGTH`, `NAME_MAX_LENGTH`) that both the schemas and the form components import, so the client rules do not drift apart between web and mobile. The schemas are in `core`, so web and mobile use the same rules.
-- **On the server**, class-validator DTOs decide what is accepted. See [Security](https://github.com/prod-forge/backend/blob/main/docs/security.md) in the backend guide. Client validation is a convenience; it is never a security boundary, since anyone can send a request without the client.
+- **On the server**, class-validator DTOs decide what is accepted. See [Security](https://github.com/prod-forge/backend/blob/main/guide/security.md) in the backend guide. Client validation is a convenience; it is never a security boundary, since anyone can send a request without the client.
 
 There is **no single source of truth** today. The limits are written twice, once in zod and once in the backend DTOs, and they are kept in sync by hand. If they diverge, the user sees the server's `DTO_VALIDATION_ERROR` message from the table above, which is correct but less specific than a field error.
 

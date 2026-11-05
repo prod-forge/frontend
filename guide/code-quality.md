@@ -1,6 +1,6 @@
 # Code Quality
 
-The shared approach is described in the backend guide: [Code Quality](https://github.com/prod-forge/backend/blob/main/docs/code-quality.md). The same six layers apply here: EditorConfig and Prettier, ESLint, pre-commit protection, commitlint, CI checks and dependency locking. The commitlint config is the same conventional preset, and exact versions with `npm ci` are used. This chapter lists only the differences for a frontend monorepo.
+The shared approach is described in the backend guide: [Code Quality](https://github.com/prod-forge/backend/blob/main/guide/code-quality.md). The same six layers apply here: EditorConfig and Prettier, ESLint, pre-commit protection, commitlint, CI checks and dependency locking. The commitlint config is the same conventional preset, and exact versions with `npm ci` are used. This chapter lists only the differences for a frontend monorepo.
 
 ## Layer 1. Formatting
 

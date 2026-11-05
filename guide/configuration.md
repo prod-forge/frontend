@@ -1,6 +1,6 @@
 # Configuration
 
-How the backend manages environments and secrets is described in [Configuration Management](https://github.com/prod-forge/backend/blob/main/docs/configuration-management.md). The client has a different problem: it has no server process that reads variables at startup. This chapter explains what that changes.
+How the backend manages environments and secrets is described in [Configuration Management](https://github.com/prod-forge/backend/blob/main/guide/configuration-management.md). The client has a different problem: it has no server process that reads variables at startup. This chapter explains what that changes.
 
 ## Build-Time Configuration
 
@@ -95,7 +95,7 @@ The same rule is checked at runtime by `configureCore`, which throws on an empty
 
 ## GitHub Variables and Secrets
 
-The CD workflow (`.github/workflows/cd.yml`) reads its configuration from the `prod` environment; `rollback.yml` and `show-web-client-versions.yml` use the deploy variables. The build step fails without `VITE_API_BASE_URL`, so a bundle never ships with an empty API URL, and the first step of `cd.yml` fails the job when `AWS_DEPLOY_ROLE_ARN`, `S3_WEB_CLIENT_BUCKET`, `S3_ASSETS_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID` or `CLOUDFRONT_URL` is empty. The deploy variables and the API URL are Terraform outputs of the environment root (`terraform -chdir=infrastructure/environments/prod output`, see [Deploy workflow variables](https://github.com/prod-forge/terraform/blob/main/docs/workflow.md#deploy-workflow-variables)).
+The CD workflow (`.github/workflows/cd.yml`) reads its configuration from the `prod` environment; `rollback.yml` and `show-web-client-versions.yml` use the deploy variables. The build step fails without `VITE_API_BASE_URL`, so a bundle never ships with an empty API URL, and the first step of `cd.yml` fails the job when `AWS_DEPLOY_ROLE_ARN`, `S3_WEB_CLIENT_BUCKET`, `S3_ASSETS_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID` or `CLOUDFRONT_URL` is empty. The deploy variables and the API URL are Terraform outputs of the environment root (`terraform -chdir=infrastructure/environments/prod output`, see [Deploy workflow variables](https://github.com/prod-forge/terraform/blob/main/guide/workflow.md#deploy-workflow-variables)).
 
 | Name                         | Kind     | Consumer | Terraform output             | Example                                                                        |
 | ---------------------------- | -------- | -------- | ---------------------------- | ------------------------------------------------------------------------------ |
@@ -149,4 +149,4 @@ Anything in a `VITE_*` or `EXPO_PUBLIC_*` variable is readable by every user. Op
 
 What is acceptable in the client, because it is public by design: the API base URL, the Sentry **DSN** (it only allows sending events, and can be limited by allowed domains in the Sentry project), the CDN origin, the app version.
 
-For the backend side of secrets (storage, rotation, environment files) see [Secret Management](https://github.com/prod-forge/backend/blob/main/docs/configuration-management.md#secret-management).
+For the backend side of secrets (storage, rotation, environment files) see [Secret Management](https://github.com/prod-forge/backend/blob/main/guide/configuration-management.md#secret-management).
