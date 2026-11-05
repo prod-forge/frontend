@@ -141,3 +141,5 @@ Agent reference docs live in `docs/`; the human guide lives in `guide/`:
 - `docs/developers-guide.md` — setup, commands, conventions, how to add features
 
 When making changes that affect any of the above, update the relevant doc in the same task. Do not defer doc updates to a follow-up.
+
+The human guide in `guide/` is updated when the behaviour it describes changes.
