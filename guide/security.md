@@ -22,7 +22,7 @@ What this application protects against, and where:
 
 ## Content Security Policy
 
-The CloudFront response headers policy (terraform repo, `docs/frontend.md#security-headers`) is the enforced source of truth: it sends the policy below as a `Content-Security-Policy` header. The `<meta>` tag in `apps/web-client/index.html` carries the same policy as a fallback for local development, where there is no CDN. The two must stay identical after substitution; both repos assert the same string (`apps/web-client/index-csp.test.ts` here, `edge.tftest.hcl` in terraform). Change them together.
+The CloudFront response headers policy (terraform repo, `guide/frontend.md#security-headers`) is the enforced source of truth: it sends the policy below as a `Content-Security-Policy` header. The `<meta>` tag in `apps/web-client/index.html` carries the same policy as a fallback for local development, where there is no CDN. The two must stay identical after substitution; both repos assert the same string (`apps/web-client/index-csp.test.ts` here, `edge.tftest.hcl` in terraform). Change them together.
 
 `apps/web-client/index.html` carries the policy in a `<meta>` tag:
 
