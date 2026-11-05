@@ -55,7 +55,7 @@ Pages are containers: they select state with `useAppSelector`, dispatch with `us
 
 ## Project-Specific Notes
 
-- **No default exports** — ESLint enforces named exports everywhere, except expo-router route files in `apps/mobile-client/src/app/**`.
+- **No default exports** — ESLint enforces named exports everywhere, except expo-router route files in `apps/mobile-client/src/app/**`, stories, `.storybook/**`, Playwright, Vite, Vitest, Jest and ESLint configs, and `*.d.ts` files (see [tooling hacks](../hacks/tooling.md)).
 - **No `any`** — use `unknown` + type narrowing.
 - **No API calls outside `core/src/api/`** — all fetch logic lives there.
 - **Typed Redux hooks only** — use `useAppDispatch` / `useAppSelector` from `apps/web-client/src/hooks/redux/redux.ts` (mobile: `src/hooks/use-app-dispatch.ts`, `use-app-selector.ts`), never raw `useDispatch` / `useSelector`.
