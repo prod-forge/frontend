@@ -17,6 +17,7 @@ test-results/
 build/
 lib/
 dist/
+storybook-static/
 example/
 docs/
 public/
