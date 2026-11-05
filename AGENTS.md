@@ -135,11 +135,23 @@ Never edit generated code manually.
 
 Agent reference docs live in `docs/`; the human guide lives in `guide/`:
 
-- `docs/architecture.md` — monorepo structure, layers, routing, Redux store, env vars
-- `docs/api.md` — HTTP client, all endpoints, error codes, async thunks
-- `docs/data-schema.md` — domain types, Redux state shape, validation constraints
-- `docs/developers-guide.md` — setup, commands, conventions, how to add features
+- `docs/goal.md` — what the project is and what it must achieve
+- `docs/architecture/` — monorepo structure, layers, routing, store (`overview.md`), HTTP client and endpoints (`api.md`), domain types and state shape (`data-schema.md`), how to add a component, feature, screen or page (`patterns.md`)
+- `docs/commands.md` — setup, running, testing, linting, building, release, commit convention
+- `docs/restrictions/` — constraints of this project, with the reason and where each is enforced
+- `docs/plans/` — what is being implemented now
+- `docs/ideas/` — raw high-level ideas
+- `docs/roadmap/` — ideas scheduled into versions; the public list of open work is `roadmap.md`
+- `docs/open-issues/` — deferred known problems
+- `docs/postmortem/` — attempts that did not work, and why
+- `docs/hacks/` — non-obvious decisions and shortcuts
 
 When making changes that affect any of the above, update the relevant doc in the same task. Do not defer doc updates to a follow-up.
 
 The human guide in `guide/` is updated when the behaviour it describes changes.
+
+## Planning
+
+- Before writing a new plan, read `docs/goal.md`, `docs/architecture/` and `docs/restrictions/`
+- Plans go to `docs/plans/`, name their target version and keep a status per task
+- Shortcuts go to `docs/hacks/`, deferred problems to `docs/open-issues/`, failed attempts to `docs/postmortem/`

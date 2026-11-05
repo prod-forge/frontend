@@ -1,5 +1,7 @@
 # Repository
 
+<!-- cspell:ignore commitlintrc infile -->
+
 ## English only
 
 - **Rule:** code, comments, docs and the guide are written in English.

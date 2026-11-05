@@ -1,5 +1,7 @@
 # Mobile client hacks
 
+<!-- cspell:ignore Logcat -->
+
 ## Entry import order
 
 - **What:** `index.ts` imports `./src/bootstrap` before `expo-router/entry`; `bootstrap.ts` imports `./services/crypto-polyfill` first, then calls `setupCore()`, `initSentry()` and dispatches `hydrateAuth()`.
@@ -39,5 +41,5 @@
 
 - **What:** a file-level `/* eslint-disable no-console */`.
 - **Where:** `apps/mobile-client/src/services/console-logger.ts`.
-- **Why:** this adapter is the single place where core's log calls reach the device console (Metro, Logcat, Xcode) (comment in the file).
+- **Why:** this adapter is the single place where core's log calls reach the device console (Metro, Android Logcat, Xcode) (comment in the file).
 - **If cleaned up:** removing the disable fails lint.

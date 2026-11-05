@@ -224,8 +224,8 @@ Show success and error toasts after API operations.
 - Restriction: no new dependencies (`docs/restrictions/dependencies.md`).
 ```
 
-This repository keeps a smaller set today: `architecture.md`, `api.md`, `data-schema.md` and `developers-guide.md` in
-[docs/](../docs/), and the roadmap in [roadmap.md](../roadmap.md).
+This repository follows the layout above in [docs/](../docs/). It omits `benchmarks/`, and the public roadmap stays in
+[roadmap.md](../roadmap.md).
 
 ### Tune your harness
 
