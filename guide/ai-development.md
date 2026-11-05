@@ -264,34 +264,31 @@ Bad prompt:
 Add notifications to the app
 ```
 
-Good prompt:
+Good prompt[^prompt-context]:
 
 ```text
-Context:
-React + Redux Toolkit monorepo for a todo application. The notifications feature does not exist yet.
-Plan: docs/plans/1.2.0-notifications.md, task 1.
-
 Task:
-Create a notifications feature with Redux state.
+Implement task 1 of docs/plans/1.2.0-notifications.md: the notifications state in packages/core.
 
 Details:
-- Files in packages/core:
-  - src/features/notifications/notifications.types.ts — Notification type (id, message, type: 'success' | 'error')
-  - src/features/notifications/notifications.slice.ts — Redux slice with add/remove actions
-  - src/features/notifications/notifications.selectors.ts — selectNotifications selector
+- src/features/notifications/notifications.types.ts — Notification type (id, message, type: 'success' | 'error')
+- src/features/notifications/notifications.slices.ts — slice with add/remove actions
+- src/features/notifications/notifications.selectors.ts — selectNotifications selector
 - Unit tests next to each file
 
 Pattern:
 Use packages/core/src/features/todos/ as the structural reference.
 
-Constraints:
-- Follow docs/restrictions/
-- Do not modify existing features
-- Code must pass the pre-commit hook without configuration changes
-- Mark the task done in the plan when finished
+Outcome:
+Any app can dispatch add/remove and read selectNotifications; task 1 is marked done in the plan.
 ```
 
 The more specific the task, the better the result. Decompose large tasks into smaller isolated steps whenever possible.
+
+[^prompt-context]:
+    The prompt has no Context or Constraints section on purpose. The agent reads the project context and the general
+    constraints from `AGENTS.md` and `docs/` (`goal.md`, `architecture/`, `restrictions/`) in every session, so the
+    prompt carries only what is specific to this task.
 
 ## Common AI Problems
 
