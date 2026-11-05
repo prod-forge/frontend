@@ -208,6 +208,21 @@ guarantee.
 Repeated actions can also become skills or custom commands of your agent: define them once, invoke them by name. Good
 candidates are commits in the project's convention, running a specific test suite or scaffolding a new feature.
 
+### Superpowers
+
+I recommend [Superpowers](https://github.com/obra/superpowers), a set of skills that gives the agent a disciplined
+development process. Three of them are critical for the workflow in this chapter:
+
+- **brainstorming** — when shaping ideas and plans: the agent asks questions one at a time, offers alternatives and
+  agrees the design with you before anything is written.
+- **writing-plans** — turns the agreed design into a plan with small steps, exact files, interfaces and the tests that
+  prove each step (see [Task Decomposition](#task-decomposition)).
+- **subagent-driven-development** — implements the plan with a fresh subagent per step, a review after each step and
+  a review of the whole branch at the end.
+
+The process costs a lot of tokens: every step gets its own implementer and reviewer. If the project is not very complex
+or critical, you can do without it and implement the plan in one session yourself.
+
 ## Pre-Hooks
 
 Agent-side hooks run before the agent uses a tool and can block the action. This repository has Claude Code hooks in
