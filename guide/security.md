@@ -105,7 +105,7 @@ Most of the code in the bundle is not written by the team. What is in place:
 What is not done and is worth adding:
 
 - **Dependabot or Renovate** for update pull requests. Exact versions mean the updates stay manual otherwise, and a manual process gets forgotten. Group the updates so they do not drown the review queue.
-- **`npm audit --omit=dev`** as a CI step, or a scheduled workflow, because a vulnerability can be published long after the version was chosen.
+- **`npm audit --omit=dev`** as a CI step, or a scheduled workflow, because a vulnerability can be published long after the version was chosen. Today it reports transitive findings in dev servers, test runners and build tools whose only fixes are breaking downgrades; they are recorded in [npm-audit-findings.md](../docs/open-issues/npm-audit-findings.md).
 - **Provenance and install scripts.** `npm ci --ignore-scripts` for the lint and test jobs, where a build script of a dependency is not needed.
 
 ## Headers Set by CloudFront
