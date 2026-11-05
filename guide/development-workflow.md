@@ -1,5 +1,9 @@
 # Development Workflow
 
+<p align="center">
+  <img alt="Development Workflow" src="assets/development-workflow.png" width="701px" height="513px">
+</p>
+
 The shared workflow is described in the backend guide: [Development Workflow](https://github.com/prod-forge/backend/blob/main/guide/development-workflow.md). Branch naming (`type/ID-short-description`), [commit conventions](https://github.com/prod-forge/backend/blob/main/guide/development-workflow.md#commit-conventions), the feature and bug fix flow, mandatory code review and squash merge are the same in this repository, and are not repeated here. This chapter lists only what a frontend monorepo adds.
 
 ## NX-Aware Development
