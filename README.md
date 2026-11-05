@@ -38,6 +38,8 @@ npm run dev:mobile     # mobile client (Expo)
   - [What Gets Shared Across Clients](guide/repository-strategy.md#what-gets-shared-across-clients)
   - [What Belongs in a Frontend Monorepo](guide/repository-strategy.md#what-belongs-in-a-frontend-monorepo)
   - [Structure](guide/repository-strategy.md#structure)
+  - [Package Scope](guide/repository-strategy.md#package-scope)
+  - [Path Aliases](guide/repository-strategy.md#path-aliases)
 
 <!-- -->
 
@@ -217,43 +219,51 @@ npm run dev:mobile     # mobile client (Expo)
 
 <!-- -->
 
-## Package scope
+# Conclusion
 
-All packages use the `@prod-forge-todolist-frontend/` scope: `core`, `ui-web`, `design-tokens`, `styles-web`, `test-data`, and the private `web-client` and `mobile-client` applications.
+A frontend is easy to start and hard to keep healthy.
 
-### Why the scope is not `@prod-forge`
+The first screen takes an afternoon. What takes years is everything around it: two clients that must agree on the same
+rules, a bundle that grows a little with every feature, an error a user saw that nobody can reproduce, a release that
+has to be rolled back on a Friday evening, and a design that drifts a pixel at a time until nobody trusts it.
 
-The scope was chosen for the first version of the repository, and it reads as the name of the project, not as a brand. A shorter `@prod-forge` scope would be tidier, but renaming touches every import in every package, the path aliases in `tsconfig.base.json`, the Vite, Vitest and Jest mappings and the lockfile, and it adds no value to the reader: the packages are never published to a registry. So the name stays as it is.
+This repository is an attempt to show that work, not just the screens.
 
-## NX
+The stack - React, Expo, Redux Toolkit, Tailwind, NX - is not the point. These are just tools. The principles behind
+them apply to almost any client, whatever framework comes next.
 
-This monorepo uses [NX](https://nx.dev) for task orchestration (build caching, dependency-aware task ordering). Each package has a `project.json` that declares its targets.
+What matters is the thinking:
 
-```bash
-# Run a specific target in one project
-npx nx test core
-npx nx storybook ui-web
-npx nx build web-client
+- Why does sharing a store and an API layer between web and mobile pay off only with a strict dependency direction?
+- Why should a design system live in the repository, with tokens, stories and visual tests, and not in a design file?
+- Why does a client need its own observability when the backend already logs every request?
+- Why is the browser an untrusted environment, and what does that change about tokens and configuration?
 
-# Run a target across all projects
-npx nx run-many -t test
-```
+These are not advanced topics. They are basic requirements for any client that real users depend on.
+The goal of Prod Forge is to make these practices visible, understandable, and reusable.
 
-## TypeScript path aliases
+## What comes next
 
-`tsconfig.base.json` at the root defines path aliases so TypeScript resolves workspace packages:
+Open work is tracked in the [roadmap](roadmap.md) and summarized on the [organization page](https://github.com/prod-forge).
 
-```json
-{
-  "@prod-forge-todolist-frontend/core": ["./packages/core/src/index.ts"],
-  "@prod-forge-todolist-frontend/test-data": ["./packages/test-data/src/index.ts"],
-  "@prod-forge-todolist-frontend/ui-web": ["./packages/ui-web/src/index.ts"]
-}
-```
+## A final thought
 
-The Vite configs of `web-client` and `ui-web` add matching `resolve.alias` entries, and the mobile client maps the same packages in `moduleNameMapper` of its Jest config, so dev and tests resolve the same sources.
+The best time to set up these practices is at the beginning of a project.
 
----
+The second best time is now.
+
+A client without error tracking leaves you guessing about what users actually saw. A design system without visual tests
+drifts until nobody trusts it. A bundle without a budget only grows. A release without a rollback path turns a small
+mistake into an outage.
+
+None of these things are difficult to set up. They are just easy to skip.
+This project exists as a reminder not to skip them.
+
+# Intentionally out of scope
+
+- Passwords, refresh tokens, sign-up and an identity provider: the clients sign in with the backend's login stub, see [Security](guide/security.md#authentication)
+- Store release of the mobile app: no EAS Build, EAS Submit or over-the-air updates, see [Mobile Client](guide/mobile-client.md#not-covered)
+- Running CI: the workflows exist but are disabled on purpose, see the [roadmap](roadmap.md)
 
 # Contributing
 

@@ -77,3 +77,23 @@ mobile-client
 ```
 
 `core` has no dependency on `ui-web`, and no client depends on another client: data only flows one way. The mobile app does not import `ui-web`, which is built for the DOM. See [Mobile Client](mobile-client.md) for what is shared.
+
+## Package Scope
+
+All packages use the `@prod-forge-todolist-frontend/` scope: `core`, `ui-web`, `design-tokens`, `styles-web`, `test-data`, and the private `web-client` and `mobile-client` applications.
+
+The scope was chosen for the first version of the repository, and it reads as the name of the project, not as a brand. A shorter `@prod-forge` scope would be tidier, but renaming touches every import in every package, the path aliases in `tsconfig.base.json`, the Vite, Vitest and Jest mappings and the lockfile, and it adds no value to the reader: the packages are never published to a registry. So the name stays as it is.
+
+## Path Aliases
+
+`tsconfig.base.json` at the root defines path aliases so TypeScript resolves workspace packages from their sources:
+
+```json
+{
+  "@prod-forge-todolist-frontend/core": ["./packages/core/src/index.ts"],
+  "@prod-forge-todolist-frontend/test-data": ["./packages/test-data/src/index.ts"],
+  "@prod-forge-todolist-frontend/ui-web": ["./packages/ui-web/src/index.ts"]
+}
+```
+
+The Vite configs of `web-client` and `ui-web` add matching `resolve.alias` entries, and the mobile client maps the same packages in `moduleNameMapper` of its Jest config, so dev and tests resolve the same sources without a prior build.

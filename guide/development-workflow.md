@@ -8,7 +8,7 @@ The shared workflow is described in the backend guide: [Development Workflow](ht
 
 ## NX-Aware Development
 
-This monorepo uses NX for task orchestration. Prefer `nx affected` over running everything: it runs only the tasks of the packages affected by your changes, based on the dependency graph.
+This monorepo uses [NX](https://nx.dev) for task orchestration: build caching and dependency-aware task ordering. Each package declares its targets in a `project.json`. Prefer `nx affected` over running everything: it runs only the tasks of the packages affected by your changes, based on the dependency graph.
 
 ```shell
 npx nx affected -t test
@@ -16,7 +16,7 @@ npx nx affected -t lint
 npx nx graph
 ```
 
-Because `core` is a dependency of `ui-web`, `web-client` and `mobile-client`, a change in `core` affects all three, while a change in `ui-web` leaves `mobile-client` alone. For a single project, call it by name: `npx nx test core`, `npx nx storybook ui-web`.
+Because `core` is a dependency of `ui-web`, `web-client` and `mobile-client`, a change in `core` affects all three, while a change in `ui-web` leaves `mobile-client` alone. For a single project, call it by name: `npx nx test core`, `npx nx storybook ui-web`, `npx nx build web-client`; for every project, `npx nx run-many -t test`.
 
 ## Visual Snapshots in a Pull Request
 
