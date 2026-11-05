@@ -23,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      # Names and ids are terraform outputs, stored as GitHub variables (docs/configuration.md).
+      # Names and ids are terraform outputs, stored as GitHub variables (guide/configuration.md).
       - name: Check deploy variables
         env:
           AWS_DEPLOY_ROLE_ARN: ${{ vars.AWS_DEPLOY_ROLE_ARN }}

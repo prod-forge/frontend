@@ -293,7 +293,7 @@ describe('useTheme', () => {
 ## Reviewer Checklist
 
 Use this when reviewing a pull request. Items marked with ⚙️ are enforced by lint and the git hooks (CI is disabled, see
-[Code Quality](docs/code-quality.md#layer-5-continuous-integration)) — flag them only if `npm run lint` is not
+[Code Quality](guide/code-quality.md#layer-5-continuous-integration)) — flag them only if `npm run lint` is not
 clean.
 
 ### General

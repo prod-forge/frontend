@@ -133,11 +133,11 @@ Never edit generated code manually.
 
 ## Documentation
 
-Internal docs live in `.claude/docs/`:
+Agent reference docs live in `docs/`; the human guide lives in `guide/`:
 
-- `architecture.md` — monorepo structure, layers, routing, Redux store, env vars
-- `api.md` — HTTP client, all endpoints, error codes, async thunks
-- `data-schema.md` — domain types, Redux state shape, validation constraints
-- `developers-guide.md` — setup, commands, conventions, how to add features
+- `docs/architecture.md` — monorepo structure, layers, routing, Redux store, env vars
+- `docs/api.md` — HTTP client, all endpoints, error codes, async thunks
+- `docs/data-schema.md` — domain types, Redux state shape, validation constraints
+- `docs/developers-guide.md` — setup, commands, conventions, how to add features
 
 When making changes that affect any of the above, update the relevant doc in the same task. Do not defer doc updates to a follow-up.

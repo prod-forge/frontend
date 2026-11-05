@@ -46,4 +46,4 @@ CI is disabled for this repository (see [Testing Strategy](testing-strategy.md))
 
 ## Documentation Is Part of the Change
 
-When a change affects the architecture, the API layer or the data shapes, the matching file in `.claude/docs/` is updated in the same pull request (`architecture.md`, `api.md`, `data-schema.md`, `developers-guide.md`). The chapters in `docs/` describe decisions; the files in `.claude/docs/` describe the current code, and both are read by people and by AI tools, as explained in [AI-Assisted Development](ai-development.md).
+When a change affects the architecture, the API layer or the data shapes, the matching file in `docs/` is updated in the same pull request (`architecture.md`, `api.md`, `data-schema.md`, `developers-guide.md`). The chapters in `guide/` describe decisions; the files in `docs/` describe the current code, and both are read by people and by AI tools, as explained in [AI-Assisted Development](ai-development.md).
