@@ -67,7 +67,8 @@ describe('AddTodoForm', () => {
     render(<AddTodoForm onSubmit={onSubmit} />);
 
     await user.type(screen.getByLabelText('Title'), 'Valid title');
-    await user.type(screen.getByLabelText('Description'), 'a'.repeat(DESCRIPTION_MAX_LENGTH + 1));
+    await user.click(screen.getByLabelText('Description'));
+    await user.paste('a'.repeat(DESCRIPTION_MAX_LENGTH + 1));
     await user.click(screen.getByRole('button', { name: /add task/i }));
 
     expect(onSubmit).not.toHaveBeenCalled();

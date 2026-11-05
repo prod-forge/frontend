@@ -100,7 +100,7 @@ describe('EditableDescription', () => {
     await user.click(screen.getByRole('button', { name: /edit description/i }));
     const textarea = screen.getByRole('textbox', { name: /description/i });
     await user.clear(textarea);
-    await user.type(textarea, 'a'.repeat(DESCRIPTION_MAX_LENGTH + 1));
+    await user.paste('a'.repeat(DESCRIPTION_MAX_LENGTH + 1));
     await user.keyboard('{Enter}');
 
     expect(onSubmit).not.toHaveBeenCalled();
