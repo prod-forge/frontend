@@ -17,6 +17,7 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 
 ## Without an issue
 
+- [branch-protection.md](branch-protection.md) — `main` has no branch protection: no required checks or review, force pushes allowed; waits for CI to be enabled.
 - [e2e-coverage-below-threshold.md](e2e-coverage-below-threshold.md) — `test:e2e:cov` reports about 71% against the 80% threshold; predates the 2026-11-05 dependency upgrade.
 
 ## Format
