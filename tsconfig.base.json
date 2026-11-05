@@ -13,12 +13,10 @@
     "sourceMap": true,
     "incremental": false,
     "strict": true,
-    "strictPropertyInitialization": false,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
-    "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "jsx": "react-jsx",
     "paths": {
