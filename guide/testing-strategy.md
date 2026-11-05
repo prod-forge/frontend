@@ -20,14 +20,14 @@ A frontend has more kinds of defects than a backend: logic can be wrong, a compo
   /______________________\
 ```
 
-| Layer     | Where                                                                    | Command                              |
-| --------- | ------------------------------------------------------------------------ | ------------------------------------ |
-| Unit      | `packages/core`, `packages/ui-web`, `apps/web-client` (`*.test.ts[x]`)   | `npm run test`                       |
-| Component | `packages/ui-web` (`*.stories.tsx`, run by `vitest --project storybook`) | `npm run test:storybook` in `ui-web` |
-| Visual    | `packages/ui-web` (`*.visual-spec.ts`)                                   | `npm run test:visual`                |
-| A11y      | `packages/ui-web` (`*.a11y-spec.ts`)                                     | `npm run test:a11y`                  |
-| E2E       | `apps/web-client/e2e`                                                    | `npm run test:e2e`                   |
-| Mobile    | `apps/mobile-client/src` (`*.test.tsx`)                                  | `npm run test:mobile`                |
+| Layer     | Where                                                                                        | Command                              |
+| --------- | -------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Unit      | `packages/core`, `packages/ui-web`, `packages/test-data`, `apps/web-client` (`*.test.ts[x]`) | `npm run test`, `npm run test:cov`   |
+| Component | `packages/ui-web` (`*.stories.tsx`, run by `vitest --project storybook`)                     | `npm run test:storybook` in `ui-web` |
+| Visual    | `packages/ui-web` (`*.visual-spec.ts`)                                                       | `npm run test:visual`                |
+| A11y      | `packages/ui-web` (`*.a11y-spec.ts`)                                                         | `npm run test:a11y`                  |
+| E2E       | `apps/web-client/e2e`                                                                        | `npm run test:e2e`                   |
+| Mobile    | `apps/mobile-client/src` (`*.test.tsx`)                                                      | `npm run test:mobile`                |
 
 The visual and a11y layers reuse the stories from the design system, so a new component with a story gets both checks by adding a short spec file. This is the five-file contract described in [Design System](design-system.md).
 
@@ -108,7 +108,7 @@ For a daily loop, run only what you changed: `npx nx test core`, `npm run test:w
 **CI is disabled.** `.github/workflows/ci.yml` has `if: false` on its `verify` job. This is an owner decision, not an oversight: the full job is heavy (see below). The workflow itself is complete and describes the intended pipeline:
 
 ```text
-npm ci -> playwright install -> lint -> knip -> unit -> e2e -> visual -> a11y -> build
+npm ci -> playwright install -> lint -> knip -> unit (test:cov) -> e2e -> visual -> a11y -> build
 ```
 
 What enabling it would take, and why it costs more than it looks:

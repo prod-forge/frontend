@@ -4,7 +4,7 @@
 
 - **Rule:** do not enable `ci.yml` and do not treat its absence as a bug. The local checks are the gate: the husky hooks and `npm run full-check` (lint, knip, unit, e2e, visual, a11y) before a push.
 - **Reason:** an owner decision, not an oversight; the full job is heavy (`guide/testing-strategy.md`, "CI is disabled"). Enabling CI is an open item in `roadmap.md`.
-- **Where:** `.github/workflows/ci.yml` — `if: false` on the `verify` job; the `build` job has `needs: verify`.
+- **Where:** `.github/workflows/ci.yml` — `if: false` on the `verify` job; the `build` job has `needs: verify`. `.github/actionlint.yaml` silences actionlint's "constant expression" error for this one condition in `ci.yml`.
 
 ## Nothing is deployed
 
