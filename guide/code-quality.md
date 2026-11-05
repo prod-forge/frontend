@@ -23,7 +23,7 @@ The ESLint config is one flat `eslint.config.ts` at the root, and it differs fro
 
 `pre-commit` runs `lint-staged`: Prettier, ESLint with `--fix`, and `tsc --noEmit` only for the packages that contain staged files. In a monorepo the last part matters, because type-checking everything on each commit would take too long; `.lintstagedrc.cjs` maps staged paths to `apps/<name>` or `packages/<name>` and runs `tsc` with that package's `tsconfig.json` and `tsconfig.node.json`.
 
-`pre-push` runs `npm run knip && npm test`, and `npm test` is `nx run-many -t test`, so the web, core, UI and mobile unit tests all run before code leaves the machine.
+`pre-push` runs `npm run knip && npm run test:cov`, and `test:cov` is `nx run-many -t test:cov`, so the unit tests of every project run with coverage before code leaves the machine, and a project below the 80% threshold blocks the push.
 
 **Knip is configured per workspace** (`knip.json`). A monorepo makes unused-code detection harder, because an export is "used" when another package imports it. The configuration tells Knip where each workspace starts:
 

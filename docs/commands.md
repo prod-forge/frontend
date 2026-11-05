@@ -153,7 +153,7 @@ cd apps/web-client && npm run lint:ts
 cd apps/mobile-client && npm run lint:ts
 ```
 
-Husky hooks: `pre-commit` runs lint-staged (Prettier, ESLint and `tsc --noEmit` on staged files), `commit-msg` runs commitlint, `pre-push` runs `npm run knip && npm test`.
+Husky hooks: `pre-commit` runs lint-staged (Prettier, ESLint and `tsc --noEmit` on staged files), `commit-msg` runs commitlint, `pre-push` runs `npm run knip && npm run test:cov`: unit tests of every project with coverage, failing below 80%.
 
 ---
 

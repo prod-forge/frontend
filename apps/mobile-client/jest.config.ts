@@ -2,6 +2,16 @@ import type { Config } from 'jest';
 
 // Workspace packages are mapped to their sources, so tests never depend on a prior build (test-data ships dist in main).
 const config: Config = {
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/test-utils/**',
+    '!src/app-tests/**',
+    '!src/**/*.d.ts',
+  ],
+  coverageThreshold: {
+    global: { branches: 80, functions: 80, lines: 80, statements: 80 },
+  },
   moduleNameMapper: {
     '^@prod-forge-todolist-frontend/core$': '<rootDir>/../../packages/core/src/index.ts',
     '^@prod-forge-todolist-frontend/design-tokens/js$': '<rootDir>/../../packages/design-tokens/js/index.mjs',

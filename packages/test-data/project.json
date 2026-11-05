@@ -26,6 +26,13 @@
         "command": "npm run test",
         "cwd": "packages/test-data"
       }
+    },
+    "test:cov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:cov",
+        "cwd": "packages/test-data"
+      }
     }
   }
 }

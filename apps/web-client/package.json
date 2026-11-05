@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "start": "vite --port 5173",
     "test": "vitest run",
-    "test:cov": "vitest run --project unit --coverage",
+    "test:cov": "vitest run --coverage",
     "test:e2e:cov": "rm -rf .nyc_output && playwright test --config=playwright.coverage.config.ts && nyc report && nyc check-coverage",
     "test:watch": "vitest",
     "format": "npm run format:prettier && npm run format:code",

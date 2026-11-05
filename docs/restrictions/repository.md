@@ -28,7 +28,7 @@
 ## Git hooks are the quality gate
 
 - **Rule:** with CI disabled, the hooks and `npm run full-check` are the only gate (`guide/development-workflow.md`, `restrictions/ci-cd.md`); a commit or push that fails them is fixed, not forced through.
-- **Where:** `.husky/pre-commit` (lint-staged: Prettier, ESLint, `tsc --noEmit`, `.lintstagedrc.cjs`), `.husky/commit-msg` (commitlint), `.husky/pre-push` (`npm run knip && npm test`).
+- **Where:** `.husky/pre-commit` (lint-staged: Prettier, ESLint, `tsc --noEmit`, `.lintstagedrc.cjs`), `.husky/commit-msg` (commitlint), `.husky/pre-push` (`npm run knip && npm run test:cov`).
 
 ## docs/ is not formatted by Prettier
 

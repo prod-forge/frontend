@@ -23,6 +23,10 @@
       "cache": true,
       "inputs": ["default", "^default"]
     },
+    "test:cov": {
+      "cache": true,
+      "inputs": ["default", "^default"]
+    },
     "test:a11y": {
       "cache": true,
       "dependsOn": ["^build"],

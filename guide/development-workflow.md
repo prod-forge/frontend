@@ -35,12 +35,12 @@ A story is part of the change. A new component without a story is incomplete, be
 
 CI is disabled for this repository (see [Testing Strategy](testing-strategy.md)), so the local checks are the gate:
 
-| When       | What runs                                                   | Where                  |
-| ---------- | ----------------------------------------------------------- | ---------------------- |
-| commit     | Prettier, ESLint and `tsc --noEmit` on the staged files     | `.husky/pre-commit`    |
-| commit msg | commitlint                                                  | `.husky/commit-msg`    |
-| push       | `knip` and the unit tests of all packages, including mobile | `.husky/pre-push`      |
-| on demand  | `npm run full-check`: lint, knip, unit, e2e, visual, a11y   | before a larger change |
+| When       | What runs                                                                                    | Where                  |
+| ---------- | -------------------------------------------------------------------------------------------- | ---------------------- |
+| commit     | Prettier, ESLint and `tsc --noEmit` on the staged files                                      | `.husky/pre-commit`    |
+| commit msg | commitlint                                                                                   | `.husky/commit-msg`    |
+| push       | `knip` and the unit tests of all packages, including mobile, with the 80% coverage threshold | `.husky/pre-push`      |
+| on demand  | `npm run full-check`: lint, knip, unit, e2e, visual, a11y                                    | before a larger change |
 
 `full-check` is the full gate, and it takes minutes because it starts Storybook and a browser. Run it before opening a pull request that touches UI, and rely on the hooks for the rest. More on the hooks is in [Code Quality](code-quality.md).
 

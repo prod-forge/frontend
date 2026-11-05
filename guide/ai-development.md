@@ -46,16 +46,16 @@ This repository uses Husky with three hooks:
 | ------------ | -------------------------------------------------------------------------------------------------- |
 | `pre-commit` | lint-staged: Prettier and `eslint --fix` on staged files, `tsc --noEmit` for every touched package |
 | `commit-msg` | commitlint (conventional commits) and a check that rejects AI attribution trailers                 |
-| `pre-push`   | Knip (unused files, exports and dependencies) and all unit tests                                   |
+| `pre-push`   | Knip (unused files, exports and dependencies) and all unit tests with the 80% coverage threshold   |
 
 The `commit-msg` hook is a good example of a rule that belongs in a gate, not in instructions: an agent may forget a
 line in `AGENTS.md`, but it cannot commit a message the hook rejects.
 
 Tests are part of the gate, not an extra. Set a coverage threshold of at least 80% that fails the run, so code without
 tests cannot pass. Agents write tests readily when asked; the threshold makes it non-optional, and a good test suite is
-what lets you accept a large AI-generated change with confidence. In this repository the web client's Vitest
-configuration sets 80% for branches, functions, lines and statements, and `npm run test:cov` fails below it; the
-`pre-push` hook runs the unit tests of every project.
+what lets you accept a large AI-generated change with confidence. In this repository every project sets 80% for
+branches, functions, lines and statements, and the `pre-push` hook runs `npm run test:cov`, so a push that drops any
+project below the line is rejected.
 
 Your CI pipeline should validate:
 

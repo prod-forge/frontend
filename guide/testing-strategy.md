@@ -78,18 +78,18 @@ Core has no ambient state between tests. `packages/core/vitest.setup.ts` calls `
 
 ## Coverage Thresholds
 
-Where a threshold exists, it is 80% for branches, functions, lines and statements:
+Every project has the same threshold: 80% for branches, functions, lines and statements. `npm run test:cov` runs all of them, and the `pre-push` hook runs it, so a push that drops a project below the line fails.
 
-| Scope                     | Tool          | Threshold                     | Where              |
-| ------------------------- | ------------- | ----------------------------- | ------------------ |
-| `apps/web-client` unit    | Vitest, v8    | 80% (all four)                | `vite.config.ts`   |
-| `apps/web-client` e2e     | nyc, istanbul | 80% (all four)                | root `.nycrc.json` |
-| `packages/core`, `ui-web` | Vitest        | none, `test:cov` only reports | -                  |
-| `apps/mobile-client`      | Jest          | none, `test:cov` only reports | -                  |
+| Scope                  | Tool          | Where                                      |
+| ---------------------- | ------------- | ------------------------------------------ |
+| `apps/web-client` unit | Vitest, v8    | `vite.config.ts`                           |
+| `apps/web-client` e2e  | nyc, istanbul | root `.nycrc.json` (run by `test:e2e:cov`) |
+| `apps/mobile-client`   | Jest          | `jest.config.ts` (`coverageThreshold`)     |
+| `packages/core`        | Vitest, v8    | `vitest.config.ts`                         |
+| `packages/ui-web`      | Vitest, v8    | `vite.config.ts` (unit project)            |
+| `packages/test-data`   | Vitest, v8    | `vitest.config.ts`                         |
 
-Coverage excludes tests, stories and `main.tsx`.
-
-The missing thresholds are a gap, not a decision with a recorded reason. The first step is to add the same 80% to `core`, where the logic and the optimistic-update rules live, because the number is most meaningful there. `ui-web` is also covered by the story, visual and a11y layers, which a line count does not show.
+Coverage is measured over all of `src/`, not only the files the tests happen to import, so an untested file counts as 0% instead of disappearing from the report. It excludes tests, stories, Playwright specs, type declarations, barrel `index.ts` files, `main.tsx` and the mobile test helpers. `ui-web` is also covered by the story, visual and a11y layers, which a line count does not show.
 
 A threshold is a floor, not a target. It stops a decline; it does not say whether the right things are tested.
 
