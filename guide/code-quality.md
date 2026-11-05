@@ -31,7 +31,7 @@ The ESLint config is one flat `eslint.config.ts` at the root, and it differs fro
 
 **Knip is configured per workspace** (`knip.json`). A monorepo makes unused-code detection harder, because an export is "used" when another package imports it. The configuration tells Knip where each workspace starts:
 
-- `apps/mobile-client` treats `src/app/**/*.tsx` as entries, because `expo-router` loads routes by file name and nothing imports them. It also ignores the `expo-doctor` binary and points at the Babel config.
+- `apps/mobile-client` treats `src/app/**/*.tsx` as entries, because `expo-router` loads routes by file name and nothing imports them. It also points at the Babel config.
 - `packages/ui-web` lists the stories' companion specs (`*.a11y-spec.ts`, `*.visual-spec.ts`) and test folders as entries.
 - `packages/design-tokens` and `packages/styles-web` have empty entries, because they contain generated or CSS-only files.
 

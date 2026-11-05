@@ -4,15 +4,13 @@
   "ignore": [],
   "workspaces": {
     ".": {
-      "project": ["*.{ts,mjs,cjs}", "release/**/*.ts"]
+      "project": ["*.{ts,mjs,cjs,css}", "release/**/*.ts"]
     },
     "apps/web-client": {
       "entry": ["src/**/*.test.{ts,tsx}"]
     },
     "apps/mobile-client": {
       "entry": ["src/app/**/*.tsx", "src/**/*.test.{ts,tsx}"],
-      "ignore": ["expo-env.d.ts"],
-      "ignoreBinaries": ["expo-doctor"],
       "babel": {
         "config": ["babel.config.js"]
       }
