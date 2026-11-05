@@ -20,7 +20,7 @@ The same principle extends beyond images. A JSON config file on S3 can hold feat
 
 ## How it works
 
-Assets live in a dedicated `assets/` directory at the root of the monorepo. On a release, the `Deploy assets` step of `.github/workflows/cd.yml` syncs this directory to the assets bucket, separately from the application build. The application references assets by their S3 URL rather than bundling them as imports.
+Assets live in a dedicated `assets/` directory at the root of the monorepo. On a release, the `Deploy assets` step of `.github/workflows/cd.yml` syncs this directory to the `assets/` prefix of the assets bucket, separately from the application build. The application references assets by their S3 URL rather than bundling them as imports.
 
 ```
 assets/
@@ -30,7 +30,7 @@ assets/
 
 Today it holds the two status icons of a todo item. `todo-item` builds the URL from the base URL and the status (`${VITE_ASSETS_BASE_URL}/todo.svg`). Folders such as `images/` or a `config/` JSON file would follow the same rule; they are examples, not part of this repository.
 
-In production, the application fetches assets from S3 via CloudFront. The release workflow runs `aws s3 sync ./assets` with an immutable `Cache-Control` header; a manual upload to the bucket works for non-engineers, but a changed file under a cached name needs a new name or a CloudFront invalidation.
+In production, the application fetches assets from S3 via CloudFront. CloudFront routes `/assets/*` to the assets bucket without an origin path, so `<CLOUDFRONT_URL>/assets/todo.svg` reads the object key `assets/todo.svg`. That is why the release workflow runs `aws s3 sync ./assets s3://<assets bucket>/assets/` (not to the bucket root) with an immutable `Cache-Control` header; a manual upload works for non-engineers when it goes under the same `assets/` prefix, but a changed file under a cached name needs a new name or a CloudFront invalidation.
 
 ## Local development
 
@@ -40,7 +40,7 @@ In local development, a lightweight static server replicates the S3 behavior:
 npm run dev:assets   # serves assets/ at http://localhost:4000
 ```
 
-The application reads the base URL from `VITE_ASSETS_BASE_URL` at build time. In development `.env.example` points it to `http://localhost:4000`. In the release build `cd.yml` sets it to `<CLOUDFRONT_URL>/assets`, the CloudFront distribution. Storybook serves the same folder from its own origin and sets the variable to an empty string. No code changes are needed between environments.
+The application reads the base URL from `VITE_ASSETS_BASE_URL` at build time. In development `.env.example` points it to `http://localhost:4000`. In the release build `cd.yml` sets it to `<CLOUDFRONT_URL>/assets`, the CloudFront distribution. Storybook serves the same folder from its own origin and sets the variable to an empty string. In every environment the file name follows the base URL directly (`http://localhost:4000/todo.svg` locally, `<CLOUDFRONT_URL>/assets/todo.svg` in production), so no code changes are needed between environments.
 
 ## What belongs in assets
 

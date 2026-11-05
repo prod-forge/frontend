@@ -72,7 +72,7 @@ jobs:
       - name: Deploy assets
         run: |
           aws s3 sync ./assets \
-            s3://${{ vars.S3_ASSETS_BUCKET }}/ \
+            s3://${{ vars.S3_ASSETS_BUCKET }}/assets/ \
             --cache-control "max-age=31536000,immutable"
 
       - name: Deploy versioned archive

@@ -35,15 +35,15 @@ The push of a tag that matches `v*` is what starts deployment. Nothing else does
 
 `.github/workflows/cd.yml` is named "Release Frontend". It runs on `push` of tags `v*`, in the `prod` environment, on Node 24.21.0, and authenticates to AWS through OIDC (`id-token: write`, `role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}`, the `<project>-prod-github-frontend-role` from Terraform), so there are no long-lived AWS keys in GitHub. It first fails when a deploy variable (role, buckets, distribution id, CloudFront URL) is empty; they are filled from `terraform output`, see [Configuration](configuration.md#github-variables-and-secrets). The steps in order:
 
-| Step                     | Command (short)                                             | Why it is in this place                                              |
-| ------------------------ | ----------------------------------------------------------- | -------------------------------------------------------------------- |
-| Build                    | `npm run build:web-client`                                  | `VITE_*` values and the Sentry upload are part of the build          |
-| Deploy assets            | `s3 sync ./assets` to the assets bucket, immutable cache    | media must exist before the new HTML that references it              |
-| Deploy versioned archive | `s3 sync dist` to `releases/<tag>/`                         | an exact copy of this release, kept for rollback                     |
-| Deploy to root           | `s3 sync dist` to the root, `--exclude "releases/*"`        | the active version; `--delete` removes files of the previous release |
-| `index.html`             | `s3 cp` with `no-cache, no-store, must-revalidate`          | replaces the immutable header that the sync gave to `index.html`     |
-| Invalidate CloudFront    | `create-invalidation --paths "/*"`                          | edges stop serving the old `index.html`                              |
-| Cleanup old versions     | list `releases/`, `sort -V`, remove all but the last `KEEP` | the archive does not grow without bound                              |
+| Step                     | Command (short)                                                       | Why it is in this place                                              |
+| ------------------------ | --------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Build                    | `npm run build:web-client`                                            | `VITE_*` values and the Sentry upload are part of the build          |
+| Deploy assets            | `s3 sync ./assets` to `assets/` in the assets bucket, immutable cache | media must exist before the new HTML that references it              |
+| Deploy versioned archive | `s3 sync dist` to `releases/<tag>/`                                   | an exact copy of this release, kept for rollback                     |
+| Deploy to root           | `s3 sync dist` to the root, `--exclude "releases/*"`                  | the active version; `--delete` removes files of the previous release |
+| `index.html`             | `s3 cp` with `no-cache, no-store, must-revalidate`                    | replaces the immutable header that the sync gave to `index.html`     |
+| Invalidate CloudFront    | `create-invalidation --paths "/*"`                                    | edges stop serving the old `index.html`                              |
+| Cleanup old versions     | list `releases/`, `sort -V`, remove all but the last `KEEP`           | the archive does not grow without bound                              |
 
 Three details are worth knowing.
 
