@@ -1,5 +1,9 @@
 # Assets Management
 
+<p align="center">
+  <img alt="Assets Management" src="assets/assets-management.jpg" width="701px" height="561px">
+</p>
+
 Most frontend projects bundle static media — icons, images, videos, audio — directly into the application build. This is convenient but has a real cost: replacing any asset requires a full rebuild and redeploy. For web applications this is an inconvenience. For mobile applications it is a much bigger problem, because a new release also means going through the app store review process.
 
 The alternative is to treat media assets as infrastructure: store them on S3, deploy them independently from the application code, and have the app reference them by URL. The application ships once; the assets can change at any time without touching the build.

@@ -1,7 +1,7 @@
 # Design System
 
 <p align="center">
-  <img alt="Design System" src="assets/design-system.png">
+  <img alt="Design System" src="assets/design-system.jpg" width="701px" height="561px">
 </p>
 
 ## What a Design System Is Here

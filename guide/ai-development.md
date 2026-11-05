@@ -1,7 +1,7 @@
 # AI-Assisted Development
 
 <p align="center">
-  <img alt="AI-Assisted Development" src="assets/ai-development.png" width="701px" height="561px">
+  <img alt="AI-Assisted Development" src="assets/ai-development.jpg" width="701px" height="561px">
 </p>
 
 AI coding agents can significantly speed up development.

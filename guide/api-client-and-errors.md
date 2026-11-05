@@ -1,5 +1,9 @@
 # API Client and Errors
 
+<p align="center">
+  <img alt="API Client and Errors" src="assets/api-client-and-errors.jpg" width="701px" height="561px">
+</p>
+
 This chapter is about the client side of the contract. How the backend produces errors, filters exceptions and logs them is in [Error Handling](https://github.com/prod-forge/backend/blob/main/guide/error-handling.md) in the backend guide.
 
 ## The Client Contract

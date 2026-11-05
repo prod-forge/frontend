@@ -1,5 +1,9 @@
 # Client Observability
 
+<p align="center">
+  <img alt="Client Observability" src="assets/client-observability.jpg" width="701px" height="561px">
+</p>
+
 The backend side of observability (structured logs, Promtail, Loki, Grafana, Prometheus) is described in [Logging and Observability](https://github.com/prod-forge/backend/blob/main/guide/logging-observability.md). This chapter covers what the browser adds, and how the two halves meet.
 
 ## Why Observability Starts in the Browser
