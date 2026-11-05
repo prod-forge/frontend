@@ -4,66 +4,55 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { TodoStatusToggle } from './todo-status-toggle';
 
+const noop = (): void => undefined;
+
 describe('TodoStatusToggle', () => {
-  it('renders "To Do" with aria-pressed=false when not completed', () => {
-    render(
-      <TodoStatusToggle
-        completed={false}
-        onToggle={() => {
-          /* empty */
-        }}
-      />,
-    );
+  describe('negative cases', () => {
+    it('does not expose aria-pressed, because the name already changes with the state', () => {
+      render(<TodoStatusToggle completed onToggle={noop} />);
 
-    const button = screen.getByRole('button', { name: /mark as done/i });
-    expect(button).toHaveTextContent('To Do');
-    expect(button).toHaveAttribute('aria-pressed', 'false');
+      expect(screen.getByRole('button')).not.toHaveAttribute('aria-pressed');
+    });
+
+    it('does not call onToggle before it is clicked', () => {
+      const onToggle = vi.fn();
+      render(<TodoStatusToggle completed={false} onToggle={onToggle} />);
+
+      expect(onToggle).not.toHaveBeenCalled();
+    });
   });
 
-  it('renders "Done" with aria-pressed=true when completed', () => {
-    render(
-      <TodoStatusToggle
-        completed
-        onToggle={() => {
-          /* empty */
-        }}
-      />,
-    );
+  describe('positive cases', () => {
+    it('renders "To Do" with the "mark as done" action when not completed', () => {
+      render(<TodoStatusToggle completed={false} onToggle={noop} />);
 
-    const button = screen.getByRole('button', { name: /mark as to do/i });
-    expect(button).toHaveTextContent('Done');
-    expect(button).toHaveAttribute('aria-pressed', 'true');
-  });
+      const button = screen.getByRole('button', { name: /mark as done/i });
+      expect(button).toHaveTextContent('To Do');
+    });
 
-  it('calls onToggle when clicked', async () => {
-    const onToggle = vi.fn();
-    const user = userEvent.setup();
-    render(<TodoStatusToggle completed={false} onToggle={onToggle} />);
+    it('renders "Done" with the "mark as to do" action when completed', () => {
+      render(<TodoStatusToggle completed onToggle={noop} />);
 
-    await user.click(screen.getByRole('button'));
+      const button = screen.getByRole('button', { name: /mark as to do/i });
+      expect(button).toHaveTextContent('Done');
+    });
 
-    expect(onToggle).toHaveBeenCalledTimes(1);
-  });
+    it('starts the accessible name with the visible status (label in name)', () => {
+      const { rerender } = render(<TodoStatusToggle completed={false} onToggle={noop} />);
+      expect(screen.getByRole('button')).toHaveAccessibleName('To do, mark as done');
 
-  it('exposes a different aria-label depending on the current state', () => {
-    const { rerender } = render(
-      <TodoStatusToggle
-        completed={false}
-        onToggle={() => {
-          /* empty */
-        }}
-      />,
-    );
-    expect(screen.getByRole('button')).toHaveAccessibleName('To do, mark as done');
+      rerender(<TodoStatusToggle completed onToggle={noop} />);
+      expect(screen.getByRole('button')).toHaveAccessibleName('Done, mark as to do');
+    });
 
-    rerender(
-      <TodoStatusToggle
-        completed
-        onToggle={() => {
-          /* empty */
-        }}
-      />,
-    );
-    expect(screen.getByRole('button')).toHaveAccessibleName('Done, mark as to do');
+    it('calls onToggle when clicked', async () => {
+      const onToggle = vi.fn();
+      const user = userEvent.setup();
+      render(<TodoStatusToggle completed={false} onToggle={onToggle} />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(onToggle).toHaveBeenCalledTimes(1);
+    });
   });
 });

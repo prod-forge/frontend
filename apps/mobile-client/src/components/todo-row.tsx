@@ -67,8 +67,8 @@ export const TodoRow = ({ onOpen, onToggle, todo }: TodoRowProps): ReactNode => 
     <View style={styles.root} testID="todo-row">
       <Pressable
         accessibilityLabel={todo.completed ? `Mark "${todo.title}" as to do` : `Mark "${todo.title}" as done`}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: todo.completed }}
+        // An action label that changes with the state, so no checked state that would announce it twice
+        accessibilityRole="button"
         hitSlop={8}
         onPress={() => {
           onToggle(todo.id);
