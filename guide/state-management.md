@@ -1,5 +1,9 @@
 # State Management
 
+<p align="center">
+  <img alt="State Management" src="assets/state-management.jpg" width="701px" height="561px">
+</p>
+
 ## Why Redux Toolkit Here
 
 The client state of this application is small: a list of todos, filters, the signed-in user and a queue of errors. The choice of a state library was driven by three criteria rather than by the size of the state:

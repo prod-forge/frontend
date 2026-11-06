@@ -1,5 +1,9 @@
 # Styles Management
 
+<p align="center">
+  <img alt="Styles Management" src="assets/styles-management.jpg" width="701px" height="561px">
+</p>
+
 A design system is not just a component library. It is a shared language between developers and designers, and it needs to be treated as a first-class part of the codebase.
 
 Without a design system, teams end up with inconsistent spacing, slightly different colors across screens, and components that look similar but are not the same. This gets worse over time, and is expensive to fix later.
