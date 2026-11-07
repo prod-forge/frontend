@@ -1,5 +1,9 @@
 # Testing Strategy
 
+<p align="center">
+  <img alt="Testing Strategy" src="assets/testing-strategy.jpg" width="701px" height="561px">
+</p>
+
 How tests are written, mocked and organized on the server is described in [Testing](https://github.com/prod-forge/backend/blob/main/guide/testing.md) in the backend guide. The principles are the same: most tests are small, they run fast, and each has a negative and a positive side. This chapter covers what is different for a client.
 
 ## The Pyramid for a Frontend
