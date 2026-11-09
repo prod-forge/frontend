@@ -1,6 +1,6 @@
 {
   "name": "@prod-forge-todolist-frontend/mobile-client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Expo mobile application (iOS and Android) for prod-forge-todolist-frontend",
   "license": "MIT",
   "private": true,

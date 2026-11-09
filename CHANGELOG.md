@@ -1,5 +1,24 @@
 # Changelog
 
+# [1.1.0](https://github.com/prod-forge/frontend/compare/v1.0.0...v1.1.0) (2026-11-09)
+
+### Bug Fixes
+
+- **a11y:** put the visible text into the names of Prev and the status toggle ([0c3e88a](https://github.com/prod-forge/frontend/commit/0c3e88a959d4342aa32388b43a7caea0f2154978))
+- **ci:** sync assets under the assets/ prefix that CloudFront reads ([6173931](https://github.com/prod-forge/frontend/commit/617393128cfd6b585808ae41c7175dfbb2636ce9))
+- make the Claude deny hooks actually deny ([8925e32](https://github.com/prod-forge/frontend/commit/8925e32a57817eda81d4610396654a5cde69f160))
+- **mobile-client:** install the @sentry/react-native version Expo SDK 58 expects ([69bf7b1](https://github.com/prod-forge/frontend/commit/69bf7b140146d72c1d395eefb0694221838432b9))
+- **mobile-client:** keep sendDefaultPii explicit under the Sentry 8.28 types ([c8806c4](https://github.com/prod-forge/frontend/commit/c8806c4144c55050ce3afda62f34d13a7e15fba4))
+- paste over-limit descriptions in ui-web tests instead of typing them ([89fce8b](https://github.com/prod-forge/frontend/commit/89fce8b4de446856d903e1dd83552a3f9dc41519))
+- **ui-web:** drop aria-pressed from the status toggle whose name changes ([d3dc9a0](https://github.com/prod-forge/frontend/commit/d3dc9a071467701fccf7ea65251f54d97109ca29))
+- **ui-web:** remove the forgot password form from the login form ([d5e89a8](https://github.com/prod-forge/frontend/commit/d5e89a89a91f1ad633a6f8fc64e5ba472d0671fc))
+- **ui-web:** trap focus in the modal and return it to the opener ([26be9e8](https://github.com/prod-forge/frontend/commit/26be9e8563a2f67b83a67dd14394932a3a66180a))
+- **web-client:** mask all text in Sentry Replay ([9b97cdf](https://github.com/prod-forge/frontend/commit/9b97cdff64ec3c46419d452684fb4574ce5d371a))
+
+### Features
+
+- **web-client:** show a not found page for unknown paths ([404256c](https://github.com/prod-forge/frontend/commit/404256c9adf4dd7cfb71705902c0f896d8a09dbc))
+
 ## 1.0.0 (2026-11-04)
 
 First published version of the Prod Forge frontend: a React web client, an Expo mobile client and the shared packages
