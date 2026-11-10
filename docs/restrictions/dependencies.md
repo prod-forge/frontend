@@ -45,3 +45,9 @@
 - **Rule:** packages that the Expo SDK pins (for example `@sentry/react-native`, `expo-*`, `react-native-*`) are installed with `npx expo install <package>` from `apps/mobile-client`, not bumped to a newer npm release. `expo install` writes a `~` range despite `save-exact`, so the range is replaced with the exact installed version afterwards. It may also add a config plugin to `app.json` (it adds `@sentry/react-native`); the mobile client does not use the Sentry config plugin, so that change is reverted.
 - **Reason:** a newer version than the SDK expects fails `npx expo install --check` and `expo-doctor` (`@sentry/react-native` 8.34.0 against the expected `~8.28.0` did).
 - **Where:** `apps/mobile-client/package.json`; checked by `npx expo install --check` and `npx nx doctor mobile-client`.
+
+## No Dependabot or Renovate
+
+- **Rule:** do not add `.github/dependabot.yml` or a Renovate config, and do not treat their absence as a bug. Dependencies are updated by hand with `npx npm-check-updates`, within the rules above.
+- **Reason:** an owner decision: automated update PRs ignore the pins in this file (React, TypeScript, `@types/node`, Expo-managed packages). Dependabot alerts are switched off for the repository as well.
+- **Where:** no config in `.github/`; alerts are off in the repository settings (`gh api -X PUT repos/prod-forge/frontend/vulnerability-alerts` turns them back on).
