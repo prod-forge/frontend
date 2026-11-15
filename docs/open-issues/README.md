@@ -8,12 +8,19 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#4](https://github.com/prod-forge/frontend/issues/4) — Set `displayName` on the remaining `ui-web` components.
 - [#5](https://github.com/prod-forge/frontend/issues/5) — Rename `errors.slice.ts` to `errors.slices.ts` to match the other feature files.
 - [#6](https://github.com/prod-forge/frontend/issues/6) — Enforce the 254 character email limit in the auth schema.
-- [#7](https://github.com/prod-forge/frontend/issues/7) — Order describe blocks negative-first in test files. The issue names three files; two were already fixed, and `home.test.tsx` plus 22 more unit test files without `negative cases` / `positive cases` blocks were restructured on 2026-11-05 (branch `fix/review-2026-11-05`). Close the issue and remove this line once that branch is merged.
 - [#8](https://github.com/prod-forge/frontend/issues/8) — Verify the format of deploy variables in the CD workflow, not only their presence.
 - [#9](https://github.com/prod-forge/frontend/issues/9) — Show the `Retry-After` wait to the user when the API answers 429.
 - [#10](https://github.com/prod-forge/frontend/issues/10) — Add a `size-limit` performance budget for the web client.
 - [#11](https://github.com/prod-forge/frontend/issues/11) — Generate Linux visual snapshots for the Playwright suite.
 - [#12](https://github.com/prod-forge/frontend/issues/12) — Deploy Storybook as a static site.
+- [#13](https://github.com/prod-forge/frontend/issues/13) — Show a "no tasks yet" empty state on Home when no search query is set.
+- [#14](https://github.com/prod-forge/frontend/issues/14) — Include the todo title in the TodoItem delete button's accessible name.
+- [#15](https://github.com/prod-forge/frontend/issues/15) — Link the EditableTitle and EditableDescription errors to their fields with `aria-describedby`.
+- [#16](https://github.com/prod-forge/frontend/issues/16) — Pass `autoComplete` to the mobile auth fields to match the web forms.
+- [#17](https://github.com/prod-forge/frontend/issues/17) — Remove the dead `instanceof Error` branch in the error middleware.
+- [#18](https://github.com/prod-forge/frontend/issues/18) — Remove the duplicated `Todo` type from core.
+- [#19](https://github.com/prod-forge/frontend/issues/19) — Leave the web todo detail page only after the delete succeeds.
+- [#20](https://github.com/prod-forge/frontend/issues/20) — Take transition durations from the design tokens instead of hardcoding them.
 
 ## Without an issue
 
