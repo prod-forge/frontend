@@ -36,6 +36,14 @@ describe('<RegisterScreen />', () => {
   });
 
   describe('positive cases', () => {
+    it('gives the OS the name, email and new-password autofill hints', async () => {
+      await renderWithStore(<RegisterScreen />);
+
+      expect(screen.getByLabelText('Name')).toHaveProp('autoComplete', 'name');
+      expect(screen.getByLabelText('Email')).toHaveProp('autoComplete', 'email');
+      expect(screen.getByLabelText('Password')).toHaveProp('autoComplete', 'new-password');
+    });
+
     it('logs the existing user in, keeps the name and replaces the route with /todos', async () => {
       const user = userEvent.setup();
       await renderWithStore(<RegisterScreen />);

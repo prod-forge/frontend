@@ -8,6 +8,7 @@ import { createThemedStyles } from '../theme/create-themed-styles';
 
 type TextFieldProps = {
   readonly autoCapitalize?: TextInputProps['autoCapitalize'];
+  readonly autoComplete?: TextInputProps['autoComplete'];
   readonly error?: string;
   readonly keyboardType?: TextInputProps['keyboardType'];
   readonly label: string;
@@ -52,6 +53,7 @@ const createStyles = createThemedStyles(({ colors, fontSize, fontWeight, radius,
 
 export const TextField = ({
   autoCapitalize = 'sentences',
+  autoComplete,
   error,
   keyboardType = 'default',
   label,
@@ -68,6 +70,7 @@ export const TextField = ({
       <TextInput
         accessibilityLabel={label}
         autoCapitalize={autoCapitalize}
+        autoComplete={autoComplete}
         keyboardType={keyboardType}
         multiline={multiline}
         onChangeText={onChangeText}
