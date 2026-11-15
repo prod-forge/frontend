@@ -67,6 +67,13 @@ describe('<LoginScreen />', () => {
   });
 
   describe('positive cases', () => {
+    it('gives the OS the email and current-password autofill hints', async () => {
+      await renderWithStore(<LoginScreen />);
+
+      expect(screen.getByLabelText('Email')).toHaveProp('autoComplete', 'email');
+      expect(screen.getByLabelText('Password')).toHaveProp('autoComplete', 'current-password');
+    });
+
     it('signs in against the backend and replaces the route with /todos', async () => {
       await signIn('a@b.com');
 

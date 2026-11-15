@@ -46,6 +46,7 @@ export default function RegisterScreen(): ReactNode {
     <Screen>
       <AuthHeader subtitle="Start organizing your tasks." title="Create an account" />
       <TextField
+        autoComplete="name"
         error={errors.name}
         label="Name"
         onChangeText={(name) => {
@@ -55,6 +56,7 @@ export default function RegisterScreen(): ReactNode {
       />
       <TextField
         autoCapitalize="none"
+        autoComplete="email"
         error={errors.email}
         keyboardType="email-address"
         label="Email"
@@ -65,6 +67,7 @@ export default function RegisterScreen(): ReactNode {
       />
       <TextField
         autoCapitalize="none"
+        autoComplete="new-password"
         error={errors.password}
         label="Password"
         onChangeText={(password) => {

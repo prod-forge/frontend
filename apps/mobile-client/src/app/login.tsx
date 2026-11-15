@@ -47,6 +47,7 @@ export default function LoginScreen(): ReactNode {
       <AuthHeader subtitle="Sign in to access your tasks." title="Welcome back" />
       <TextField
         autoCapitalize="none"
+        autoComplete="email"
         error={errors.email}
         keyboardType="email-address"
         label="Email"
@@ -57,6 +58,7 @@ export default function LoginScreen(): ReactNode {
       />
       <TextField
         autoCapitalize="none"
+        autoComplete="current-password"
         error={errors.password}
         label="Password"
         onChangeText={(password) => {
