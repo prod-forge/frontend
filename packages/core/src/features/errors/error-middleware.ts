@@ -26,7 +26,7 @@ export const errorMiddleware: Middleware = (api) => (next) => (action) => {
     const rejectedValue = isRejectedWithValue(action) ? (action.payload as RejectedValue) : undefined;
     const isSilent = rejectedValue?.silent === true;
 
-    logger.error(error instanceof Error ? error : message, action.type);
+    logger.error(message, action.type);
 
     if (shouldReport(error) && !isExpectedRejection(rejectedValue)) {
       reportError(new Error(message), {
