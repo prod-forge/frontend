@@ -1,4 +1,8 @@
 // Auto-generated. Do not edit manually.
+export declare const duration: {
+  fast: string;
+  base: string;
+};
 export declare const containerMax: number;
 export declare const headerHeight: number;
 export declare const radius: {

@@ -13,7 +13,7 @@ export const TodoStatusToggle = ({ completed, onToggle }: Props): ReactNode => (
     // No aria-pressed: the name already changes with the state, and a toggle button must keep a constant name.
     aria-label={completed ? 'Done, mark as to do' : 'To do, mark as done'}
     className={cn(
-      'group/toggle inline-flex cursor-pointer items-center gap-2 rounded-full border border-transparent px-[10px] py-[3px] text-xs font-semibold tracking-[0.06em] uppercase transition duration-[120ms] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
+      'group/toggle inline-flex cursor-pointer items-center gap-2 rounded-full border border-transparent px-[10px] py-[3px] text-xs font-semibold tracking-[0.06em] uppercase transition duration-fast focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
       completed ? 'bg-ok-soft text-ok hover:border-ok' : 'bg-page-soft text-fg-soft hover:border-fg-muted',
     )}
     onClick={onToggle}
@@ -22,7 +22,7 @@ export const TodoStatusToggle = ({ completed, onToggle }: Props): ReactNode => (
     <span
       aria-hidden="true"
       className={cn(
-        'inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border transition-colors duration-[120ms]',
+        'inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border transition-colors duration-fast',
         completed ? 'border-ok bg-ok' : 'border-line bg-card',
       )}
     >

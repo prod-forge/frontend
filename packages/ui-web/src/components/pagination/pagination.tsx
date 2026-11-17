@@ -33,7 +33,7 @@ const getPageItems = (currentPage: number, totalPages: number): PageItem[] => {
 };
 
 const btnClass =
-  'inline-flex min-h-9 shrink-0 items-center gap-2 rounded-md border border-line bg-card px-4 max-[480px]:px-3 text-sm font-medium text-fg transition duration-[120ms] hover:not-disabled:border-brand hover:not-disabled:text-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+  'inline-flex min-h-9 shrink-0 items-center gap-2 rounded-md border border-line bg-card px-4 max-[480px]:px-3 text-sm font-medium text-fg transition duration-fast hover:not-disabled:border-brand hover:not-disabled:text-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
 
 export const Pagination = ({ limit, offset, onOffsetChange, total }: Props): ReactNode => {
   const totalPages = Math.max(1, Math.ceil(total / limit));
@@ -80,7 +80,7 @@ export const Pagination = ({ limit, offset, onOffsetChange, total }: Props): Rea
                 aria-current={item.page === currentPage ? 'page' : undefined}
                 aria-label={`Page ${item.page}`}
                 className={cn(
-                  'inline-flex min-h-9 min-w-9 items-center justify-center rounded-md border border-transparent px-2 text-sm font-medium transition duration-[120ms] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
+                  'inline-flex min-h-9 min-w-9 items-center justify-center rounded-md border border-transparent px-2 text-sm font-medium transition duration-fast focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
                   item.page === currentPage
                     ? 'bg-brand text-brand-fg'
                     : 'bg-transparent text-fg-soft hover:bg-page-soft hover:text-fg',

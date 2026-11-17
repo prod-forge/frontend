@@ -1,6 +1,6 @@
 {
   "transition": {
-    "fast": { "$value": "120ms ease" },
-    "base": { "$value": "220ms ease" }
+    "fast": { "$value": "{duration.fast} ease" },
+    "base": { "$value": "{duration.base} ease" }
   }
 }

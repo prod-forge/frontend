@@ -28,7 +28,7 @@ export const Select = <T extends string>({
       <div className="relative inline-flex max-[480px]:flex-1">
         <select
           aria-label={label === undefined ? ariaLabel : undefined}
-          className="min-h-9 cursor-pointer appearance-none rounded-md border border-line bg-card pr-8 pl-3 text-sm font-medium text-fg transition duration-[120ms] hover:border-brand focus-visible:border-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 max-[480px]:w-full"
+          className="min-h-9 cursor-pointer appearance-none rounded-md border border-line bg-card pr-8 pl-3 text-sm font-medium text-fg transition duration-fast hover:border-brand focus-visible:border-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 max-[480px]:w-full"
           id={id}
           onChange={(event) => onChange(event.target.value as T)}
           value={value}

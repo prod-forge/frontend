@@ -1,5 +1,7 @@
 :root {
 
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
   --container-max: 1024px;
   --header-height: 64px;
   --radius-sm: 4px;

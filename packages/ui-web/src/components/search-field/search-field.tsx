@@ -9,10 +9,10 @@ export type Props = {
 };
 
 export const SearchField = ({ id, maxLength, onChange, placeholder, value }: Props): ReactNode => (
-  <div className="group flex min-h-10 w-full items-center gap-2 rounded-md border border-line bg-card px-3 transition duration-[120ms] hover:border-fg-muted focus-within:border-brand focus-within:shadow-[0_0_0_3px_var(--color-brand-soft)] motion-reduce:transition-none">
+  <div className="group flex min-h-10 w-full items-center gap-2 rounded-md border border-line bg-card px-3 transition duration-fast hover:border-fg-muted focus-within:border-brand focus-within:shadow-[0_0_0_3px_var(--color-brand-soft)] motion-reduce:transition-none">
     <svg
       aria-hidden="true"
-      className="shrink-0 origin-center text-fg-muted transition-[color,transform] duration-[220ms] group-focus-within:scale-110 group-focus-within:animate-search-pulse group-focus-within:text-brand motion-reduce:transition-none motion-reduce:group-focus-within:animate-none"
+      className="shrink-0 origin-center text-fg-muted transition-[color,transform] duration-base group-focus-within:scale-110 group-focus-within:animate-search-pulse group-focus-within:text-brand motion-reduce:transition-none motion-reduce:group-focus-within:animate-none"
       fill="none"
       height="18"
       viewBox="0 0 18 18"

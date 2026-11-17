@@ -45,6 +45,10 @@
   /* Container */
   --container-page: var(--container-max);
 
+  /* Transitions: Tailwind reads `duration-*` from this namespace */
+  --transition-duration-fast: var(--duration-fast);
+  --transition-duration-base: var(--duration-base);
+
   /* Animations */
   --animate-search-pulse: search-icon-pulse 600ms ease;
 

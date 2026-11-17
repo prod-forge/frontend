@@ -73,13 +73,13 @@ export const Home = (): ReactNode => {
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
-            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-brand px-4 text-sm font-semibold text-brand-fg transition duration-[120ms] hover:bg-brand-hover focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-brand px-4 text-sm font-semibold text-brand-fg transition duration-fast hover:bg-brand-hover focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
             to="/login"
           >
             Sign in
           </Link>
           <Link
-            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md border border-line bg-card px-4 text-sm font-semibold text-fg transition duration-[120ms] hover:border-fg-muted focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md border border-line bg-card px-4 text-sm font-semibold text-fg transition duration-fast hover:border-fg-muted focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
             to="/register"
           >
             Create account

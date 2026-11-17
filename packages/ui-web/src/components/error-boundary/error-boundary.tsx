@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <h1 className="text-4xl font-semibold leading-tight tracking-[-0.03em] text-fg">Something went wrong</h1>
           <p className="text-lg text-fg-soft">An unexpected error occurred. Try reloading the page.</p>
           <button
-            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-brand px-4 text-sm font-semibold text-brand-fg transition duration-[120ms] hover:bg-brand-hover focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-brand px-4 text-sm font-semibold text-brand-fg transition duration-fast hover:bg-brand-hover focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
             onClick={() => window.location.reload()}
             type="button"
           >
