@@ -37,11 +37,11 @@ Tokens are authored as JSON in the [W3C design token format](https://tr.designto
 
 The files are in `packages/design-tokens/src/tokens/`:
 
-| Path                             | Content                                                             |
-| -------------------------------- | ------------------------------------------------------------------- |
-| `base/*.json`                    | Theme-independent: spacing, radius, typography, layout, transitions |
-| `color/light.json`, `dark.json`  | Color palette per theme                                             |
-| `shadow/light.json`, `dark.json` | Shadows per theme                                                   |
+| Path                             | Content                                                                        |
+| -------------------------------- | ------------------------------------------------------------------------------ |
+| `base/*.json`                    | Theme-independent: spacing, radius, typography, layout, durations, transitions |
+| `color/light.json`, `dark.json`  | Color palette per theme                                                        |
+| `shadow/light.json`, `dark.json` | Shadows per theme                                                              |
 
 [Style Dictionary](https://styledictionary.com) reads them with `packages/design-tokens/style-dictionary.config.mjs` and produces two outputs:
 

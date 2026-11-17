@@ -16,9 +16,7 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#13](https://github.com/prod-forge/frontend/issues/13) — Show a "no tasks yet" empty state on Home when no search query is set.
 - [#14](https://github.com/prod-forge/frontend/issues/14) — Include the todo title in the TodoItem delete button's accessible name.
 - [#15](https://github.com/prod-forge/frontend/issues/15) — Link the EditableTitle and EditableDescription errors to their fields with `aria-describedby`.
-- [#17](https://github.com/prod-forge/frontend/issues/17) — Remove the dead `instanceof Error` branch in the error middleware.
 - [#18](https://github.com/prod-forge/frontend/issues/18) — Remove the duplicated `Todo` type from core.
-- [#19](https://github.com/prod-forge/frontend/issues/19) — Leave the web todo detail page only after the delete succeeds.
 
 ## Without an issue
 
