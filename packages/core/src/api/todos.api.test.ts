@@ -93,7 +93,7 @@ describe('todosApi.delete', () => {
 
 describe('todosApi.getAll', () => {
   const filters = { limit: 10 as const, offset: 0, order: 'asc' as const, query: '', sortBy: 'title' as const };
-  const response = { data: [todo], meta: { limit: 10, offset: 0, total: 1 } };
+  const response = { data: [todo], meta: { completed: 0, limit: 10, offset: 0, total: 1 } };
 
   describe('positive cases', () => {
     it('returns the response as-is', async () => {

@@ -37,6 +37,6 @@ export const applyTodosQuery = (items: readonly Todo[], query: TodosQuery): Todo
 
   return {
     data: sorted.slice(offset, offset + limit),
-    meta: { limit, offset, total: sorted.length },
+    meta: { completed: sorted.filter((todo) => todo.completed).length, limit, offset, total: sorted.length },
   };
 };

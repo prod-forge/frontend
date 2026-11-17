@@ -15,6 +15,7 @@ const TEMP_ID_PREFIX = 'optimistic-';
 const initialState: TodosState = {
   _pendingDeletes: {},
   _pendingUpdates: {},
+  completed: 0,
   currentTodo: null,
   currentTodoStatus: 'idle',
   filters: {
@@ -167,6 +168,7 @@ const todosSlice = createSlice({
         state.items = action.payload.data;
         state.nextOffset = action.meta.arg.offset + action.payload.data.length;
         state.total = action.payload.meta.total;
+        state.completed = action.payload.meta.completed;
       })
       .addCase(fetchTodos.rejected, (state) => {
         state.status = 'error';
@@ -182,6 +184,7 @@ const todosSlice = createSlice({
         state.items.push(...action.payload.data.filter((t) => !loadedIds.has(t.id)));
         state.nextOffset = action.meta.arg.offset + action.payload.data.length;
         state.total = action.payload.meta.total;
+        state.completed = action.payload.meta.completed;
       })
       .addCase(fetchMoreTodos.rejected, (state) => {
         state.status = 'error';
@@ -242,9 +245,11 @@ const todosSlice = createSlice({
         const index = state.items.findIndex((t) => t.id === id);
 
         if (index !== -1) {
-          state._pendingDeletes[action.meta.requestId] = { index, item: state.items[index] };
+          const item = state.items[index];
+          state._pendingDeletes[action.meta.requestId] = { index, item };
           state.items.splice(index, 1);
           state.total -= 1;
+          if (item.completed) state.completed -= 1;
         }
       })
       .addCase(deleteTodo.fulfilled, (state, action) => {
@@ -258,6 +263,7 @@ const todosSlice = createSlice({
         if (snapshot) {
           state.items.splice(snapshot.index, 0, snapshot.item);
           state.total += 1;
+          if (snapshot.item.completed) state.completed += 1;
           delete state._pendingDeletes[action.meta.requestId];
         }
       })
@@ -268,6 +274,7 @@ const todosSlice = createSlice({
 
         if (todo) {
           todo.completed = !todo.completed;
+          state.completed += todo.completed ? 1 : -1;
         }
       })
       .addCase(toggleTodo.fulfilled, (state, action) => {
@@ -282,6 +289,7 @@ const todosSlice = createSlice({
 
         if (todo) {
           todo.completed = !todo.completed;
+          state.completed += todo.completed ? 1 : -1;
         }
       })
 

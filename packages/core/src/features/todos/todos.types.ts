@@ -24,6 +24,8 @@ export type TodosState = {
   _pendingDeletes: Partial<Record<string, { index: number; item: Todo }>>;
   /** @internal original field values for in-flight updates keyed by requestId */
   _pendingUpdates: Partial<Record<string, Pick<Todo, 'description' | 'title'>>>;
+  /** Completed todos among all that match the filters (server count, adjusted by optimistic toggles and deletes). */
+  completed: number;
   currentTodo: null | Todo;
   currentTodoStatus: CurrentTodoStatus;
   filters: TodoFilters;

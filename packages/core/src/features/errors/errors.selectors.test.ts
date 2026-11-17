@@ -21,6 +21,7 @@ const makeState = (errors: AppError[]): RootState => ({
   todos: {
     _pendingDeletes: {},
     _pendingUpdates: {},
+    completed: 0,
     currentTodo: null,
     currentTodoStatus: 'idle',
     filters: { limit: 10, offset: 0, order: 'asc', query: '', sortBy: 'title' },

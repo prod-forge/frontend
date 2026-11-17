@@ -40,7 +40,7 @@ describe('applyTodosQuery', () => {
       const result = applyTodosQuery(items, { limit: 2, offset: 2, order: 'asc' });
 
       expect(result.data.map((t) => t.id)).toEqual(['3', '4']);
-      expect(result.meta).toEqual({ limit: 2, offset: 2, total: 5 });
+      expect(result.meta).toEqual({ completed: 2, limit: 2, offset: 2, total: 5 });
     });
 
     it('keeps only completed records for completed=true', () => {
@@ -48,6 +48,12 @@ describe('applyTodosQuery', () => {
 
       expect(result.data.map((t) => t.id)).toEqual(['2', '4']);
       expect(result.meta.total).toBe(2);
+    });
+
+    it('counts completed records across all pages in meta.completed', () => {
+      const result = applyTodosQuery(items, { limit: 1, order: 'asc' });
+
+      expect(result.meta.completed).toBe(2);
     });
 
     it('searches title case-insensitively', () => {

@@ -111,13 +111,15 @@ Known limit: rollback restores the value that was current when the request start
 const selectTodosState = (state: RootState): RootState['todos'] => state.todos;
 
 export const selectItems = createSelector(selectTodosState, (state) => state.items);
-export const selectCompletedTodos = createSelector(selectItems, (items) => items.filter((t) => t.completed).length);
+export const selectCompletedTodos = createSelector(selectTodosState, (state) => state.completed);
 ```
+
+`selectCompletedTodos` reads a stored count instead of filtering `items`. The list is paginated, so a count over the loaded page would disagree with `total` once there is more than one page. The backend returns `meta.completed` for all matching todos, the slice stores it, and optimistic toggles and deletes adjust it the same way they adjust `total`.
 
 Components never reach into `state.todos` themselves. The reasons:
 
 - The shape of the state can change (see the next sections) without touching a component.
-- Derived values such as `selectCompletedTodos` are computed once per change of `items`, not on every render.
+- A derived value (a filter or a count over `items`) would be computed once per change of its input, not on every render.
 - Selectors are plain functions and are tested without React (`todos.selectors.test.ts`).
 
 Not every selector earns its memoization. `selectItems` returns an existing reference and would be fine as a plain function; it is wrapped for consistency, so that the whole feature is read the same way. The memoization that matters is on derived values: a filter or a count that creates a new array or number on every call.

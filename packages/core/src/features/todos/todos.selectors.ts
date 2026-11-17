@@ -12,7 +12,7 @@ export const selectStatus = createSelector(selectTodosState, (state) => state.st
 
 export const selectVisibleTodos = createSelector(selectTodosState, (state) => state.items);
 
-export const selectCompletedTodos = createSelector(selectItems, (items) => items.filter((t) => t.completed).length);
+export const selectCompletedTodos = createSelector(selectTodosState, (state) => state.completed);
 
 export const selectTotalTodos = createSelector(selectTodosState, (state) => state.total);
 

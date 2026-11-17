@@ -69,7 +69,8 @@ const renderHome = async (options: { authenticated?: boolean } = {}): Promise<Re
 };
 
 const firstPage = applyTodosQuery(todos, { order: 'asc', sortBy: 'title' }).data;
-const completedCount = firstPage.filter((t) => t.completed).length;
+// The summary counts completed todos on every page, not only the first one
+const completedCount = todos.filter((t) => t.completed).length;
 const totalCount = todos.length;
 
 beforeEach(() => {
