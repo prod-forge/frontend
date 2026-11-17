@@ -37,5 +37,4 @@ Rows are in priority order: the order they are implemented in.
 
 | #   | Global plan | Status | Version | Modules |
 | --- | ----------- | ------ | ------- | ------- |
-
-No global plan is open at the moment.
+| 1   | [001-api-contract](./001-api-contract/readme.md) | ⏸ hold | 1.2.0 | core, test-data, web-client, mobile-client, docs |
