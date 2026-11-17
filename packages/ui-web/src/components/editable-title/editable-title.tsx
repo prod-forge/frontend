@@ -1,7 +1,7 @@
 import type { KeyboardEvent, ReactNode } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,6 +18,7 @@ type FormValues = {
 
 export const EditableTitle = ({ maxLength, onSubmit, schema, value }: Props): ReactNode => {
   const [isEditing, setIsEditing] = useState(false);
+  const errorId = useId();
 
   const formSchema = useMemo(() => z.object({ value: schema }), [schema]);
 
@@ -75,6 +76,7 @@ export const EditableTitle = ({ maxLength, onSubmit, schema, value }: Props): Re
   ) : (
     <form noValidate onSubmit={(e) => void submit(e)}>
       <input
+        aria-describedby={formState.errors.value ? errorId : undefined}
         aria-invalid={formState.errors.value ? true : undefined}
         aria-label="Title"
         autoComplete="off"
@@ -95,7 +97,7 @@ export const EditableTitle = ({ maxLength, onSubmit, schema, value }: Props): Re
         }}
       />
       {formState.errors.value ? (
-        <p className="mt-2 text-sm text-err" role="alert">
+        <p className="mt-2 text-sm text-err" id={errorId} role="alert">
           {formState.errors.value.message}
         </p>
       ) : null}
