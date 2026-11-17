@@ -11,7 +11,7 @@ import {
 } from '@prod-forge-todolist-frontend/core';
 import { todos } from '@prod-forge-todolist-frontend/test-data';
 import { configureStore } from '@reduxjs/toolkit';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -132,6 +132,22 @@ describe('<TodoDetail /> page', () => {
 
       const { errors } = store.getState().errors;
       expect(errors.some((e) => !e.silent)).toBe(true);
+    });
+
+    it('stays on the detail page when delete fails', async () => {
+      const user = userEvent.setup();
+      vi.mocked(todosApi.delete).mockRejectedValue(new Error('Network error'));
+      const { store } = renderAt(`/todo/${openTodo.id}`);
+      await screen.findByRole('heading', { level: 1, name: openTodo.title });
+
+      await user.click(screen.getByRole('button', { name: /delete task/i }));
+      await user.click(screen.getByRole('button', { name: /^delete$/i }));
+
+      await waitFor(() => {
+        expect(store.getState().errors.errors.some((e) => !e.silent)).toBe(true);
+      });
+      expect(screen.queryByTestId('home')).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: openTodo.title })).toBeInTheDocument();
     });
 
     it('keeps the original title when validation fails', async () => {
@@ -271,7 +287,7 @@ describe('<TodoDetail /> page', () => {
       await user.click(screen.getByRole('button', { name: /delete task/i }));
       await user.click(screen.getByRole('button', { name: /^delete$/i }));
 
-      expect(screen.getByTestId('home')).toBeInTheDocument();
+      expect(await screen.findByTestId('home')).toBeInTheDocument();
     });
 
     it('dispatches clearErrors and re-fetches when the retry button is clicked', async () => {
