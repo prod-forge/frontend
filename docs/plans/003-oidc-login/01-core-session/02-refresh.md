@@ -1,4 +1,4 @@
-**Status:** ✅ approved · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** core
+**Status:** ⏸ hold · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** core
 
 # 02 — Refresh
 

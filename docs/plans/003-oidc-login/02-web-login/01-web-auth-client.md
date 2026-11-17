@@ -1,4 +1,4 @@
-**Status:** ✅ approved · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** web-client
+**Status:** ⏸ hold · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** web-client
 
 # 01 — Web AuthClient
 

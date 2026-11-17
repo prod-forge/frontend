@@ -1,4 +1,4 @@
-**Status:** ✅ approved · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** web-client, ui-web, docs, guide
+**Status:** ⏸ hold · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** web-client, ui-web, docs, guide
 
 # 02 — Pages, e2e, docs
 

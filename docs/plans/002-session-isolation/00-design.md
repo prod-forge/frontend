@@ -1,4 +1,4 @@
-**Status:** ✅ approved · **Version:** 1.1.1 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, docs
+**Status:** ⏸ hold · **Version:** 1.1.1 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, docs
 
 # Design: session isolation on the client
 
@@ -55,7 +55,7 @@ None.
 ## Decisions
 
 - 2026-11-17 — Ownership tests ship before the auth replacement; both before high-load work.
-- 2026-11-17 — The agent's calls below are confirmed. The plan is approved.
+- 2026-11-17 — The agent's calls below are confirmed. The plan is approved and put on hold: not implemented for now.
 
 ## Agent's calls (to check)
 
