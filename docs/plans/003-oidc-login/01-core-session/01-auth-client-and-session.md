@@ -6,7 +6,7 @@
 
 - `packages/core/src/config/core-config.ts` — `authClient` in `CoreConfig`, validated by `configureCore`.
 - `packages/core/src/features/auth/auth.types.ts` — `TokenSet`, `AuthSession = { tokens, user }`.
-- `auth.thunks.ts` — `login`/`register` call `signIn`; a cancelled sign-in resolves to no session without an error.
+- `auth.thunks.ts` — `login` calls `signIn`, `register` is removed; a cancelled sign-in resolves to no session without an error.
 - `auth.listeners.ts`, `auth.constants.ts` — `auth-session` key; `hydrateAuth` parses and checks expiry.
 - `packages/core/src/utils/decode-jwt-claims.ts` — base64url payload decode, no verification.
 - Remove `api/auth.api.ts`, `UNKNOWN_EMAIL_MESSAGE`, `serializeLoginError`, `docs/hacks/core.md` register entry.

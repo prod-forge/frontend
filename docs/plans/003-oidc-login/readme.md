@@ -5,8 +5,8 @@
 ## Goal
 
 Both clients sign in through the OpenID Connect provider with Authorization Code + PKCE, keep and refresh the tokens,
-and log out at the provider. The email form that called `POST /auth/login`, and the register form that did the same,
-are replaced. Client counterpart of the backend `003-oidc-authentication`. Design: [00-design.md](./00-design.md).
+and log out at the provider. The email form that called `POST /auth/login` becomes one "Sign in" button, and the register
+form that did the same is removed. Client counterpart of the backend `003-oidc-authentication`. Design: [00-design.md](./00-design.md).
 
 Prerequisites: [002-session-isolation](../002-session-isolation/readme.md) is done; backend 003 plans 01–02 are
 merged (Keycloak runs locally).

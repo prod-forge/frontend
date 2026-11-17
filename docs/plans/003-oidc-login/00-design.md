@@ -34,7 +34,7 @@ Cognito on AWS) and removes `POST /auth/login`. Both clients must log in through
 
 - Silent login in an iframe and third-party cookies.
 - Social login, MFA: provider configuration, no client code.
-- A backend-for-frontend that keeps tokens in an HttpOnly cookie on web (see Open questions).
+- A backend-for-frontend that keeps tokens in an HttpOnly cookie on web (decision 2026-11-17).
 
 ## Design
 
@@ -44,7 +44,7 @@ Cognito on AWS) and removes `POST /auth/login`. Both clients must log in through
 
   ```ts
   type AuthClient = {
-    readonly signIn: (mode: 'login' | 'register') => Promise<TokenSet | null>; // null when the user cancels
+    readonly signIn: () => Promise<TokenSet | null>; // null when the user cancels
     readonly refresh: (refreshToken: string) => Promise<TokenSet>;
     readonly signOut: (idToken: string | null) => Promise<void>;
   };
@@ -56,8 +56,8 @@ Cognito on AWS) and removes `POST /auth/login`. Both clients must log in through
   };
   ```
 
-- `login` and `register` thunks call `authClient.signIn('login' | 'register')` (`register` opens the provider's sign-up
-  page; the register hack goes away). `AuthUser` comes from ID token claims (`email`, `name`), decoded, not verified:
+- The `login` thunk calls `authClient.signIn()`; the `register` thunk and its hack are removed (sign-up is a link on
+  the provider's page). `AuthUser` comes from ID token claims (`email`, `name`), decoded, not verified:
   the client trusts what its own provider exchange returned, the API verifies the access token.
 - `apiRequest` gets the access token through `getToken`, as today; a new `ensureFreshToken()` refreshes when less
   than 60 s remain, with one shared in-flight refresh. A 401 triggers one refresh and one retry, then `logout()`.
@@ -71,7 +71,8 @@ Cognito on AWS) and removes `POST /auth/login`. Both clients must log in through
   redirect flow). `signIn` redirects; route `/auth/callback` completes the exchange and dispatches the session.
 - Config: `VITE_OIDC_AUTHORITY`, `VITE_OIDC_CLIENT_ID`; the build env guard and the CSP `connect-src` include the
   authority.
-- Login and register pages become one button each to the provider; the password fields and schemas are removed.
+- The login page becomes one "Sign in" button to the provider; the register page and route, the password fields and
+  the form schemas are removed.
 - e2e: `fixtures.ts` mocks the authority's discovery, authorize redirect and token endpoint, so Playwright runs the
   full code flow without Keycloak.
 
@@ -88,16 +89,17 @@ upgrade; there is no store release, so nothing to migrate.
 
 ## Open questions
 
-1. Web token storage: keep the session in `localStorage` (as today, `guide/security.md` explains why) with short
-   access tokens and refresh-token rotation at the provider, or add a backend-for-frontend with HttpOnly cookies (a new
-   service, out of scope of this plan)?
-2. Keep a separate register screen that opens the provider's sign-up page, or one "Sign in" screen where the provider
-   offers sign-up?
+None.
 
 ## Decisions
 
 - 2026-11-17 — Generic OIDC with Authorization Code + PKCE on both clients; Keycloak locally, Cognito on AWS.
 - 2026-11-17 — Session isolation tests (002) first, then this plan.
+- 2026-11-17 — Web keeps the session in `localStorage`, with short access tokens and refresh-token rotation at the
+  provider; no backend-for-frontend.
+- 2026-11-17 — One "Sign in" screen; sign-up is offered by the provider's page. The register screens, route and thunk
+  are removed.
+- 2026-11-17 — The backend stores only `sub`; the user's email and name come from the ID token on the client.
 
 ## Agent's calls (to check)
 

@@ -4,8 +4,8 @@
 
 ## Files
 
-- Login and register pages: provider buttons; password fields and `loginSchema`/`registerSchema` removed (or kept
-  only if open question 2 keeps a form).
+- Login page: one "Sign in" button; the register page, its route and links, the password fields and
+  `loginSchema`/`registerSchema` removed.
 - `apps/web-client/e2e/fixtures.ts` — mocked discovery, authorize redirect back to `/auth/callback`, token endpoint;
   `auth.spec.ts` and `session-isolation.spec.ts` run through it.
 - Visual snapshots of the changed pages (`npm run test:visual`, macOS).

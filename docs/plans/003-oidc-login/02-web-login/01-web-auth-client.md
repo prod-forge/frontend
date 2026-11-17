@@ -5,7 +5,7 @@
 ## Files
 
 - `apps/web-client/src/services/auth-client.ts` — `AuthClient` over `UserManager` (code flow, PKCE S256,
-  `response_mode=query`); `register` adds `kc_action=register` / the provider's sign-up hint from config.
+  `response_mode=query`).
 - `apps/web-client/src/services/core-setup.ts` — pass `authClient`.
 - Route `/auth/callback` (lazy page): `signinRedirectCallback`, then dispatch the session and navigate home; an
   error shows the existing error UI.

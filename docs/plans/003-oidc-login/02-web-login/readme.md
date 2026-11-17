@@ -5,7 +5,7 @@
 ## Steps
 
 1. [01-web-auth-client](./01-web-auth-client.md) — `oidc-client-ts` adapter, callback route, env and CSP.
-2. [02-pages-e2e-docs](./02-pages-e2e-docs.md) — login and register pages, e2e with a mocked provider, guide.
+2. [02-pages-e2e-docs](./02-pages-e2e-docs.md) — the sign-in page, e2e with a mocked provider, guide.
 
 ## Conclusions
 
