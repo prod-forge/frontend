@@ -51,13 +51,13 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
         ) : (
           <>
             <Link
-              className="text-sm font-medium text-fg-soft transition-colors duration-[120ms] hover:text-brand"
+              className="text-sm font-medium text-fg-soft transition-colors duration-fast hover:text-brand"
               to="/login"
             >
               Sign in
             </Link>
             <Link
-              className="inline-flex min-h-8 items-center justify-center gap-2 rounded-md bg-brand px-3 text-xs font-semibold text-brand-fg transition duration-[120ms] hover:bg-brand-hover focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+              className="inline-flex min-h-8 items-center justify-center gap-2 rounded-md bg-brand px-3 text-xs font-semibold text-brand-fg transition duration-fast hover:bg-brand-hover focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               to="/register"
             >
               Sign up
@@ -67,7 +67,7 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
 
         <button
           aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="flex size-[38px] items-center justify-center rounded-full border border-line bg-card text-fg-soft transition duration-[120ms] hover:border-brand hover:bg-brand-soft hover:text-brand"
+          className="flex size-[38px] items-center justify-center rounded-full border border-line bg-card text-fg-soft transition duration-fast hover:border-brand hover:bg-brand-soft hover:text-brand"
           onClick={onToggle}
         >
           {theme === 'dark' ? (

@@ -19,7 +19,7 @@ export const Accordion = ({ children, defaultOpen = false, title }: Props): Reac
       <button
         aria-controls={panelId}
         aria-expanded={isOpen}
-        className="flex min-h-11 w-full items-center justify-between gap-3 border-0 bg-transparent px-4 py-2 text-left text-sm font-semibold text-fg transition-colors duration-[120ms] hover:bg-page-soft focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:[outline-offset:-2px]"
+        className="flex min-h-11 w-full items-center justify-between gap-3 border-0 bg-transparent px-4 py-2 text-left text-sm font-semibold text-fg transition-colors duration-fast hover:bg-page-soft focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:[outline-offset:-2px]"
         id={triggerId}
         onClick={() => setIsOpen((open) => !open)}
         type="button"
@@ -28,7 +28,7 @@ export const Accordion = ({ children, defaultOpen = false, title }: Props): Reac
         <svg
           aria-hidden="true"
           className={cn(
-            'shrink-0 will-change-transform transition-[color,transform] duration-[220ms] motion-reduce:transition-none',
+            'shrink-0 will-change-transform transition-[color,transform] duration-base motion-reduce:transition-none',
             {
               'rotate-180 text-brand': isOpen,
               'text-fg-muted': !isOpen,
@@ -45,10 +45,10 @@ export const Accordion = ({ children, defaultOpen = false, title }: Props): Reac
       <div
         aria-labelledby={triggerId}
         className={cn(
-          'grid [transition-property:grid-template-rows,visibility] [transition-duration:220ms,0s] motion-reduce:transition-none',
+          'grid [transition-property:grid-template-rows,visibility] [transition-duration:var(--duration-base),0s] motion-reduce:transition-none',
           isOpen
             ? 'visible grid-rows-[1fr] [transition-delay:0s,0s]'
-            : 'invisible grid-rows-[0fr] [transition-delay:0s,220ms]',
+            : 'invisible grid-rows-[0fr] [transition-delay:0s,var(--duration-base)]',
         )}
         id={panelId}
         role="region"

@@ -19,7 +19,6 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#17](https://github.com/prod-forge/frontend/issues/17) — Remove the dead `instanceof Error` branch in the error middleware.
 - [#18](https://github.com/prod-forge/frontend/issues/18) — Remove the duplicated `Todo` type from core.
 - [#19](https://github.com/prod-forge/frontend/issues/19) — Leave the web todo detail page only after the delete succeeds.
-- [#20](https://github.com/prod-forge/frontend/issues/20) — Take transition durations from the design tokens instead of hardcoding them.
 
 ## Without an issue
 

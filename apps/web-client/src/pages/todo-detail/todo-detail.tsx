@@ -94,7 +94,7 @@ export const TodoDetail = (): ReactNode => {
   return (
     <div>
       <Link
-        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-fg-soft transition-colors duration-[120ms] hover:text-brand"
+        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-fg-soft transition-colors duration-fast hover:text-brand"
         to="/"
       >
         <svg fill="none" height="16" viewBox="0 0 16 16" width="16">
@@ -114,7 +114,7 @@ export const TodoDetail = (): ReactNode => {
           <TodoStatus completed={todo.completed} />
           <button
             aria-label="Delete task"
-            className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-transparent text-fg-muted transition duration-[120ms] outline-none hover:border-line hover:bg-page-soft hover:text-err focus-visible:border-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+            className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-transparent text-fg-muted transition duration-fast outline-none hover:border-line hover:bg-page-soft hover:text-err focus-visible:border-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
             onClick={() => setConfirmOpen(true)}
             type="button"
           >

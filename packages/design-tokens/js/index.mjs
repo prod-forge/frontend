@@ -1,4 +1,8 @@
 // Auto-generated. Do not edit manually.
+export const duration = {
+  "fast": "120ms",
+  "base": "220ms"
+};
 export const containerMax = 1024;
 export const headerHeight = 64;
 export const radius = {

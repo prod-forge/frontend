@@ -57,7 +57,7 @@ export const EditableTitle = ({ maxLength, onSubmit, schema, value }: Props): Re
       <h1 className="text-3xl font-semibold leading-tight tracking-[-0.03em] text-fg">{value}</h1>
       <button
         aria-label="Edit title"
-        className="mt-2 inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-transparent text-fg-muted opacity-0 transition duration-[120ms] outline-none hover:border-line hover:bg-page-soft hover:text-fg group-hover/title:opacity-100 focus-visible:border-brand focus-visible:opacity-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+        className="mt-2 inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-transparent text-fg-muted opacity-0 transition duration-fast outline-none hover:border-line hover:bg-page-soft hover:text-fg group-hover/title:opacity-100 focus-visible:border-brand focus-visible:opacity-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
         onClick={startEditing}
         type="button"
       >
@@ -78,7 +78,7 @@ export const EditableTitle = ({ maxLength, onSubmit, schema, value }: Props): Re
         aria-invalid={formState.errors.value ? true : undefined}
         aria-label="Title"
         autoComplete="off"
-        className="block w-full rounded-md border border-line bg-card px-3 py-2 text-3xl font-bold leading-tight tracking-[-0.03em] text-fg outline-none transition duration-[120ms] focus:border-brand focus:shadow-[0_0_0_3px_var(--color-brand-soft)]"
+        className="block w-full rounded-md border border-line bg-card px-3 py-2 text-3xl font-bold leading-tight tracking-[-0.03em] text-fg outline-none transition duration-fast focus:border-brand focus:shadow-[0_0_0_3px_var(--color-brand-soft)]"
         maxLength={maxLength}
         {...inputProps}
         onBlur={(event) => {

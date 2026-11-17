@@ -37,7 +37,7 @@ export const Button = ({
 }: Props): ReactNode => (
   <button
     className={cn(
-      'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-semibold transition duration-[120ms] outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+      'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-semibold transition duration-fast outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
       sizeClasses[size],
       variantClasses[variant],
       className,
