@@ -12,12 +12,15 @@ import {
   selectVisibleTodos,
 } from './todos.selectors';
 
-const makeState = (overrides: { filters?: Partial<TodoFilters>; items?: Todo[]; total?: number } = {}): RootState => ({
+const makeState = (
+  overrides: { completed?: number; filters?: Partial<TodoFilters>; items?: Todo[]; total?: number } = {},
+): RootState => ({
   auth: { hydration: 'done', token: null, user: null },
   errors: { errors: [] },
   todos: {
     _pendingDeletes: {},
     _pendingUpdates: {},
+    completed: overrides.completed ?? 0,
     currentTodo: null,
     currentTodoStatus: 'idle',
     filters: {
@@ -79,15 +82,14 @@ describe('selectTotalTodos', () => {
 
 describe('selectCompletedTodos', () => {
   describe('negative cases', () => {
-    it('returns 0 when none are completed', () => {
-      const open = items.map((t) => ({ ...t, completed: false }));
-      expect(selectCompletedTodos(makeState({ items: open }))).toBe(0);
+    it('does not count the completed items of the loaded page', () => {
+      expect(selectCompletedTodos(makeState({ completed: 0, items }))).toBe(0);
     });
   });
 
   describe('positive cases', () => {
-    it('returns the number of completed items in the current page', () => {
-      expect(selectCompletedTodos(makeState({ items }))).toBe(1);
+    it('returns the server count of completed todos across all pages', () => {
+      expect(selectCompletedTodos(makeState({ completed: 30, items, total: 47 }))).toBe(30);
     });
   });
 });

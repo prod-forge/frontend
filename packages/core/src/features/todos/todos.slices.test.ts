@@ -39,12 +39,13 @@ const todoB: Todo = { completed: true, description: 'desc-b', id: 'b', title: 'B
 const defaultFilters: TodoFilters = { limit: 10, offset: 0, order: 'asc', query: '', sortBy: 'title' };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const makeTodosStore = (preloadedItems: Todo[] = [], total = 0) =>
+export const makeTodosStore = (preloadedItems: Todo[] = [], total = 0, completed = 0) =>
   configureStore({
     preloadedState: {
       todos: {
         _pendingDeletes: {},
         _pendingUpdates: {},
+        completed,
         currentTodo: null,
         currentTodoStatus: 'idle',
         filters: { limit: 10, offset: 0, order: 'asc', query: '', sortBy: 'title' } as TodoFilters,
@@ -89,7 +90,7 @@ describe('todos slice — initial state', () => {
 describe('todos slice — fetchTodos', () => {
   const response: TodosResponse = {
     data: [todoA, todoB],
-    meta: { limit: 10, offset: 0, total: 2 },
+    meta: { completed: 0, limit: 10, offset: 0, total: 2 },
   };
 
   describe('negative cases', () => {
@@ -129,10 +130,22 @@ describe('todos slice — fetchTodos', () => {
       expect(state.status).toBe('idle');
     });
 
+    it('takes the completed count from meta, not from the loaded page', async () => {
+      vi.mocked(todosApi.getAll).mockResolvedValueOnce({
+        data: [todoA, todoB],
+        meta: { completed: 30, limit: 10, offset: 0, total: 47 },
+      });
+      const store = makeTodosStore();
+
+      await store.dispatch(fetchTodos(defaultFilters));
+
+      expect(store.getState().todos.completed).toBe(30);
+    });
+
     it('sets nextOffset to the end of the loaded page', async () => {
       vi.mocked(todosApi.getAll).mockResolvedValueOnce({
         data: [todoA, todoB],
-        meta: { limit: 10, offset: 4, total: 9 },
+        meta: { completed: 0, limit: 10, offset: 4, total: 9 },
       });
       const store = makeTodosStore();
 
@@ -147,7 +160,7 @@ describe('todos slice — fetchMoreTodos', () => {
   const todoC: Todo = { completed: false, description: 'desc-c', id: 'c', title: 'Cherry' };
   const nextPage: TodosResponse = {
     data: [todoB, todoC],
-    meta: { limit: 10, offset: 1, total: 3 },
+    meta: { completed: 0, limit: 10, offset: 1, total: 3 },
   };
 
   describe('negative cases', () => {
@@ -387,6 +400,24 @@ describe('todos slice — deleteTodo', () => {
       expect(state.nextOffset).toBe(2);
     });
 
+    it('restores the completed count when deleting a completed item is rejected', async () => {
+      vi.mocked(todosApi.delete).mockRejectedValueOnce(new Error('fail'));
+      const store = makeTodosStore([todoA, todoB], 2, 1);
+
+      await store.dispatch(deleteTodo(todoB.id));
+
+      expect(store.getState().todos.completed).toBe(1);
+    });
+
+    it('keeps the completed count when deleting an open item', async () => {
+      vi.mocked(todosApi.delete).mockResolvedValueOnce();
+      const store = makeTodosStore([todoA, todoB], 2, 1);
+
+      await store.dispatch(deleteTodo(todoA.id));
+
+      expect(store.getState().todos.completed).toBe(1);
+    });
+
     it('is a no-op when the id does not exist', async () => {
       vi.mocked(todosApi.delete).mockResolvedValueOnce();
       const store = makeTodosStore([todoA], 1);
@@ -412,6 +443,15 @@ describe('todos slice — deleteTodo', () => {
       const state = store.getState().todos;
       expect(state.items.find((t) => t.id === todoA.id)).toBeUndefined();
       expect(state.total).toBe(1);
+    });
+
+    it('decrements the completed count when a completed item is deleted', async () => {
+      vi.mocked(todosApi.delete).mockResolvedValueOnce();
+      const store = makeTodosStore([todoA, todoB], 2, 1);
+
+      await store.dispatch(deleteTodo(todoB.id));
+
+      expect(store.getState().todos.completed).toBe(0);
     });
 
     it('removes the rollback snapshot on fulfilled', async () => {
@@ -456,6 +496,15 @@ describe('todos slice — toggleTodo', () => {
       expect(store.getState().todos.items.find((t) => t.id === todoA.id)?.completed).toBe(todoA.completed);
     });
 
+    it('restores the completed count on rejection', async () => {
+      vi.mocked(todosApi.update).mockRejectedValueOnce(new Error('fail'));
+      const store = makeTodosStore([todoA], 1, 0);
+
+      await store.dispatch(toggleTodo(todoA.id));
+
+      expect(store.getState().todos.completed).toBe(0);
+    });
+
     it('is a no-op when the id does not exist', async () => {
       vi.mocked(todosApi.update).mockRejectedValueOnce(new Error('Not found'));
       const store = makeTodosStore([todoA]);
@@ -488,6 +537,24 @@ describe('todos slice — toggleTodo', () => {
       await store.dispatch(toggleTodo(todoA.id));
 
       expect(store.getState().todos.items.find((t) => t.id === todoA.id)?.completed).toBe(true);
+    });
+
+    it('increments the completed count when an item is completed', async () => {
+      vi.mocked(todosApi.update).mockResolvedValueOnce({ ...todoA, completed: true });
+      const store = makeTodosStore([todoA], 1, 0);
+
+      await store.dispatch(toggleTodo(todoA.id));
+
+      expect(store.getState().todos.completed).toBe(1);
+    });
+
+    it('decrements the completed count when an item is reopened', async () => {
+      vi.mocked(todosApi.update).mockResolvedValueOnce({ ...todoB, completed: false });
+      const store = makeTodosStore([todoB], 1, 1);
+
+      await store.dispatch(toggleTodo(todoB.id));
+
+      expect(store.getState().todos.completed).toBe(0);
     });
   });
 });
@@ -598,6 +665,7 @@ describe('todos slice — setLimit', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, offset: 30 },
@@ -632,6 +700,7 @@ describe('todos slice — setOffset', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, query: 'hi' },
@@ -666,6 +735,7 @@ describe('todos slice — setOrder', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, offset: 10 },
@@ -700,6 +770,7 @@ describe('todos slice — setSortBy', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, offset: 10 },
@@ -736,6 +807,7 @@ describe('todos slice — updateFilters', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
             filters: { ...defaultFilters, offset: 10 },

@@ -54,7 +54,9 @@ describe('<TodosScreen />', () => {
 
     it('shows the empty state when the backend has no todos', async () => {
       fetchMock.mockResolvedValueOnce(
-        new Response(JSON.stringify({ data: [], meta: { limit: 10, offset: 0, total: 0 } }), { status: 200 }),
+        new Response(JSON.stringify({ data: [], meta: { completed: 0, limit: 10, offset: 0, total: 0 } }), {
+          status: 200,
+        }),
       );
       await renderSignedIn();
 

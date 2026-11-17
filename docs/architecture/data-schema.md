@@ -28,6 +28,7 @@ type TodosResponse = {
 };
 
 type TodosMeta = {
+  completed: number; // Completed items among all that match the filters, not only this page.
   limit: number; // Page size used for this response.
   offset: number; // 0-based row offset: number of items skipped.
   total: number; // Total matching items in the backend (used to compute page count).
@@ -107,6 +108,7 @@ Persistence is a side effect in `auth.listeners.ts`: `login.fulfilled`/`register
 type TodosState = {
   items: Todo[]; // Current page of todos shown in the list.
   total: number; // Total count from last getAll response (for pagination).
+  completed: number; // meta.completed from the last getAll response, adjusted by optimistic toggles and deletes; read by selectCompletedTodos.
   status: TodosStatus; // 'idle' | 'loading' | 'error' — for the list fetch (fetchTodos and fetchMoreTodos).
   nextOffset: number; // Server offset after the last loaded page (fetchTodos/fetchMoreTodos); optimistic adds do not move it, a confirmed delete lowers it by 1. Mobile "Load more" requests from here.
 
