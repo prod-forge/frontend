@@ -87,8 +87,11 @@ export const TodoDetail = (): ReactNode => {
 
   const handleConfirmDelete = (): void => {
     setConfirmOpen(false);
-    void dispatch(deleteTodo(todo.id));
-    void navigate('/');
+    void dispatch(deleteTodo(todo.id)).then((result) => {
+      if (deleteTodo.fulfilled.match(result)) {
+        void navigate('/');
+      }
+    });
   };
 
   return (
