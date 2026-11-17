@@ -1,4 +1,4 @@
-**Status:** 📝 draft · **Version:** 1.1.1 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, docs
+**Status:** ✅ approved · **Version:** 1.1.1 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, docs
 
 # 002 — Session isolation on the client
 

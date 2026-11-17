@@ -35,8 +35,8 @@ measured, decided, learned) and the user has looked at its result.
 
 Rows are in priority order: the order they are implemented in.
 
-| #   | Global plan                                                | Status   | Version | Modules                                                 |
-| --- | ---------------------------------------------------------- | -------- | ------- | ------------------------------------------------------- |
-| 1   | [002-session-isolation](./002-session-isolation/readme.md) | 📝 draft | 1.1.1   | core, web-client, mobile-client, docs                   |
-| 2   | [003-oidc-login](./003-oidc-login/readme.md)               | 📝 draft | 2.0.0   | core, web-client, mobile-client, test-data, docs, guide |
-| 3   | [001-api-contract](./001-api-contract/readme.md)           | ⏸ hold   | 1.2.0   | core, test-data, web-client, mobile-client, docs        |
+| #   | Global plan                                                | Status      | Version | Modules                                                 |
+| --- | ---------------------------------------------------------- | ----------- | ------- | ------------------------------------------------------- |
+| 1   | [002-session-isolation](./002-session-isolation/readme.md) | ✅ approved | 1.1.1   | core, web-client, mobile-client, docs                   |
+| 2   | [003-oidc-login](./003-oidc-login/readme.md)               | ✅ approved | 2.0.0   | core, web-client, mobile-client, test-data, docs, guide |
+| 3   | [001-api-contract](./001-api-contract/readme.md)           | ⏸ hold      | 1.2.0   | core, test-data, web-client, mobile-client, docs        |

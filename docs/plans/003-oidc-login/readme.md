@@ -1,4 +1,4 @@
-**Status:** 📝 draft · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, test-data, docs, guide
+**Status:** ✅ approved · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, test-data, docs, guide
 
 # 003 — OIDC login
 

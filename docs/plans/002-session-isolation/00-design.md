@@ -1,4 +1,4 @@
-**Status:** 📝 draft · **Version:** 1.1.1 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, docs
+**Status:** ✅ approved · **Version:** 1.1.1 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, docs
 
 # Design: session isolation on the client
 
@@ -55,8 +55,11 @@ None.
 ## Decisions
 
 - 2026-11-17 — Ownership tests ship before the auth replacement; both before high-load work.
+- 2026-11-17 — The agent's calls below are confirmed. The plan is approved.
 
 ## Agent's calls (to check)
+
+All confirmed by the owner on 2026-11-17.
 
 1. The fix uses a session id in thunk meta rather than aborting in-flight requests on logout: abort covers fetches but
    not a response already being parsed, and the meta check is one rule for every thunk.

@@ -1,4 +1,4 @@
-**Status:** 📝 draft · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, test-data, docs, guide
+**Status:** ✅ approved · **Version:** 2.0.0 · **Date:** 2026-11-17 · **Modules:** core, web-client, mobile-client, test-data, docs, guide
 
 # Design: OIDC login
 
@@ -100,8 +100,11 @@ None.
 - 2026-11-17 — One "Sign in" screen; sign-up is offered by the provider's page. The register screens, route and thunk
   are removed.
 - 2026-11-17 — The backend stores only `sub`; the user's email and name come from the ID token on the client.
+- 2026-11-17 — The agent's calls below are confirmed. The plan is approved.
 
 ## Agent's calls (to check)
+
+All confirmed by the owner on 2026-11-17.
 
 1. `AuthClient` adapter injected through `CoreConfig`, like storage and logger; core has no OIDC library.
 2. `oidc-client-ts` on web instead of a hand-written PKCE flow; `expo-auth-session` on mobile.
