@@ -1,23 +1,48 @@
 <p align="center">
-  <img alt="Prod Forge" src="https://raw.githubusercontent.com/prod-forge/.github/main/assets/prod-forge-logo.png" width="264px" height="243px">
+  <img alt="Prod Forge" src="https://raw.githubusercontent.com/prod-forge/.github/main/assets/prod-forge-logo.png" width="120px" height="110px">
 </p>
 
-_AI made writing the code easy. Running it in production is still hard._
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/prod-forge/frontend?style=flat-square"></a>
+  <a href="https://github.com/prod-forge/frontend/releases"><img alt="Release" src="https://img.shields.io/github/v/release/prod-forge/frontend?style=flat-square"></a>
+</p>
 
-This repository holds the web and mobile clients in one NX monorepo, with a shared design system. It answers: how do I build, ship, and keep web and mobile clients healthy?
+A React web client and an Expo mobile client in one NX monorepo, sharing one Redux core and one set of design tokens,
+with a 17-chapter guide that explains every decision: quality gates, design system, client observability, testing,
+release and rollback.
 
-Part of Prod Forge — start with the organization overview: https://github.com/prod-forge
+## What's inside
+
+- **One core for web and mobile:** the Redux store, thunks, selectors, zod schemas and the API client live in
+  `packages/core`; each app passes in its storage, logger and config at startup. The UI is written per platform.
+  [Mobile Client](guide/mobile-client.md#what-is-shared-and-what-is-not)
+- **One set of design tokens, two outputs:** Style Dictionary builds CSS variables for Tailwind and plain numbers for
+  React Native. [Design System](guide/design-system.md#token-pipeline)
+- **Components are done when they are pinned:** every Storybook story has a visual snapshot and an axe-core
+  accessibility check in Playwright. [Design System](guide/design-system.md#storybook-as-the-contract)
+- **A trace ID from the browser to the backend logs:** the client sends it as a header, so a user's error in Sentry
+  leads to the matching API logs. [Client Observability](guide/client-observability.md#trace-id-end-to-end)
+- **Optimistic updates with an explicit rollback** in reducers.
+  [State Management](guide/state-management.md#optimistic-updates-and-rollback)
+- **Errors as a taxonomy:** backend error codes mapped to user messages, toasts, retry and an error boundary.
+  [API Client and Errors](guide/api-client-and-errors.md)
+- **Rollback without a rebuild:** every release is kept in S3 as a versioned copy, and a manual workflow puts it back.
+  [Release and Deployment](guide/release-and-deployment.md#rollback)
+- **Tests at every level:** unit tests with a real store, Playwright e2e with a mocked API, mobile screen tests on
+  `jest-expo`. [Testing Strategy](guide/testing-strategy.md)
+
+This repository holds the clients. The API they talk to is in [prod-forge/backend](https://github.com/prod-forge/backend),
+the AWS infrastructure in [prod-forge/terraform](https://github.com/prod-forge/terraform); the
+[organization page](https://github.com/prod-forge) has the architecture diagram and the reading order.
 
 ## Stack
 
 <!-- prettier-ignore -->
-| Layer          | Tools                                            |
-| -------------- | ------------------------------------------------ |
-| Web Client     | React · Vite · Redux Toolkit · Tailwind CSS · NX |
-| Mobile Client  | Expo · React Native · Redux Toolkit              |
-| Quality        | ESLint · Prettier · Husky · Commitlint · CI/CD   |
-
-The full stack table is on the organization page: https://github.com/prod-forge
+| Layer          | Tools                                                           |
+| -------------- | --------------------------------------------------------------- |
+| Web Client     | React · Vite · Redux Toolkit · Tailwind CSS · NX                |
+| Mobile Client  | Expo · React Native · Redux Toolkit                             |
+| Quality        | ESLint · Prettier · Husky · Commitlint · Playwright · Storybook |
 
 ## Getting started
 
@@ -32,6 +57,27 @@ npm run dev:mobile     # mobile client (Expo)
 ```
 
 # Table of contents
+
+- [1. Repository Strategy](guide/repository-strategy.md)
+- [2. Architecture Decisions](guide/architecture-decisions.md)
+- [3. Development Workflow](guide/development-workflow.md)
+- [4. AI-Assisted Development](guide/ai-development.md)
+- [5. Code Quality](guide/code-quality.md)
+- [6. Styles Management](guide/styles-management.md)
+- [7. Assets Management](guide/assets-management.md)
+- [8. Design System](guide/design-system.md)
+- [9. State Management](guide/state-management.md)
+- [10. API Client and Errors](guide/api-client-and-errors.md)
+- [11. Client Observability](guide/client-observability.md)
+- [12. Testing Strategy](guide/testing-strategy.md)
+- [13. Configuration](guide/configuration.md)
+- [14. Performance](guide/performance.md)
+- [15. Security](guide/security.md)
+- [16. Release and Deployment](guide/release-and-deployment.md)
+- [17. Mobile Client](guide/mobile-client.md)
+
+<details>
+<summary>Full table of contents</summary>
 
 - [1. Repository Strategy](guide/repository-strategy.md)
   - [Why Frontend Projects Use a Monorepo](guide/repository-strategy.md#why-frontend-projects-use-a-monorepo)
@@ -225,6 +271,8 @@ npm run dev:mobile     # mobile client (Expo)
   - [Not Covered](guide/mobile-client.md#not-covered)
 
 <!-- -->
+
+</details>
 
 # Conclusion
 
