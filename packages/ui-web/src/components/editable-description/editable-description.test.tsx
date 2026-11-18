@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 
 import { DESCRIPTION_MAX_LENGTH, descriptionSchema } from '@prod-forge-todolist-frontend/core';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
@@ -15,6 +15,18 @@ const renderDescription = (
 
 describe('EditableDescription', () => {
   describe('negative cases', () => {
+    it('associates the validation error with the description field', async () => {
+      const user = userEvent.setup();
+      renderDescription({ schema: z.string().max(5, 'Max 5 characters'), value: 'Short' });
+
+      await user.click(screen.getByRole('button', { name: /edit description/i }));
+      const field = screen.getByRole('textbox', { name: /description/i });
+      await user.clear(field);
+      await user.type(field, 'Too long{Enter}');
+
+      expect(field).toHaveAccessibleDescription('Max 5 characters');
+    });
+
     it('renders an empty-state placeholder when value is empty', () => {
       renderDescription({ value: '' });
 
@@ -70,6 +82,27 @@ describe('EditableDescription', () => {
   });
 
   describe('positive cases', () => {
+    it('clears the error description when the description is corrected', async () => {
+      const user = userEvent.setup();
+      renderDescription({ schema: z.string().max(5, 'Max 5 characters'), value: 'Short' });
+
+      await user.click(screen.getByRole('button', { name: /edit description/i }));
+      const field = screen.getByRole('textbox', { name: /description/i });
+      expect(field).not.toHaveAttribute('aria-describedby');
+      await user.clear(field);
+      await user.type(field, 'Too long{Enter}');
+      expect(field).toHaveAccessibleDescription('Max 5 characters');
+
+      await user.clear(field);
+      await user.type(field, 'Fixed');
+
+      await waitFor(() => {
+        expect(field).not.toHaveAttribute('aria-describedby');
+      });
+      expect(field).not.toHaveAccessibleDescription();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
     it('renders the value as paragraph text by default', () => {
       renderDescription();
 
