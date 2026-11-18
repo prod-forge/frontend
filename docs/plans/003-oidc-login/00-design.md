@@ -80,7 +80,9 @@ Cognito on AWS) and removes `POST /auth/login`. Both clients must log in through
 
 - `apps/mobile-client/src/services/auth-client.ts` on `expo-auth-session` + `expo-web-browser` (Expo SDK packages, no
   native files to maintain), redirect `prodforge://auth/callback`; config from `EXPO_PUBLIC_OIDC_*`.
-- Session in SecureStore as today. Jest tests mock `expo-auth-session`.
+- Session in SecureStore as today, one small value per key (see 01-core-session): SecureStore warns about values
+  over ~2 KB, and an access, ID and refresh token together in one JSON value can pass that. Jest tests mock
+  `expo-auth-session`.
 
 ## Compatibility
 
@@ -101,6 +103,11 @@ None.
   are removed.
 - 2026-11-17 — The backend stores only `sub`; the user's email and name come from the ID token on the client.
 - 2026-11-17 — The agent's calls below are confirmed. The plan is approved and put on hold: not implemented for now.
+- 2026-11-18 — The session is stored as separate keys (access token, refresh token, expiry, user), never one JSON
+  value; the ID token is not stored once the user is read from it. Prompted by an r/expo review comment about the
+  SecureStore ~2 KB limit.
+- 2026-11-18 — Web token storage (`localStorage` vs an HttpOnly cookie) is being reconsidered after the same comment;
+  the 2026-11-17 decision stands until the owner decides.
 
 ## Agent's calls (to check)
 
