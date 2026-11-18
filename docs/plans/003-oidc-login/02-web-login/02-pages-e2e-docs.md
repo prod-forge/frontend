@@ -9,7 +9,9 @@
 - `apps/web-client/e2e/fixtures.ts` — mocked discovery, authorize redirect back to `/auth/callback`, token endpoint;
   `auth.spec.ts` and `session-isolation.spec.ts` run through it.
 - Visual snapshots of the changed pages (`npm run test:visual`, macOS).
-- `guide/security.md` "Authentication", `guide/state-management.md` (session, refresh), `docs/architecture/api.md`,
+- `guide/security.md` "Authentication" — includes the trade-off of tokens in `localStorage` (readable by XSS; short
+  access tokens, rotation and CSP limit the damage; a BFF is the stronger option, see
+  `docs/ideas/bff-session-cookie.md`). `guide/state-management.md` (session, refresh), `docs/architecture/api.md`,
   `docs/architecture/data-schema.md`, `README.md` env list.
 
 ## Tests

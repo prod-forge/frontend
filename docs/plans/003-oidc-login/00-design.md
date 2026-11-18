@@ -106,8 +106,10 @@ None.
 - 2026-11-18 — The session is stored as separate keys (access token, refresh token, expiry, user), never one JSON
   value; the ID token is not stored once the user is read from it. Prompted by an r/expo review comment about the
   SecureStore ~2 KB limit.
-- 2026-11-18 — Web token storage (`localStorage` vs an HttpOnly cookie) is being reconsidered after the same comment;
-  the 2026-11-17 decision stands until the owner decides.
+- 2026-11-18 — Web token storage reconsidered after the same comment: `localStorage` stays (short access tokens,
+  refresh-token rotation, CSP). A backend-for-frontend with an HttpOnly cookie is recorded as an idea
+  ([bff-session-cookie](../../ideas/bff-session-cookie.md)); in-memory tokens with silent renew are rejected
+  (third-party cookie blocking without an own provider domain).
 
 ## Agent's calls (to check)
 
