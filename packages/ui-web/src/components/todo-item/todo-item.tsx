@@ -40,7 +40,7 @@ export const TodoItem = ({ onDelete, onToggle, todo }: Props): ReactNode => {
       </div>
       {onDelete ? (
         <button
-          aria-label="Delete todo"
+          aria-label={`Delete "${todo.title}"`}
           className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-transparent text-fg-muted transition duration-fast outline-none hover:border-line hover:bg-page-soft hover:text-err focus-visible:border-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
           onClick={() => onDelete(todo.id)}
           type="button"

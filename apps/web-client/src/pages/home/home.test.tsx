@@ -450,7 +450,7 @@ describe('<Home /> page — delete from the list', () => {
 
   const openDeleteConfirmation = async (user: ReturnType<typeof userEvent.setup>): Promise<HTMLElement> => {
     const firstCard = screen.getAllByRole('article')[0];
-    await user.click(within(firstCard).getByRole('button', { name: 'Delete todo' }));
+    await user.click(within(firstCard).getByRole('button', { name: /^Delete ".+"$/ }));
 
     return screen.getByRole('dialog', { name: /are you sure you want to delete\?/i });
   };

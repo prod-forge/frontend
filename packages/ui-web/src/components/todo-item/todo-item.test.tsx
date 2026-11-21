@@ -95,7 +95,7 @@ describe('TodoItem', () => {
       it('does not render the delete button when onDelete is not provided', () => {
         renderItem(baseTodo);
 
-        expect(screen.queryByRole('button', { name: 'Delete todo' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Delete "Buy milk"' })).not.toBeInTheDocument();
       });
 
       it('does not call onToggle when the delete button is clicked', async () => {
@@ -103,7 +103,7 @@ describe('TodoItem', () => {
         const user = userEvent.setup();
         renderItem(baseTodo, onToggle, vi.fn());
 
-        await user.click(screen.getByRole('button', { name: 'Delete todo' }));
+        await user.click(screen.getByRole('button', { name: 'Delete "Buy milk"' }));
 
         expect(onToggle).not.toHaveBeenCalled();
       });
@@ -113,7 +113,7 @@ describe('TodoItem', () => {
       it('renders the delete button when onDelete is provided', () => {
         renderItem(baseTodo, undefined, vi.fn());
 
-        expect(screen.getByRole('button', { name: 'Delete todo' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Delete "Buy milk"' })).toBeInTheDocument();
       });
 
       it('calls onDelete with the todo id when the delete button is clicked', async () => {
@@ -121,7 +121,7 @@ describe('TodoItem', () => {
         const user = userEvent.setup();
         renderItem(baseTodo, undefined, onDelete);
 
-        await user.click(screen.getByRole('button', { name: 'Delete todo' }));
+        await user.click(screen.getByRole('button', { name: 'Delete "Buy milk"' }));
 
         expect(onDelete).toHaveBeenCalledWith('abc-123');
       });
