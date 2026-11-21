@@ -156,7 +156,9 @@ export const Home = (): ReactNode => {
           message="Failed to load tasks. Please refresh the page."
         />
       ) : todos.length === 0 ? (
-        <EmptyState message="No tasks match your search." />
+        <EmptyState
+          message={filters.query.trim() ? 'No tasks match your search.' : 'No tasks yet. Add the first one above.'}
+        />
       ) : (
         <TodoList>
           {todos.map((todo) => (
