@@ -1,15 +1,12 @@
+import type { Todo } from '../../interfaces/todos';
+
+export type { Todo };
+
 export type LimitValue = 10 | 20 | 50;
 
 export type Order = 'asc' | 'desc';
 
 export type SortBy = 'completed' | 'title';
-
-export type Todo = {
-  completed: boolean;
-  description: string;
-  id: string;
-  title: string;
-};
 
 export type TodoFilters = {
   limit: LimitValue;
