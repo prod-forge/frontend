@@ -64,7 +64,6 @@ export {
 } from './features/todos/todos.slices';
 // Todos feature
 export type { LimitValue, Order, SortBy, TodoFilters, TodosState } from './features/todos/todos.types';
-export { filterTodos, sortTodos } from './features/todos/todos.utils';
 
 export type { SelectOption } from './interfaces/select-option';
 // Interfaces
