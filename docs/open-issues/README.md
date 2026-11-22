@@ -15,7 +15,6 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#12](https://github.com/prod-forge/frontend/issues/12) — Deploy Storybook as a static site.
 - [#13](https://github.com/prod-forge/frontend/issues/13) — Show a "no tasks yet" empty state on Home when no search query is set.
 - [#15](https://github.com/prod-forge/frontend/issues/15) — Link the EditableTitle and EditableDescription errors to their fields with `aria-describedby`.
-- [#18](https://github.com/prod-forge/frontend/issues/18) — Remove the duplicated `Todo` type from core.
 - [#25](https://github.com/prod-forge/frontend/issues/25) — Fix the contrast of text on primary and danger buttons in the dark theme.
 - [#26](https://github.com/prod-forge/frontend/issues/26) — Ignore stale `fetchTodos` responses so an earlier search cannot overwrite a newer one.
 - [#27](https://github.com/prod-forge/frontend/issues/27) — Skip the PATCH when a web inline edit leaves the value unchanged.
