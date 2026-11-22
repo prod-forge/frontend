@@ -7,7 +7,7 @@ import { Alert } from 'react-native';
 
 import TodoDetailScreen from '../app/todos/[id]';
 import { mockRouter, mockSearchParams } from '../test-utils/expo-router-mock';
-import { fetchBodies, fetchCalls, mockFakeBackend } from '../test-utils/fake-backend';
+import { backendErrorResponse, fetchBodies, fetchCalls, mockFakeBackend } from '../test-utils/fake-backend';
 import { prepareStore, renderWithStore } from '../test-utils/render-with-store';
 
 jest.mock('expo-router', () => jest.requireActual<Record<string, unknown>>('../test-utils/expo-router-mock'));
@@ -68,6 +68,22 @@ describe('<TodoDetailScreen />', () => {
 
       expect(fetchCalls(fetchMock, 'DELETE')).toEqual([]);
       expect(mockRouter.back).not.toHaveBeenCalled();
+    });
+
+    it('stays on the detail screen when delete fails', async () => {
+      const user = userEvent.setup();
+      answerAlertWith('destructive');
+      await renderDetail(todo.id);
+      await screen.findByLabelText('Title');
+      fetchMock.mockResolvedValueOnce(backendErrorResponse(500, 'INTERNAL_ERROR'));
+
+      await user.press(screen.getByRole('button', { name: 'Delete task' }));
+
+      await waitFor(() => {
+        expect(fetchCalls(fetchMock, 'DELETE')).toEqual([todoUrl]);
+      });
+      expect(mockRouter.back).not.toHaveBeenCalled();
+      expect(screen.getByLabelText('Title')).toBeOnTheScreen();
     });
   });
 
