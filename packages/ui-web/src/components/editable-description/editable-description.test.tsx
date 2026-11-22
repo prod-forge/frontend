@@ -79,6 +79,25 @@ describe('EditableDescription', () => {
       expect(screen.queryByRole('textbox', { name: /description/i })).not.toBeInTheDocument();
       expect(screen.getByText('Pick up milk')).toBeInTheDocument();
     });
+
+    it('does not call onSubmit when the description is left unchanged on blur', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(
+        <div>
+          <EditableDescription onSubmit={onSubmit} schema={descriptionSchema} value="Pick up milk" />
+          <button type="button">Outside</button>
+        </div>,
+      );
+
+      await user.click(screen.getByRole('button', { name: /edit description/i }));
+      expect(screen.getByRole('textbox', { name: /description/i })).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Outside' }));
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.queryByRole('textbox', { name: /description/i })).not.toBeInTheDocument();
+      expect(screen.getByText('Pick up milk')).toBeInTheDocument();
+    });
   });
 
   describe('positive cases', () => {
