@@ -1,7 +1,7 @@
 import type { KeyboardEvent, ReactNode } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,6 +18,7 @@ type FormValues = {
 
 export const EditableDescription = ({ maxLength, onSubmit, schema, value }: Props): ReactNode => {
   const [isEditing, setIsEditing] = useState(false);
+  const errorId = useId();
 
   const formSchema = useMemo(() => z.object({ value: schema }), [schema]);
 
@@ -84,6 +85,7 @@ export const EditableDescription = ({ maxLength, onSubmit, schema, value }: Prop
   ) : (
     <form noValidate onSubmit={(e) => void submit(e)}>
       <textarea
+        aria-describedby={formState.errors.value ? errorId : undefined}
         aria-invalid={formState.errors.value ? true : undefined}
         aria-label="Description"
         className="block min-h-[6rem] w-full resize-y rounded-md border border-line bg-card px-3 py-2 text-md leading-relaxed text-fg outline-none transition duration-fast focus:border-brand focus:shadow-[0_0_0_3px_var(--color-brand-soft)]"
@@ -104,7 +106,7 @@ export const EditableDescription = ({ maxLength, onSubmit, schema, value }: Prop
         }}
       />
       {formState.errors.value ? (
-        <p className="mt-2 text-sm text-err" role="alert">
+        <p className="mt-2 text-sm text-err" id={errorId} role="alert">
           {formState.errors.value.message}
         </p>
       ) : null}
