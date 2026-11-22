@@ -45,8 +45,10 @@ const mockServerTodos = (initial: typeof todos): void => {
   });
 };
 
-const renderHome = async (options: { authenticated?: boolean } = {}): Promise<ReturnType<typeof render>> => {
-  const { authenticated = true } = options;
+const renderHome = async (
+  options: { authenticated?: boolean; waitForTodos?: boolean } = {},
+): Promise<ReturnType<typeof render>> => {
+  const { authenticated = true, waitForTodos = true } = options;
   const store = configureStore({ reducer: { auth: authReducer, todos: todosReducer } });
 
   if (authenticated) {
@@ -61,7 +63,7 @@ const renderHome = async (options: { authenticated?: boolean } = {}): Promise<Re
     </Provider>,
   );
 
-  if (authenticated) {
+  if (authenticated && waitForTodos) {
     await screen.findAllByRole('article');
   }
 
@@ -167,6 +169,16 @@ describe('<Home /> page — authenticated', () => {
         expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
       });
     });
+
+    it('does not say "no tasks yet" when a search matches nothing', async () => {
+      const user = userEvent.setup();
+      await renderHome();
+
+      await user.type(screen.getByRole('searchbox'), 'definitely-no-match-zzz');
+      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
+
+      expect(screen.queryByText(/no tasks yet/i)).not.toBeInTheDocument();
+    });
   });
 
   describe('positive cases', () => {
@@ -212,6 +224,26 @@ describe('<Home /> page — authenticated', () => {
       await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
 
       expect(screen.getByText(/no tasks match your search/i)).toBeInTheDocument();
+    });
+
+    it('shows "no tasks yet" instead of the search message when the list is empty and no query is set', async () => {
+      mockServerTodos([]);
+      await renderHome({ waitForTodos: false });
+
+      expect(await screen.findByText('No tasks yet. Add the first one above.')).toBeInTheDocument();
+      expect(screen.queryByText(/no tasks match your search/i)).not.toBeInTheDocument();
+    });
+
+    it('treats a whitespace-only query as no query when the list is empty', async () => {
+      const user = userEvent.setup();
+      mockServerTodos([]);
+      await renderHome({ waitForTodos: false });
+      await screen.findByText('No tasks yet. Add the first one above.');
+
+      await user.type(screen.getByRole('searchbox'), '   ');
+
+      expect(await screen.findByText('No tasks yet. Add the first one above.')).toBeInTheDocument();
+      expect(screen.queryByText(/no tasks match your search/i)).not.toBeInTheDocument();
     });
 
     it('paginates: page 2 shows the remaining todos', async () => {
