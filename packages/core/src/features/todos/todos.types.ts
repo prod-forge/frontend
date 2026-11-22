@@ -17,6 +17,8 @@ export type TodoFilters = {
 };
 
 export type TodosState = {
+  /** @internal requestId of the latest fetchTodos; responses to older requests are dropped */
+  _fetchTodosRequestId?: string;
   /** @internal rollback data for in-flight deletes keyed by requestId */
   _pendingDeletes: Partial<Record<string, { index: number; item: Todo }>>;
   /** @internal original field values for in-flight updates keyed by requestId */

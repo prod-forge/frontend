@@ -160,17 +160,23 @@ const todosSlice = createSlice({
       .addCase(logout, () => initialState)
 
       // fetchTodos
-      .addCase(fetchTodos.pending, (state) => {
+      .addCase(fetchTodos.pending, (state, action) => {
+        state._fetchTodosRequestId = action.meta.requestId;
         state.status = 'loading';
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
+        // an older request answering late (or one started before logout) must not overwrite the list
+        if (action.meta.requestId !== state._fetchTodosRequestId) return;
+
         state.status = 'idle';
         state.items = action.payload.data;
         state.nextOffset = action.meta.arg.offset + action.payload.data.length;
         state.total = action.payload.meta.total;
         state.completed = action.payload.meta.completed;
       })
-      .addCase(fetchTodos.rejected, (state) => {
+      .addCase(fetchTodos.rejected, (state, action) => {
+        if (action.meta.requestId !== state._fetchTodosRequestId) return;
+
         state.status = 'error';
       })
 
