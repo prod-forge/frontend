@@ -78,6 +78,22 @@ describe('<TodoDetailScreen />', () => {
       expect(fetchCalls(fetchMock, 'DELETE')).toEqual([]);
       expect(mockRouter.back).not.toHaveBeenCalled();
     });
+
+    it('stays on the detail screen when delete fails', async () => {
+      const user = userEvent.setup();
+      answerAlertWith('destructive');
+      await renderDetail(todo.id);
+      await screen.findByLabelText('Title');
+      fetchMock.mockResolvedValueOnce(backendErrorResponse(500, 'INTERNAL_ERROR'));
+
+      await user.press(screen.getByRole('button', { name: 'Delete task' }));
+
+      await waitFor(() => {
+        expect(fetchCalls(fetchMock, 'DELETE')).toEqual([todoUrl]);
+      });
+      expect(mockRouter.back).not.toHaveBeenCalled();
+      expect(screen.getByLabelText('Title')).toBeOnTheScreen();
+    });
   });
 
   describe('positive cases', () => {

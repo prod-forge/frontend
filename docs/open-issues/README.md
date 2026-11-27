@@ -6,7 +6,6 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 
 - [#3](https://github.com/prod-forge/frontend/issues/3) — Type `Todo.description` as `string | null` to match the backend. See the note under `Todo` in [data-schema.md](../architecture/data-schema.md): the backend column is nullable, the client type says `string`, and the UI treats a falsy description as empty.
 - [#4](https://github.com/prod-forge/frontend/issues/4) — Set `displayName` on the remaining `ui-web` components.
-- [#5](https://github.com/prod-forge/frontend/issues/5) — Rename `errors.slice.ts` to `errors.slices.ts` to match the other feature files.
 - [#8](https://github.com/prod-forge/frontend/issues/8) — Verify the format of deploy variables in the CD workflow, not only their presence.
 - [#9](https://github.com/prod-forge/frontend/issues/9) — Show the `Retry-After` wait to the user when the API answers 429.
 - [#10](https://github.com/prod-forge/frontend/issues/10) — Add a `size-limit` performance budget for the web client.
@@ -14,8 +13,6 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#12](https://github.com/prod-forge/frontend/issues/12) — Deploy Storybook as a static site.
 - [#25](https://github.com/prod-forge/frontend/issues/25) — Fix the contrast of text on primary and danger buttons in the dark theme.
 - [#26](https://github.com/prod-forge/frontend/issues/26) — Ignore stale `fetchTodos` responses so an earlier search cannot overwrite a newer one.
-- [#27](https://github.com/prod-forge/frontend/issues/27) — Skip the PATCH when a web inline edit leaves the value unchanged.
-- [#29](https://github.com/prod-forge/frontend/issues/29) — Test that the mobile todo detail screen stays open when the delete fails.
 
 ## Without an issue
 
