@@ -48,6 +48,15 @@ describe('<TodoDetailScreen />', () => {
       expect(screen.queryByLabelText('Title')).not.toBeOnTheScreen();
     });
 
+    it('shows the error banner with a Retry button when the first GET answers 500', async () => {
+      fetchMock.mockResolvedValueOnce(backendErrorResponse(500, 'INTERNAL_ERROR'));
+      await renderDetail(todo.id);
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Failed to load the task.');
+      expect(screen.getByRole('button', { name: 'Retry' })).toBeOnTheScreen();
+      expect(screen.queryByLabelText('Title')).not.toBeOnTheScreen();
+    });
+
     it('shows the titleSchema error and sends no PATCH for an empty title', async () => {
       const user = userEvent.setup();
       await renderDetail(todo.id);
@@ -88,6 +97,17 @@ describe('<TodoDetailScreen />', () => {
   });
 
   describe('positive cases', () => {
+    it('shows the editor and clears the errors after Retry succeeds', async () => {
+      const user = userEvent.setup();
+      fetchMock.mockResolvedValueOnce(backendErrorResponse(500, 'INTERNAL_ERROR'));
+      await renderDetail(todo.id);
+
+      await user.press(await screen.findByRole('button', { name: 'Retry' }));
+
+      expect(await screen.findByLabelText('Title')).toBeOnTheScreen();
+      expect(store.getState().errors.errors).toEqual([]);
+    });
+
     it('sends PATCH with the edited title', async () => {
       const user = userEvent.setup();
       await renderDetail(todo.id);
