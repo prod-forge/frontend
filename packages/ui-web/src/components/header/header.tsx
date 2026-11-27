@@ -25,7 +25,7 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
         to="/"
       >
         <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-linear-[135deg,var(--color-brand),var(--color-brand-hover)] text-white">
-          <svg fill="none" height="18" viewBox="0 0 18 18" width="18">
+          <svg aria-hidden="true" fill="none" height="18" viewBox="0 0 18 18" width="18">
             <path
               d="M3 9.5l4 4 8-8"
               stroke="currentColor"
@@ -71,7 +71,7 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
           onClick={onToggle}
         >
           {theme === 'dark' ? (
-            <svg fill="none" height="18" viewBox="0 0 18 18" width="18">
+            <svg aria-hidden="true" fill="none" height="18" viewBox="0 0 18 18" width="18">
               <circle cx="9" cy="9" r="4" stroke="currentColor" strokeWidth="1.5" />
               <path
                 d="M9 1v2M9 15v2M1 9h2M15 9h2M3.64 3.64l1.42 1.42M12.94 12.94l1.42 1.42M3.64 14.36l1.42-1.42M12.94 5.06l1.42-1.42"
@@ -81,7 +81,7 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
               />
             </svg>
           ) : (
-            <svg fill="none" height="18" viewBox="0 0 18 18" width="18">
+            <svg aria-hidden="true" fill="none" height="18" viewBox="0 0 18 18" width="18">
               <path
                 d="M15.5 10.5A7 7 0 017.5 2.5a7 7 0 100 13 7 7 0 008-5z"
                 stroke="currentColor"

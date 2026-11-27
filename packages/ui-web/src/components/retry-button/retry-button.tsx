@@ -11,7 +11,7 @@ export const RetryButton = ({ onClick }: Props): ReactNode => (
     onClick={onClick}
     type="button"
   >
-    <svg fill="none" height="14" viewBox="0 0 14 14" width="14">
+    <svg aria-hidden="true" fill="none" height="14" viewBox="0 0 14 14" width="14">
       <path
         d="M1.5 7a5.5 5.5 0 1 0 .6-2.5M1.5 1.5V5H5"
         stroke="currentColor"

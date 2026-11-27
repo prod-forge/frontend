@@ -74,7 +74,7 @@ export const EditableDescription = ({ maxLength, onSubmit, schema, value }: Prop
         onClick={startEditing}
         type="button"
       >
-        <svg fill="none" height="16" viewBox="0 0 16 16" width="16">
+        <svg aria-hidden="true" fill="none" height="16" viewBox="0 0 16 16" width="16">
           <path
             d="M11.333 2.667a1.886 1.886 0 1 1 2.667 2.667L5.333 14H2.667v-2.667l8.666-8.666z"
             stroke="currentColor"
