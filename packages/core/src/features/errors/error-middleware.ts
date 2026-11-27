@@ -5,7 +5,7 @@ import { isRejected, isRejectedWithValue } from '@reduxjs/toolkit';
 import type { SerializedApiError } from '../../errors/serialize-api-error';
 
 import { getCoreConfig } from '../../config/core-config';
-import { pushError } from './errors.slice';
+import { pushError } from './errors.slices';
 
 type RejectedValue = undefined | { kind?: string; silent?: boolean };
 

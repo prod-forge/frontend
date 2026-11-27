@@ -3,7 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { authListenerMiddleware } from './features/auth/auth.listeners';
 import { authReducer } from './features/auth/auth.slices';
 import { errorMiddleware } from './features/errors/error-middleware';
-import { errorsReducer } from './features/errors/errors.slice';
+import { errorsReducer } from './features/errors/errors.slices';
 import { todosReducer } from './features/todos/todos.slices';
 
 export const store = configureStore({

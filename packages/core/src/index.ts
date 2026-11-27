@@ -30,7 +30,7 @@ export { hydrateAuth, login, register, sessionRestored } from './features/auth/a
 export type { AuthSession, AuthState, AuthUser } from './features/auth/auth.types';
 export { errorMiddleware } from './features/errors/error-middleware';
 export { selectVisibleErrors } from './features/errors/errors.selectors';
-export { clearErrors, dismissError, errorsReducer, pushError } from './features/errors/errors.slice';
+export { clearErrors, dismissError, errorsReducer, pushError } from './features/errors/errors.slices';
 // Errors feature
 export type { AppError, AppErrorType, ErrorSource, ErrorsState } from './features/errors/errors.types';
 
