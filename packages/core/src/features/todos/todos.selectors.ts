@@ -4,8 +4,6 @@ import type { RootState } from '../../store';
 
 const selectTodosState = (state: RootState): RootState['todos'] => state.todos;
 
-export const selectItems = createSelector(selectTodosState, (state) => state.items);
-
 export const selectFilters = createSelector(selectTodosState, (state) => state.filters);
 
 export const selectStatus = createSelector(selectTodosState, (state) => state.status);

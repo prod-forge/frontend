@@ -6,7 +6,6 @@ import type { Todo, TodoFilters, TodosState } from './todos.types';
 import {
   selectCompletedTodos,
   selectFilters,
-  selectItems,
   selectStatus,
   selectTotalTodos,
   selectVisibleTodos,
@@ -43,14 +42,6 @@ const items: Todo[] = [
   { completed: true, description: 'desc-b', id: 'b', title: 'Banana' },
   { completed: false, description: 'desc-c', id: 'c', title: 'Cherry' },
 ];
-
-describe('selectItems', () => {
-  describe('positive cases', () => {
-    it('returns the items list from state', () => {
-      expect(selectItems(makeState({ items }))).toEqual(items);
-    });
-  });
-});
 
 describe('selectFilters', () => {
   describe('positive cases', () => {

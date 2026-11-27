@@ -176,7 +176,7 @@ export const deleteTodo = createAsyncThunk<string, string, { rejectValue: { sile
 ```ts
 const selectTodosState = (state: RootState): RootState['todos'] => state.todos;
 
-export const selectItems = createSelector(selectTodosState, (s) => s.items);
+export const selectVisibleTodos = createSelector(selectTodosState, (s) => s.items);
 export const selectStatus = createSelector(selectTodosState, (s) => s.status);
 ```
 
