@@ -69,6 +69,39 @@ describe('EditableTitle', () => {
       expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument();
       expect(screen.getByRole('heading', { level: 1, name: 'Buy milk' })).toBeInTheDocument();
     });
+
+    it('does not call onSubmit when the title is left unchanged on blur', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      render(
+        <div>
+          <EditableTitle onSubmit={onSubmit} schema={titleSchema} value="Buy milk" />
+          <button type="button">Outside</button>
+        </div>,
+      );
+
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
+      expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Outside' }));
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: 'Buy milk' })).toBeInTheDocument();
+    });
+
+    it('does not call onSubmit when only surrounding whitespace is added to the title', async () => {
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      renderTitle({ onSubmit });
+
+      await user.click(screen.getByRole('button', { name: /edit title/i }));
+      const field = screen.getByRole('textbox', { name: /title/i });
+      await user.type(field, '  ');
+      await user.keyboard('{Enter}');
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument();
+    });
   });
 
   describe('positive cases', () => {

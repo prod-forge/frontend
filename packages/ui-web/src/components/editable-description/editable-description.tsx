@@ -41,7 +41,10 @@ export const EditableDescription = ({ maxLength, onSubmit, schema, value }: Prop
   };
 
   const submit = handleSubmit((data) => {
-    onSubmit(data.value);
+    if (data.value !== value) {
+      onSubmit(data.value);
+    }
+
     reset({ value: data.value });
     setIsEditing(false);
   });

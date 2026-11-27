@@ -41,7 +41,10 @@ export const EditableTitle = ({ maxLength, onSubmit, schema, value }: Props): Re
   };
 
   const submit = handleSubmit((data) => {
-    onSubmit(data.value);
+    if (data.value !== value) {
+      onSubmit(data.value);
+    }
+
     reset({ value: data.value });
     setIsEditing(false);
   });
