@@ -6,10 +6,13 @@ export const PASSWORD_MAX_LENGTH = 20;
 
 export const NAME_MAX_LENGTH = 50;
 
+export const EMAIL_MAX_LENGTH = 254;
+
 const emailSchema = z
   .string()
   .trim()
   .min(1, 'Email is required')
+  .max(EMAIL_MAX_LENGTH, `Email must be ${EMAIL_MAX_LENGTH} characters or fewer`)
   .refine((v) => /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/.test(v), 'Enter a valid email');
 
 const passwordSchema = z

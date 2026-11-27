@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import {
+  clearErrors,
   deleteTodo,
   fetchTodoById,
   selectCurrentTodo,
@@ -74,10 +75,15 @@ export default function TodoDetailScreen(): ReactNode {
     );
   }
 
+  const retry = (): void => {
+    dispatch(clearErrors());
+    void dispatch(fetchTodoById(id));
+  };
+
   if (status === 'error') {
     return (
       <Screen>
-        <ErrorBanner message="Failed to load the task." onRetry={() => void dispatch(fetchTodoById(id))} />
+        <ErrorBanner message="Failed to load the task." onRetry={retry} />
       </Screen>
     );
   }

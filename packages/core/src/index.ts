@@ -14,7 +14,13 @@ export { BackendError, isBackendErrorResponse } from './errors/backend-error';
 export { NETWORK_ERROR_MESSAGES, NetworkError } from './errors/network-error';
 export { TOKEN_STORAGE_KEY, UNKNOWN_EMAIL_MESSAGE, USER_STORAGE_KEY } from './features/auth/auth.constants';
 
-export { loginSchema, NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, registerSchema } from './features/auth/auth.schemas';
+export {
+  EMAIL_MAX_LENGTH,
+  loginSchema,
+  NAME_MAX_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  registerSchema,
+} from './features/auth/auth.schemas';
 export type { LoginValues, RegisterValues } from './features/auth/auth.schemas';
 export { selectAuthToken, selectAuthUser, selectIsAuthenticated } from './features/auth/auth.selectors';
 
@@ -64,7 +70,6 @@ export {
 } from './features/todos/todos.slices';
 // Todos feature
 export type { LimitValue, Order, SortBy, TodoFilters, TodosState } from './features/todos/todos.types';
-export { filterTodos, sortTodos } from './features/todos/todos.utils';
 
 export type { SelectOption } from './interfaces/select-option';
 // Interfaces
