@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { ErrorsState } from './errors.types';
 
-import { clearErrors, dismissError, errorsReducer, pushError } from './errors.slice';
+import { clearErrors, dismissError, errorsReducer, pushError } from './errors.slices';
 
 const initial = (): ErrorsState => errorsReducer(undefined, { type: '@@init' });
 

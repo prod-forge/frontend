@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AuthState } from './auth.types';
 
 import { errorMiddleware } from '../errors/error-middleware';
-import { errorsReducer } from '../errors/errors.slice';
+import { errorsReducer } from '../errors/errors.slices';
 import { UNKNOWN_EMAIL_MESSAGE } from './auth.constants';
 import { authReducer, logout } from './auth.slices';
 import { login, register } from './auth.thunks';

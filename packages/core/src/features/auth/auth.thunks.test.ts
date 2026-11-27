@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { describe, expect, it, vi } from 'vitest';
 
 import { getCoreConfig } from '../../config/core-config';
-import { errorsReducer } from '../errors/errors.slice';
+import { errorsReducer } from '../errors/errors.slices';
 import { todosReducer } from '../todos/todos.slices';
 import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from './auth.constants';
 import { selectIsAuthenticated } from './auth.selectors';

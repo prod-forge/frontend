@@ -143,7 +143,7 @@ The `reportError` rule is `error.status === undefined || error.status >= 500`. A
 
 For the middleware to see the status, thunks are created with `serializeError: serializeApiError` (`errors/serialize-api-error.ts`). RTK's default serializer keeps only `name`, `message` and `stack`, so without this the status would be lost before the middleware runs.
 
-The errors slice (`errors.slice.ts`) stores `AppError` records (`id`, `message`, `silent`, `source`, `timestamp`, `type`). `selectVisibleErrors` filters out `silent` ones. How these become toasts is described in [API Client and Errors](api-client-and-errors.md).
+The errors slice (`errors.slices.ts`) stores `AppError` records (`id`, `message`, `silent`, `source`, `timestamp`, `type`). `selectVisibleErrors` filters out `silent` ones. How these become toasts is described in [API Client and Errors](api-client-and-errors.md).
 
 Thunks that use `rejectWithValue` for expected outcomes are not reported either. `fetchTodoById` rejects with `{ kind: 'not-found', silent: true }` on a 404, and the optimistic thunks reject with `{ silent: true }` for temp ids that never reached the server. Such a rejection has no `status` on `action.error`, so `shouldReport` alone would treat it as status-less; the middleware therefore also skips any rejected value that is `silent` or of kind `not-found`. A different `rejectWithValue` payload (for example `{ kind: 'error' }`) is still reported.
 
