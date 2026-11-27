@@ -110,7 +110,7 @@ Known limit: rollback restores the value that was current when the request start
 ```ts
 const selectTodosState = (state: RootState): RootState['todos'] => state.todos;
 
-export const selectItems = createSelector(selectTodosState, (state) => state.items);
+export const selectVisibleTodos = createSelector(selectTodosState, (state) => state.items);
 export const selectCompletedTodos = createSelector(selectTodosState, (state) => state.completed);
 ```
 
@@ -122,7 +122,7 @@ Components never reach into `state.todos` themselves. The reasons:
 - A derived value (a filter or a count over `items`) would be computed once per change of its input, not on every render.
 - Selectors are plain functions and are tested without React (`todos.selectors.test.ts`).
 
-Not every selector earns its memoization. `selectItems` returns an existing reference and would be fine as a plain function; it is wrapped for consistency, so that the whole feature is read the same way. The memoization that matters is on derived values: a filter or a count that creates a new array or number on every call.
+Not every selector earns its memoization. `selectVisibleTodos` returns an existing reference and would be fine as a plain function; it is wrapped for consistency, so that the whole feature is read the same way. The memoization that matters is on derived values: a filter or a count that creates a new array or number on every call.
 
 On web, components read the store through the typed hooks `useAppSelector` and `useAppDispatch` in `apps/web-client/src/hooks/redux/`. Containers (`containers/`) connect the store to the stateless components of `ui-web`, which is what keeps those components usable in Storybook without a provider.
 

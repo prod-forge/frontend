@@ -47,7 +47,6 @@ export {
   selectCurrentTodo,
   selectCurrentTodoStatus,
   selectFilters,
-  selectItems,
   selectStatus,
   selectTotalTodos,
   selectVisibleTodos,
