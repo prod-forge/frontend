@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Button } from './button';
+import { Button, buttonClassName } from './button';
 
 describe('Button', () => {
   describe('negative cases', () => {
@@ -95,6 +95,34 @@ describe('Button', () => {
       );
 
       expect(element).toBeInstanceOf(HTMLButtonElement);
+    });
+  });
+});
+
+describe('buttonClassName', () => {
+  describe('negative cases', () => {
+    it('does not include the classes of another variant', () => {
+      expect(buttonClassName({ variant: 'secondary' })).not.toContain('bg-brand');
+    });
+  });
+
+  describe('positive cases', () => {
+    it('defaults to the md primary classes', () => {
+      expect(buttonClassName()).toContain('bg-brand');
+      expect(buttonClassName()).toContain('min-h-9');
+    });
+
+    it('returns the classes of the requested size and variant', () => {
+      const className = buttonClassName({ size: 'sm', variant: 'secondary' });
+
+      expect(className).toContain('bg-card');
+      expect(className).toContain('min-h-8');
+    });
+
+    it('matches the classes Button renders with', () => {
+      render(<Button variant="secondary">S</Button>);
+
+      expect(screen.getByRole('button')).toHaveAttribute('class', buttonClassName({ variant: 'secondary' }));
     });
   });
 });

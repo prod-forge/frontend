@@ -9,6 +9,11 @@ export type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & 
   variant?: ButtonVariant;
 };
 
+type ButtonClassNameOptions = {
+  readonly size?: ButtonSize;
+  readonly variant?: ButtonVariant;
+};
+
 type ButtonSize = 'lg' | 'md' | 'sm';
 
 type ButtonVariant = 'danger' | 'ghost' | 'primary' | 'secondary';
@@ -26,6 +31,15 @@ const variantClasses: Record<ButtonVariant, string> = {
   secondary: 'border border-line bg-card text-fg hover:border-fg-muted',
 };
 
+const baseClasses =
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-semibold transition duration-fast outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+
+/**
+ * The classes of a `Button`, for elements that must look like one but are not a `<button>`, such as a router link.
+ */
+export const buttonClassName = ({ size = 'md', variant = 'primary' }: ButtonClassNameOptions = {}): string =>
+  cn(baseClasses, sizeClasses[size], variantClasses[variant]);
+
 export const Button = ({
   children,
   className,
@@ -35,17 +49,7 @@ export const Button = ({
   variant = 'primary',
   ...rest
 }: Props): ReactNode => (
-  <button
-    className={cn(
-      'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-semibold transition duration-fast outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-      sizeClasses[size],
-      variantClasses[variant],
-      className,
-    )}
-    ref={ref}
-    type={type}
-    {...rest}
-  >
+  <button className={cn(buttonClassName({ size, variant }), className)} ref={ref} type={type} {...rest}>
     {children}
   </button>
 );

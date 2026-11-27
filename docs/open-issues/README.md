@@ -18,7 +18,6 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#45](https://github.com/prod-forge/frontend/issues/45) — Debounce the web search before fetching todos.
 - [#46](https://github.com/prod-forge/frontend/issues/46) — Hide decorative icons from screen readers with `aria-hidden`.
 - [#47](https://github.com/prod-forge/frontend/issues/47) — Remove the duplicated `selectItems` selector from core.
-- [#48](https://github.com/prod-forge/frontend/issues/48) — Reuse the `Button` styles for the Sign in and Create account links on web Home.
 - [#49](https://github.com/prod-forge/frontend/issues/49) — Fix the flaky mobile `todos.test.tsx` error banner test under parallel `test:cov`.
 
 ## Without an issue
