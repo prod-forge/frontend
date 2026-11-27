@@ -161,7 +161,7 @@ type AppError = {
 
 | Field    | Rule                                                                |
 | -------- | ------------------------------------------------------------------- |
-| email    | Required. Must match `^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$`            |
+| email    | Required. Max 254 chars (`EMAIL_MAX_LENGTH`). Must match `^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$` |
 | password | Min 3 chars (`PASSWORD_MIN_LENGTH`), max 20 (`PASSWORD_MAX_LENGTH`) |
 | name     | Optional. Max 50 chars (`NAME_MAX_LENGTH`). Trimmed.                |
 

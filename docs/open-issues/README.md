@@ -7,7 +7,6 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#3](https://github.com/prod-forge/frontend/issues/3) — Type `Todo.description` as `string | null` to match the backend. See the note under `Todo` in [data-schema.md](../architecture/data-schema.md): the backend column is nullable, the client type says `string`, and the UI treats a falsy description as empty.
 - [#4](https://github.com/prod-forge/frontend/issues/4) — Set `displayName` on the remaining `ui-web` components.
 - [#5](https://github.com/prod-forge/frontend/issues/5) — Rename `errors.slice.ts` to `errors.slices.ts` to match the other feature files.
-- [#6](https://github.com/prod-forge/frontend/issues/6) — Enforce the 254 character email limit in the auth schema.
 - [#8](https://github.com/prod-forge/frontend/issues/8) — Verify the format of deploy variables in the CD workflow, not only their presence.
 - [#9](https://github.com/prod-forge/frontend/issues/9) — Show the `Retry-After` wait to the user when the API answers 429.
 - [#10](https://github.com/prod-forge/frontend/issues/10) — Add a `size-limit` performance budget for the web client.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { loginSchema, NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, registerSchema } from './auth.schemas';
+import { EMAIL_MAX_LENGTH, loginSchema, NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, registerSchema } from './auth.schemas';
 
 const firstMessage = (result: { error?: { issues: { message: string }[] } }): string | undefined =>
   result.error?.issues[0]?.message;
@@ -13,6 +13,15 @@ describe('loginSchema', () => {
 
     it.each(['plain', 'a@b', 'a b@c.com', '@b.com', 'a@.com'])('rejects the malformed email %s', (email) => {
       expect(firstMessage(loginSchema.safeParse({ email, password: 'pwd' }))).toBe('Enter a valid email');
+    });
+
+    it('rejects an email longer than the maximum', () => {
+      const email = `${'a'.repeat(EMAIL_MAX_LENGTH - 5)}@b.com`;
+
+      expect(email).toHaveLength(EMAIL_MAX_LENGTH + 1);
+      expect(firstMessage(loginSchema.safeParse({ email, password: 'pwd' }))).toBe(
+        `Email must be ${EMAIL_MAX_LENGTH} characters or fewer`,
+      );
     });
 
     it('rejects a password shorter than 3 characters', () => {
@@ -36,6 +45,13 @@ describe('loginSchema', () => {
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual({ email: 'a@b.com', password: 'pwd' });
+    });
+
+    it('accepts an email of exactly the maximum length', () => {
+      const email = `${'a'.repeat(EMAIL_MAX_LENGTH - 6)}@b.com`;
+
+      expect(email).toHaveLength(EMAIL_MAX_LENGTH);
+      expect(loginSchema.safeParse({ email, password: 'pwd' }).success).toBe(true);
     });
 
     it('accepts a password of exactly the maximum length', () => {
