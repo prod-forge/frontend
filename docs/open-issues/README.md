@@ -13,6 +13,13 @@ Deferred known problems, so they are not rediscovered (or silently "fixed") in e
 - [#12](https://github.com/prod-forge/frontend/issues/12) — Deploy Storybook as a static site.
 - [#25](https://github.com/prod-forge/frontend/issues/25) — Fix the contrast of text on primary and danger buttons in the dark theme.
 - [#26](https://github.com/prod-forge/frontend/issues/26) — Ignore stale `fetchTodos` responses so an earlier search cannot overwrite a newer one.
+- [#43](https://github.com/prod-forge/frontend/issues/43) — Ignore out-of-order `toggleTodo` responses so a quick double toggle cannot leave the wrong state.
+- [#44](https://github.com/prod-forge/frontend/issues/44) — Refetch the current page after adding a todo on web Home.
+- [#45](https://github.com/prod-forge/frontend/issues/45) — Debounce the web search before fetching todos.
+- [#46](https://github.com/prod-forge/frontend/issues/46) — Hide decorative icons from screen readers with `aria-hidden`.
+- [#47](https://github.com/prod-forge/frontend/issues/47) — Remove the duplicated `selectItems` selector from core.
+- [#48](https://github.com/prod-forge/frontend/issues/48) — Reuse the `Button` styles for the Sign in and Create account links on web Home.
+- [#49](https://github.com/prod-forge/frontend/issues/49) — Fix the flaky mobile `todos.test.tsx` error banner test under parallel `test:cov`.
 
 ## Without an issue
 
