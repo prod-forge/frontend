@@ -45,7 +45,7 @@ export const TodoItem = ({ onDelete, onToggle, todo }: Props): ReactNode => {
           onClick={() => onDelete(todo.id)}
           type="button"
         >
-          <svg fill="none" height="16" viewBox="0 0 16 16" width="16">
+          <svg aria-hidden="true" fill="none" height="16" viewBox="0 0 16 16" width="16">
             <path
               d="M4 4l8 8M12 4l-8 8"
               stroke="currentColor"
@@ -61,7 +61,7 @@ export const TodoItem = ({ onDelete, onToggle, todo }: Props): ReactNode => {
         className="shrink-0 text-fg-muted transition duration-fast outline-none group-hover:translate-x-1 group-hover:text-brand focus-visible:text-brand"
         to={`/todo/${todo.id}`}
       >
-        <svg fill="none" height="20" viewBox="0 0 20 20" width="20">
+        <svg aria-hidden="true" fill="none" height="20" viewBox="0 0 20 20" width="20">
           <path
             d="M7.5 5l5 5-5 5"
             stroke="currentColor"

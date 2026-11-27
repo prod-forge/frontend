@@ -100,7 +100,7 @@ export const TodoDetail = (): ReactNode => {
         className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-fg-soft transition-colors duration-fast hover:text-brand"
         to="/"
       >
-        <svg fill="none" height="16" viewBox="0 0 16 16" width="16">
+        <svg aria-hidden="true" fill="none" height="16" viewBox="0 0 16 16" width="16">
           <path
             d="M10 3L5 8l5 5"
             stroke="currentColor"
@@ -121,7 +121,7 @@ export const TodoDetail = (): ReactNode => {
             onClick={() => setConfirmOpen(true)}
             type="button"
           >
-            <svg fill="none" height="16" viewBox="0 0 16 16" width="16">
+            <svg aria-hidden="true" fill="none" height="16" viewBox="0 0 16 16" width="16">
               <path
                 d="M4 4l8 8M12 4l-8 8"
                 stroke="currentColor"
