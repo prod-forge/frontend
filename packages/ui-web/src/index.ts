@@ -1,5 +1,5 @@
 export { Accordion } from './components/accordion/accordion';
-export { Button } from './components/button/button';
+export { Button, buttonClassName } from './components/button/button';
 export { CircularProgress } from './components/circular-progress/circular-progress';
 export { EditableDescription } from './components/editable-description/editable-description';
 export { EditableTitle } from './components/editable-title/editable-title';

@@ -29,6 +29,7 @@ import {
   Accordion,
   AddTodoForm,
   Button,
+  buttonClassName,
   EmptyState,
   ErrorBlock,
   Modal,
@@ -72,16 +73,10 @@ export const Home = (): ReactNode => {
           new account to get started.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-brand px-4 text-sm font-semibold text-brand-fg transition duration-fast hover:bg-brand-hover focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-            to="/login"
-          >
+          <Link className={buttonClassName({ variant: 'primary' })} to="/login">
             Sign in
           </Link>
-          <Link
-            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md border border-line bg-card px-4 text-sm font-semibold text-fg transition duration-fast hover:border-fg-muted focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-            to="/register"
-          >
+          <Link className={buttonClassName({ variant: 'secondary' })} to="/register">
             Create account
           </Link>
         </div>
