@@ -43,6 +43,20 @@ describe('BackendError', () => {
       expect(new BackendError(makeResponse({ traceId: 'abc-xyz' })).traceId).toBe('abc-xyz');
     });
 
+    it('includes the Retry-After wait in the message and exposes it for TOO_MANY_REQUESTS', () => {
+      const error = new BackendError({
+        code: 'TOO_MANY_REQUESTS',
+        details: {},
+        message: 'Too Many Requests',
+        retryAfterSeconds: 120,
+        status: 429,
+        traceId: 'trace-123',
+      });
+
+      expect(error.message).toBe('Too many requests. Please try again in 120 seconds.');
+      expect(error.retryAfterSeconds).toBe(120);
+    });
+
     it('uses fallback message for unknown error codes', () => {
       const error = new BackendError(makeResponse({ code: 'UNKNOWN_CODE' }));
 
