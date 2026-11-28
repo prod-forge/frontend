@@ -71,6 +71,7 @@ export const color = {
     "warning": "#d97706",
     "warningSubtle": "#fef3c7",
     "danger": "#dc2626",
+    "dangerForeground": "#fff",
     "dangerSubtle": "#fee2e2"
   },
   "dark": {
@@ -86,13 +87,14 @@ export const color = {
     "textMuted": "#55556e",
     "accent": "#818cf8",
     "accentHover": "#6366f1",
-    "accentForeground": "#fff",
+    "accentForeground": "#1e1b4b",
     "accentSubtle": "#1e1b4b",
     "success": "#4ade80",
     "successSubtle": "#052e16",
     "warning": "#fbbf24",
     "warningSubtle": "#1c1400",
     "danger": "#f87171",
+    "dangerForeground": "#450a0a",
     "dangerSubtle": "#2d0a0a"
   }
 };

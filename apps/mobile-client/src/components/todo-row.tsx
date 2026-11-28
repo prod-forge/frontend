@@ -31,7 +31,7 @@ const createStyles = createThemedStyles(({ colors, fontSize, fontWeight, radius,
     borderColor: colors.success,
   },
   checkmark: {
-    color: colors.accentForeground,
+    color: colors.successSubtle,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.bold,
   },
