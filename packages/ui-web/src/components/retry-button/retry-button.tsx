@@ -1,13 +1,15 @@
 import type { ReactNode } from 'react';
 
 export type Props = {
+  readonly disabled?: boolean;
   readonly onClick: () => void;
 };
 
-export const RetryButton = ({ onClick }: Props): ReactNode => (
+export const RetryButton = ({ disabled, onClick }: Props): ReactNode => (
   <button
     aria-label="Retry"
-    className="inline-flex size-8 items-center justify-center rounded-full border border-line bg-card text-fg-soft transition duration-fast hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+    className="inline-flex size-8 items-center justify-center rounded-full border border-line bg-card text-fg-soft transition duration-fast hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    disabled={disabled}
     onClick={onClick}
     type="button"
   >
