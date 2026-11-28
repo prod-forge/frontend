@@ -33,3 +33,5 @@ export const SearchField = ({ id, maxLength, onChange, placeholder, value }: Pro
     />
   </div>
 );
+
+SearchField.displayName = 'SearchField';
