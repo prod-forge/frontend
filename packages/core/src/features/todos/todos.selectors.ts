@@ -10,6 +10,8 @@ export const selectFilters = createSelector(selectTodosState, (state) => state.f
 
 export const selectStatus = createSelector(selectTodosState, (state) => state.status);
 
+export const selectTodosError = createSelector(selectTodosState, (state) => state.error ?? null);
+
 export const selectVisibleTodos = createSelector(selectTodosState, (state) => state.items);
 
 export const selectCompletedTodos = createSelector(selectTodosState, (state) => state.completed);
