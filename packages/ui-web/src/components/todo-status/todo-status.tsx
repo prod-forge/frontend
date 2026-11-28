@@ -16,3 +16,5 @@ export const TodoStatus = ({ completed }: Props): ReactNode => (
     {completed ? 'Done' : 'To Do'}
   </span>
 );
+
+TodoStatus.displayName = 'TodoStatus';
