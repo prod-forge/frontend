@@ -123,12 +123,17 @@ type TodosState = {
 
   _pendingUpdates: Partial<Record<string, Pick<Todo, 'title' | 'description'>>>;
   // Key: requestId of the in-flight updateTodo. Value: previous title/description for rollback.
+
+  _latestToggleRequestIds: Partial<Record<string, string>>;
+  // Key: todo id. Value: requestId of the latest toggleTodo for that todo.
 };
 ```
 
 **`_pendingDeletes`** — when `deleteTodo` is dispatched, the item is removed from `items` immediately and stored here. On rejection, the item is re-inserted at its original index.
 
 **`_pendingUpdates`** — when `updateTodo` is dispatched, the original title and description are stored here. On rejection, they are restored. `toggleTodo` keeps no snapshot: a rejection flips `completed` back.
+
+**`_latestToggleRequestIds`** — when `toggleTodo` is dispatched, its `requestId` is recorded here for the todo. `fulfilled` and `rejected` from an older toggle (a different `requestId`) are ignored, so a late first response from two quick toggles cannot overwrite the second toggle's state or flip `completed` back.
 
 Fields prefixed with `_` are internal and must not be selected directly by UI components — use selectors.
 
