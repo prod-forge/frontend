@@ -29,7 +29,7 @@ export const TodoStatusToggle = ({ completed, onToggle }: Props): ReactNode => (
       {completed ? (
         <svg fill="none" height="9" viewBox="0 0 12 12" width="9">
           <path
-            className="text-white"
+            className="text-ok-soft"
             d="M2.5 6.5l2 2L9.5 3.5"
             stroke="currentColor"
             strokeLinecap="round"
