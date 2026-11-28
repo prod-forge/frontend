@@ -12,12 +12,12 @@ This document describes the frontend domain model: types, Redux state shape, and
 type Todo = {
   id: string; // Server-assigned UUID. Optimistic items use "optimistic-{requestId}" prefix.
   title: string; // Short label. Max 200 chars. Required.
-  description: string; // Extended details. Max 2000 chars. Can be empty.
+  description: string | null; // Extended details. Max 2000 chars. Null when the backend has no description.
   completed: boolean; // Completion status. Toggled optimistically.
 };
 ```
 
-The backend column is nullable (`description String?`), so a todo created by another client can come back with `description: null` although the type says `string`. The client always sends a string, and the UI treats a falsy description as empty.
+The backend column is nullable (`description String?`), so a todo created by another client can come back with `description: null, which the type now allows. The client always sends a string, and the UI treats a falsy description as empty.
 
 ### `TodosResponse`
 
