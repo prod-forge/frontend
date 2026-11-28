@@ -20,6 +20,7 @@
       "warning": { "$value": "#d97706", "$type": "color" },
       "warning-subtle": { "$value": "#fef3c7", "$type": "color" },
       "danger": { "$value": "#dc2626", "$type": "color" },
+      "danger-foreground": { "$value": "#fff", "$type": "color" },
       "danger-subtle": { "$value": "#fee2e2", "$type": "color" }
     }
   }
