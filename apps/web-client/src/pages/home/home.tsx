@@ -45,6 +45,9 @@ import { Link } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux/redux';
 
+// Pause after the last keystroke before the typed query reaches the store (and fetchTodos).
+const SEARCH_DEBOUNCE_MS = 300;
+
 export const Home = (): ReactNode => {
   const dispatch = useAppDispatch();
 
@@ -56,12 +59,33 @@ export const Home = (): ReactNode => {
   const completed = useAppSelector(selectCompletedTodos);
   const status = useAppSelector(selectStatus);
   const [pendingDeleteId, setPendingDeleteId] = useState<null | string>(null);
+  const [searchInput, setSearchInput] = useState(filters.query);
 
   useEffect(() => {
     if (isAuthenticated) {
       void dispatch(fetchTodos(filters));
     }
   }, [dispatch, filters, isAuthenticated]);
+
+  // The search field updates on every keystroke, but the query only reaches the
+  // store (and fetchTodos) after a pause in typing, so typing a word sends one
+  // request instead of one per keystroke. Clearing the field still fetches the
+  // full list once the pause elapses.
+  useEffect(() => {
+    if (searchInput === filters.query) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      dispatch(updateFilters({ query: searchInput }));
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(timeoutId);
+  }, [dispatch, filters.query, searchInput]);
+
+  useEffect(() => {
+    setSearchInput(filters.query);
+  }, [filters.query]);
 
   if (!isAuthenticated) {
     return (
@@ -135,9 +159,9 @@ export const Home = (): ReactNode => {
         <SearchField
           id="search"
           maxLength={SEARCH_MAX_LENGTH}
-          onChange={(value) => dispatch(updateFilters({ query: value }))}
+          onChange={(value) => setSearchInput(value)}
           placeholder="Search tasks…"
-          value={filters.query}
+          value={searchInput}
         />
       </div>
 
