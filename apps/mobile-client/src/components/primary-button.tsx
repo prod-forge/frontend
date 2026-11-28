@@ -28,7 +28,7 @@ const createStyles = createThemedStyles(({ colors, fontSize, fontWeight, radius,
     borderColor: colors.danger,
   },
   dangerLabel: {
-    color: colors.accentForeground,
+    color: colors.dangerForeground,
   },
   disabled: {
     opacity: 0.5,
