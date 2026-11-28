@@ -170,9 +170,7 @@ describe('todosApi.getOne', () => {
     it('sends a GET request to the correct todo endpoint', async () => {
       vi.mocked(apiRequest).mockResolvedValueOnce({ data: todo });
 
-      
-      await todosApi.getOne(todo.id);
-
+            await todosApi.getOne(todo.id);
       expect(apiRequest).toHaveBeenCalledWith(`todos/${todo.id}`);
     });
   });
