@@ -95,3 +95,5 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
     </div>
   </header>
 );
+
+Header.displayName = 'Header';
