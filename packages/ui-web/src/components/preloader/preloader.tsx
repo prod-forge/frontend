@@ -8,3 +8,5 @@ export const Preloader = (): ReactNode => (
     </svg>
   </div>
 );
+
+Preloader.displayName = 'Preloader';
