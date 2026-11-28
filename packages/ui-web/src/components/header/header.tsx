@@ -24,7 +24,7 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
         className="flex items-center gap-3 text-lg font-bold tracking-tight text-fg outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
         to="/"
       >
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-linear-[135deg,var(--color-brand),var(--color-brand-hover)] text-white">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-linear-[135deg,var(--color-brand),var(--color-brand-hover)] text-brand-fg">
           <svg fill="none" height="18" viewBox="0 0 18 18" width="18">
             <path
               d="M3 9.5l4 4 8-8"
@@ -37,7 +37,6 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
         </div>
         TodoAI
       </Link>
-
       <nav aria-label="User" className="flex items-center gap-3">
         {isAuthenticated && user ? (
           <>
@@ -64,7 +63,6 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
             </Link>
           </>
         )}
-
         <button
           aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           className="flex size-[38px] items-center justify-center rounded-full border border-line bg-card text-fg-soft transition duration-fast hover:border-brand hover:bg-brand-soft hover:text-brand"
