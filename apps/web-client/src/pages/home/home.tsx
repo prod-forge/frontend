@@ -112,11 +112,18 @@ export const Home = (): ReactNode => {
     });
   };
 
+  const handleAddTodo = (values: TodoFormValues): void => {
+    void dispatch(addTodo({ description: values.description, title: values.title })).then((result) => {
+      if (addTodo.fulfilled.match(result)) {
+        void dispatch(fetchTodos(filters));
+      }
+    });
+  };
+
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-3xl font-semibold leading-tight tracking-[-0.03em] text-fg">My Tasks</h1>
-
         <p className="mt-2 text-md text-fg-soft">
           {user?.name ? `${user.name} — ` : ''}
           {completed} of {total} completed
@@ -124,11 +131,7 @@ export const Home = (): ReactNode => {
       </div>
 
       <div className="mb-6">
-        <AddTodoForm
-          onSubmit={(values: TodoFormValues) =>
-            void dispatch(addTodo({ description: values.description, title: values.title }))
-          }
-        />
+        <AddTodoForm onSubmit={handleAddTodo} />
       </div>
 
       <div className="mb-3">

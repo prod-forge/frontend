@@ -43,6 +43,12 @@ const mockServerTodos = (initial: typeof todos): void => {
 
     return Promise.resolve();
   });
+  vi.mocked(todosApi.create).mockImplementation((payload) => {
+    const created = { completed: false, description: payload.description, id: 'new-real-id', title: payload.title };
+    serverTodos = [...serverTodos, created];
+
+    return Promise.resolve(created);
+  });
 };
 
 const renderHome = async (
@@ -71,6 +77,7 @@ const renderHome = async (
 };
 
 const firstPage = applyTodosQuery(todos, { order: 'asc', sortBy: 'title' }).data;
+
 // The summary counts completed todos on every page, not only the first one
 const completedCount = todos.filter((t) => t.completed).length;
 const totalCount = todos.length;
@@ -175,8 +182,8 @@ describe('<Home /> page — authenticated', () => {
       await renderHome();
 
       await user.type(screen.getByRole('searchbox'), 'definitely-no-match-zzz');
-      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
 
+      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
       expect(screen.queryByText(/no tasks yet/i)).not.toBeInTheDocument();
     });
   });
@@ -200,8 +207,8 @@ describe('<Home /> page — authenticated', () => {
       await renderHome();
 
       await user.type(screen.getByRole('searchbox'), 'storybook');
-      const cards = await screen.findAllByRole('article');
 
+      const cards = await screen.findAllByRole('article');
       expect(cards).toHaveLength(1);
       expect(within(cards[0]).getByRole('link', { name: 'Storybook integration' })).toBeInTheDocument();
     });
@@ -211,8 +218,8 @@ describe('<Home /> page — authenticated', () => {
       await renderHome();
 
       await user.type(screen.getByRole('searchbox'), 'zustand');
-      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
 
+      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
       expect(screen.getByText(/no tasks match your search/i)).toBeInTheDocument();
     });
 
@@ -221,8 +228,8 @@ describe('<Home /> page — authenticated', () => {
       await renderHome();
 
       await user.type(screen.getByRole('searchbox'), 'definitely-no-match-zzz');
-      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
 
+      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
       expect(screen.getByText(/no tasks match your search/i)).toBeInTheDocument();
     });
 
@@ -238,8 +245,8 @@ describe('<Home /> page — authenticated', () => {
       const user = userEvent.setup();
       mockServerTodos([]);
       await renderHome({ waitForTodos: false });
-      await screen.findByText('No tasks yet. Add the first one above.');
 
+      await screen.findByText('No tasks yet. Add the first one above.');
       await user.type(screen.getByRole('searchbox'), '   ');
 
       expect(await screen.findByText('No tasks yet. Add the first one above.')).toBeInTheDocument();
@@ -251,8 +258,8 @@ describe('<Home /> page — authenticated', () => {
       await renderHome();
 
       await user.click(screen.getByRole('button', { name: 'Page 2' }));
-      const remaining = await screen.findAllByRole('article');
 
+      const remaining = await screen.findAllByRole('article');
       expect(remaining).toHaveLength(totalCount - 10);
     });
 
@@ -274,7 +281,6 @@ describe('<Home /> page — authenticated', () => {
 
       const trigger = screen.getByRole('button', { name: /filters/i });
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
-
       await user.click(trigger);
 
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
@@ -357,36 +363,51 @@ describe('<Home /> page — authenticated', () => {
 
     it('adds a new todo optimistically and shows it in the list', async () => {
       const user = userEvent.setup();
-      vi.mocked(todosApi.create).mockResolvedValue({
-        completed: false,
-        description: 'fresh todo',
-        id: 'new-real-id',
-        title: 'AAA Brand new task',
-      });
+      mockServerTodos(todos);
       await renderHome();
 
       await user.type(screen.getByLabelText('Title'), 'AAA Brand new task');
       await user.type(screen.getByLabelText('Description'), 'fresh todo');
       await user.click(screen.getByRole('button', { name: /add task/i }));
 
-      expect(screen.getByText(new RegExp(`${completedCount} of ${totalCount + 1} completed`))).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(new RegExp(`${completedCount} of ${totalCount + 1} completed`))).toBeInTheDocument();
+      });
+      expect(await screen.findByRole('link', { name: 'AAA Brand new task' })).toBeInTheDocument();
+    });
+
+    it('refetches the current page after adding a todo so the list stays at the page limit', async () => {
+      const user = userEvent.setup();
+      mockServerTodos(todos);
+      await renderHome();
+
+      expect(screen.getAllByRole('article')).toHaveLength(10);
+      const getAllCallsBefore = vi.mocked(todosApi.getAll).mock.calls.length;
+
+      await user.type(screen.getByLabelText('Title'), 'AAA Brand new task');
+      await user.type(screen.getByLabelText('Description'), 'fresh todo');
+      await user.click(screen.getByRole('button', { name: /add task/i }));
+
+      await waitFor(() => {
+        expect(vi.mocked(todosApi.getAll).mock.calls.length).toBeGreaterThan(getAllCallsBefore);
+      });
+      await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(10));
       expect(screen.getByRole('link', { name: 'AAA Brand new task' })).toBeInTheDocument();
     });
 
-    it('preserves the typed title when the API response returns an empty title', async () => {
+    it('shows the typed title optimistically while the add request is in flight', async () => {
       const user = userEvent.setup();
-      vi.mocked(todosApi.create).mockResolvedValue({
-        completed: false,
-        description: '',
-        id: 'new-real-id',
-        title: '',
-      });
+      vi.mocked(todosApi.create).mockReturnValue(
+        new Promise(() => {
+          return;
+        }),
+      );
       await renderHome();
 
       await user.type(screen.getByLabelText('Title'), 'AAA Preserved title');
       await user.click(screen.getByRole('button', { name: /add task/i }));
 
-      expect(await screen.findByRole('link', { name: 'AAA Preserved title' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'AAA Preserved title' })).toBeInTheDocument();
     });
 
     it('clears the form fields after a successful submit', async () => {
@@ -513,8 +534,8 @@ describe('<Home /> page — delete from the list', () => {
       const user = userEvent.setup();
       vi.mocked(todosApi.delete).mockRejectedValue(new Error('Network error'));
       await renderHome();
-      const getAllCallsBefore = vi.mocked(todosApi.getAll).mock.calls.length;
 
+      const getAllCallsBefore = vi.mocked(todosApi.getAll).mock.calls.length;
       const dialog = await openDeleteConfirmation(user);
       await user.click(within(dialog).getByRole('button', { name: /^delete$/i }));
 
@@ -554,6 +575,7 @@ describe('<Home /> page — delete from the list', () => {
 
       await user.click(screen.getByRole('button', { name: 'Page 2' }));
       await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(1));
+
       const dialog = await openDeleteConfirmation(user);
       await user.click(within(dialog).getByRole('button', { name: /^delete$/i }));
 
