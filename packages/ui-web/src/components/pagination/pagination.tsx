@@ -117,3 +117,5 @@ export const Pagination = ({ limit, offset, onOffsetChange, total }: Props): Rea
     </nav>
   );
 };
+
+Pagination.displayName = 'Pagination';
