@@ -5,8 +5,8 @@ import { expect } from '@playwright/test';
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'];
 
-const visitStory = async (page: Page, id: string): Promise<void> => {
-  await page.goto(`/iframe.html?id=${id}&viewMode=story`);
+const visitStory = async (page: Page, id: string, theme: 'dark' | 'light'): Promise<void> => {
+  await page.goto(`/iframe.html?id=${id}&viewMode=story&globals=theme:${theme}`);
   await page.waitForLoadState('networkidle');
   await page.evaluate(async () => {
     if ('fonts' in document) {
@@ -15,8 +15,12 @@ const visitStory = async (page: Page, id: string): Promise<void> => {
   });
 };
 
-export const checkStoryA11y = async (page: Page, id: string): Promise<void> => {
-  await visitStory(page, id);
+export const checkStoryA11y = async (
+  page: Page,
+  id: string,
+  theme: 'dark' | 'light' = 'light',
+): Promise<void> => {
+  await visitStory(page, id, theme);
 
   const results = await new AxeBuilder({ page }).include('#storybook-root').withTags(WCAG_TAGS).analyze();
 
@@ -36,3 +40,5 @@ const formatViolations = (
     )
     .join('\n\n');
 };
+
+export const themes = ['light', 'dark'] as const;
