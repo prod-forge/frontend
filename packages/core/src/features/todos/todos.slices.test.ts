@@ -45,6 +45,7 @@ export const makeTodosStore = (preloadedItems: Todo[] = [], total = 0, completed
       todos: {
         _pendingDeletes: {},
         _pendingUpdates: {},
+        _latestToggleRequestIds: {},
         completed,
         currentTodo: null,
         currentTodoStatus: 'idle',
@@ -505,6 +506,39 @@ describe('todos slice — toggleTodo', () => {
       expect(store.getState().todos.completed).toBe(0);
     });
 
+    it('ignores the first response when it resolves after the second toggle', async () => {
+      let resolveFirst: (value: Todo) => void = () => {
+        return;
+      };
+      let resolveSecond: (value: Todo) => void = () => {
+        return;
+      };
+      vi.mocked(todosApi.update)
+        .mockReturnValueOnce(
+          new Promise<Todo>((resolve) => {
+            resolveFirst = resolve;
+          }),
+        )
+        .mockReturnValueOnce(
+          new Promise<Todo>((resolve) => {
+            resolveSecond = resolve;
+          }),
+        );
+      const store = makeTodosStore([todoA], 1, 0);
+
+      const firstToggle = store.dispatch(toggleTodo(todoA.id));
+      const secondToggle = store.dispatch(toggleTodo(todoA.id));
+
+      resolveSecond({ ...todoA, completed: false });
+      await secondToggle;
+      resolveFirst({ ...todoA, completed: true });
+      await firstToggle;
+
+      const state = store.getState().todos;
+      expect(state.items.find((t) => t.id === todoA.id)?.completed).toBe(false);
+      expect(state.completed).toBe(0);
+    });
+
     it('is a no-op when the id does not exist', async () => {
       vi.mocked(todosApi.update).mockRejectedValueOnce(new Error('Not found'));
       const store = makeTodosStore([todoA]);
@@ -665,6 +699,7 @@ describe('todos slice — setLimit', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            _latestToggleRequestIds: {},
             completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
@@ -700,6 +735,7 @@ describe('todos slice — setOffset', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            _latestToggleRequestIds: {},
             completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
@@ -735,6 +771,7 @@ describe('todos slice — setOrder', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            _latestToggleRequestIds: {},
             completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
@@ -770,6 +807,7 @@ describe('todos slice — setSortBy', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            _latestToggleRequestIds: {},
             completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',
@@ -807,6 +845,7 @@ describe('todos slice — updateFilters', () => {
           todos: {
             _pendingDeletes: {},
             _pendingUpdates: {},
+            _latestToggleRequestIds: {},
             completed: 0,
             currentTodo: null,
             currentTodoStatus: 'idle',

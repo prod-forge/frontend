@@ -51,6 +51,7 @@ The todos slice (`todos.slices.ts`) keeps this state:
   currentTodo: Todo | null; // the detail page
   currentTodoStatus: ...;   // idle | loading | error | not-found
   _pendingDeletes, _pendingUpdates  // rollback snapshots, keyed by requestId
+  _latestToggleRequestIds           // latest toggleTodo requestId per todo id; older toggle responses are ignored
 }
 ```
 
@@ -89,6 +90,8 @@ Todo mutations are applied to the state before the server answers. The pattern i
 
 A toggle is its own inverse, so no snapshot is needed. The payload function reads the already flipped value, so the request carries the new desired state.
 
+Two quick toggles of the same todo send two requests that can resolve in either order. `toggleTodo.pending` records the latest `requestId` for that todo in `_latestToggleRequestIds`, and `fulfilled`/`rejected` from an older toggle are ignored, so a late first response cannot overwrite the second toggle's state (and a late rejection cannot flip `completed` back).
+
 The other mutations need a snapshot:
 
 | Thunk        | pending                                          | rejected                                        |
@@ -101,7 +104,7 @@ Snapshots are keyed by `action.meta.requestId`, which is unique per dispatch. Tw
 
 The `optimistic-` prefix has a second use. A thunk that receives such an id (`toggleTodo`, `updateTodo`, `deleteTodo`) returns `rejectWithValue({ silent: true })` without calling the API: the todo does not exist on the server yet. The error middleware sees `silent` and keeps this rejection out of the toast list.
 
-Known limit: rollback restores the value that was current when the request started. If a second, later change to the same field succeeded in the meantime, a failure of the first one can restore an older value. For a single-user todo list this is acceptable; for collaborative data a version number or server-side merge would be needed.
+Known limit: rollback restores the value that was current when the request started. If a second, later change to the same field succeeded in the meantime, a failure of the first one can restore an older value. For a single-user todo list this is acceptable; for collaborative data a version number or server-side merge would be needed. The toggle case is an exception: a rejection from an older toggle is ignored once a newer toggle exists (see `_latestToggleRequestIds` above).
 
 ## Selectors and Memoization
 

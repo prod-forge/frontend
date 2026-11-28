@@ -15,6 +15,7 @@ const TEMP_ID_PREFIX = 'optimistic-';
 const initialState: TodosState = {
   _pendingDeletes: {},
   _pendingUpdates: {},
+  _latestToggleRequestIds: {},
   completed: 0,
   currentTodo: null,
   currentTodoStatus: 'idle',
@@ -273,11 +274,21 @@ const todosSlice = createSlice({
         const todo = state.items.find((t) => t.id === action.meta.arg);
 
         if (todo) {
+          state._latestToggleRequestIds[action.meta.arg] = action.meta.requestId;
           todo.completed = !todo.completed;
           state.completed += todo.completed ? 1 : -1;
         }
       })
       .addCase(toggleTodo.fulfilled, (state, action) => {
+        // A response from an older toggle of the same todo must not overwrite
+        // state set by a newer toggle: the newer toggle's optimistic flip (and
+        // its own response) already reflects the latest intent.
+        const latestToggleRequestId = state._latestToggleRequestIds[action.payload.id];
+
+        if (latestToggleRequestId !== undefined && latestToggleRequestId !== action.meta.requestId) {
+          return;
+        }
+
         const idx = state.items.findIndex((t) => t.id === action.payload.id);
 
         if (idx !== -1) {
@@ -285,6 +296,15 @@ const todosSlice = createSlice({
         }
       })
       .addCase(toggleTodo.rejected, (state, action) => {
+        // Ignore a rejection from an older toggle when a newer toggle of the
+        // same todo is in flight or has already settled: flipping back would
+        // undo the newer toggle's optimistic state.
+        const latestToggleRequestId = state._latestToggleRequestIds[action.meta.arg];
+
+        if (latestToggleRequestId !== undefined && latestToggleRequestId !== action.meta.requestId) {
+          return;
+        }
+
         const todo = state.items.find((t) => t.id === action.meta.arg);
 
         if (todo) {
