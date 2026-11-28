@@ -107,3 +107,5 @@ export const EditableTitle = ({ maxLength, onSubmit, schema, value }: Props): Re
     </form>
   );
 };
+
+EditableTitle.displayName = 'EditableTitle';
