@@ -68,8 +68,7 @@ export const Home = (): ReactNode => {
       <section className="mx-auto flex max-w-xl flex-col items-center gap-6 py-16 text-center">
         <h1 className="text-4xl font-semibold leading-tight tracking-[-0.03em] text-fg">Welcome to TodoAI</h1>
         <p className="text-lg text-fg-soft">
-          Plan your day, capture your ideas, and tick things off as you go. Sign in to view your task list, or create a
-          new account to get started.
+          Plan your day, capture your ideas, and tick things off as you go. Sign in to view your task list, or create a new account to get started.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
@@ -91,6 +90,7 @@ export const Home = (): ReactNode => {
 
   const handleConfirmDelete = (): void => {
     const id = pendingDeleteId;
+
     setPendingDeleteId(null);
 
     if (!id) {
@@ -112,11 +112,18 @@ export const Home = (): ReactNode => {
     });
   };
 
+  const handleAddTodo = (values: TodoFormValues): void => {
+    void dispatch(addTodo({ description: values.description, title: values.title })).then((result) => {
+      if (addTodo.fulfilled.match(result)) {
+        void dispatch(fetchTodos(filters));
+      }
+    });
+  };
+
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-3xl font-semibold leading-tight tracking-[-0.03em] text-fg">My Tasks</h1>
-
         <p className="mt-2 text-md text-fg-soft">
           {user?.name ? `${user.name} — ` : ''}
           {completed} of {total} completed
@@ -124,11 +131,7 @@ export const Home = (): ReactNode => {
       </div>
 
       <div className="mb-6">
-        <AddTodoForm
-          onSubmit={(values: TodoFormValues) =>
-            void dispatch(addTodo({ description: values.description, title: values.title }))
-          }
-        />
+        <AddTodoForm onSubmit={handleAddTodo} />
       </div>
 
       <div className="mb-3">
@@ -182,7 +185,6 @@ export const Home = (): ReactNode => {
               options={SORT_BY_OPTIONS}
               value={filters.sortBy}
             />
-
             <Select
               id="order"
               label="Order"
@@ -190,7 +192,6 @@ export const Home = (): ReactNode => {
               options={ORDER_OPTIONS}
               value={filters.order}
             />
-
             <Select
               id="limit"
               label="Per page"
