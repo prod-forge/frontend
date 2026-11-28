@@ -42,3 +42,5 @@ export const TodoStatusToggle = ({ completed, onToggle }: Props): ReactNode => (
     {completed ? 'Done' : 'To Do'}
   </button>
 );
+
+TodoStatusToggle.displayName = 'TodoStatusToggle';
