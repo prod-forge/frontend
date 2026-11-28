@@ -25,3 +25,5 @@ export const Layout = ({ isAuthenticated, onLogout, user }: Props): ReactNode =>
     </div>
   );
 };
+
+Layout.displayName = 'Layout';

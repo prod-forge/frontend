@@ -72,3 +72,5 @@ export const AddTodoForm = ({ onSubmit }: Props): ReactNode => {
     </form>
   );
 };
+
+AddTodoForm.displayName = 'AddTodoForm';

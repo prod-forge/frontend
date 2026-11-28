@@ -53,3 +53,5 @@ export const Select = <T extends string>({
     </div>
   );
 };
+
+  Select.displayName = 'Select';

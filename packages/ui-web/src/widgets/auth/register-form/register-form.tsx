@@ -88,3 +88,5 @@ export const RegisterForm = ({ onSubmit }: Props): ReactNode => {
     </form>
   );
 };
+
+RegisterForm.displayName = 'RegisterForm';

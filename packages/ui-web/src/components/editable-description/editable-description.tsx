@@ -116,3 +116,5 @@ export const EditableDescription = ({ maxLength, onSubmit, schema, value }: Prop
     </form>
   );
 };
+
+EditableDescription.displayName = 'EditableDescription';

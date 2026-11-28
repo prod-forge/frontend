@@ -60,3 +60,5 @@ export const Accordion = ({ children, defaultOpen = false, title }: Props): Reac
     </div>
   );
 };
+
+Accordion.displayName = 'Accordion';
