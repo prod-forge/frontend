@@ -66,3 +66,5 @@ export const LoginForm = ({ onSubmit }: Props): ReactNode => {
     </form>
   );
 };
+
+LoginForm.displayName = 'LoginForm';
