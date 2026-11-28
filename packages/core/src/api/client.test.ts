@@ -8,8 +8,9 @@ import { configureCore, getCoreConfig } from '../config/core-config';
 import { NETWORK_ERROR_MESSAGES } from '../errors/network-error';
 import { apiRequest } from './client';
 
-const makeFetchMock = (status: number, body: unknown = null): ReturnType<typeof vi.fn> =>
+const makeFetchMock = (status: number, body: unknown = null, headers?: Headers): ReturnType<typeof vi.fn> =>
   vi.fn().mockResolvedValue({
+    headers: headers ?? new Headers(),
     json: vi.fn().mockResolvedValue(body),
     ok: status >= 200 && status < 300,
     status,
@@ -111,6 +112,78 @@ describe('apiRequest', () => {
       });
     });
 
+    it('includes the Retry-After wait in seconds on the BackendError for 429 responses', async () => {
+      vi.stubGlobal(
+        'fetch',
+        makeFetchMock(
+          429,
+          { code: 'TOO_MANY_REQUESTS', message: 'Too Many Requests', status: 429 },
+          new Headers({ 'Retry-After': '120' }),
+        ),
+      );
+
+      await expect(apiRequest('todos')).rejects.toMatchObject({
+        message: 'Too many requests. Please try again in 120 seconds.',
+        name: 'BackendError',
+        retryAfterSeconds: 120,
+        status: 429,
+      });
+    });
+
+    it('parses an HTTP-date Retry-After header into seconds on the BackendError for 429 responses', async () => {
+      const retryAfter = new Date(Date.now() + 60_000).toUTCString();
+      vi.stubGlobal(
+        'fetch',
+        makeFetchMock(
+          429,
+          { code: 'TOO_MANY_REQUESTS', message: 'Too Many Requests', status: 429 },
+          new Headers({ 'Retry-After': retryAfter }),
+        ),
+      );
+
+      await expect(apiRequest('todos')).rejects.toMatchObject({
+        message: 'Too many requests. Please try again in 60 seconds.',
+        name: 'BackendError',
+        retryAfterSeconds: 60,
+        status: 429,
+      });
+    });
+
+    it('leaves retryAfterSeconds undefined on the BackendError when the 429 response has no Retry-After header', async () => {
+      vi.stubGlobal(
+        'fetch',
+        makeFetchMock(429, { code: 'TOO_MANY_REQUESTS', message: 'Too Many Requests', status: 429 }),
+      );
+
+      let caught: unknown;
+      try {
+        await apiRequest('todos');
+      } catch (error) {
+        caught = error;
+      }
+
+      expect(caught).toMatchObject({
+        message: 'Too many requests. Please wait a moment and try again.',
+        name: 'BackendError',
+        status: 429,
+      });
+      expect((caught as { retryAfterSeconds?: number }).retryAfterSeconds).toBeUndefined();
+    });
+
+    it('includes the Retry-After wait in seconds on the ApiError for 429 responses without a backend error body', async () => {
+      vi.stubGlobal(
+        'fetch',
+        makeFetchMock(429, { error: 'Too Many Requests' }, new Headers({ 'Retry-After': '30' })),
+      );
+
+      await expect(apiRequest('todos')).rejects.toMatchObject({
+        message: 'HTTP 429',
+        name: 'ApiError',
+        retryAfterSeconds: 30,
+        status: 429,
+      });
+    });
+
     it('throws NetworkError when fetch rejects due to no connection', async () => {
       vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
 
@@ -127,6 +200,7 @@ describe('apiRequest', () => {
       vi.stubGlobal(
         'fetch',
         vi.fn().mockResolvedValue({
+          headers: new Headers(),
           json: vi.fn().mockRejectedValue(new SyntaxError('Unexpected token')),
           ok: false,
           status: 502,
