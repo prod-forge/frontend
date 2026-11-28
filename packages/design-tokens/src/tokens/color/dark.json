@@ -13,13 +13,14 @@
       "text-muted": { "$value": "#55556e", "$type": "color" },
       "accent": { "$value": "#818cf8", "$type": "color" },
       "accent-hover": { "$value": "#6366f1", "$type": "color" },
-      "accent-foreground": { "$value": "#fff", "$type": "color" },
+      "accent-foreground": { "$value": "#1e1b4b", "$type": "color" },
       "accent-subtle": { "$value": "#1e1b4b", "$type": "color" },
       "success": { "$value": "#4ade80", "$type": "color" },
       "success-subtle": { "$value": "#052e16", "$type": "color" },
       "warning": { "$value": "#fbbf24", "$type": "color" },
       "warning-subtle": { "$value": "#1c1400", "$type": "color" },
       "danger": { "$value": "#f87171", "$type": "color" },
+      "danger-foreground": { "$value": "#450a0a", "$type": "color" },
       "danger-subtle": { "$value": "#2d0a0a", "$type": "color" }
     }
   }
