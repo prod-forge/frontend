@@ -160,10 +160,17 @@ describe('todosApi.getOne', () => {
 
       expect(result).toEqual(todo);
     });
+          it('returns a todo whose description is null', async () => {
+            const todoWithNullDescription: Todo = { ...todo, description: null };
+            vi.mocked(apiRequest).mockResolvedValueOnce({ data: todoWithNullDescription });
+            const result = await todosApi.getOne(todo.id);
+            expect(result).toEqual(todoWithNullDescription);
+          });
 
     it('sends a GET request to the correct todo endpoint', async () => {
       vi.mocked(apiRequest).mockResolvedValueOnce({ data: todo });
 
+      
       await todosApi.getOne(todo.id);
 
       expect(apiRequest).toHaveBeenCalledWith(`todos/${todo.id}`);
