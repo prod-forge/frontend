@@ -74,3 +74,5 @@ export const TodoItem = ({ onDelete, onToggle, todo }: Props): ReactNode => {
     </article>
   );
 };
+
+TodoItem.displayName = 'TodoItem';
