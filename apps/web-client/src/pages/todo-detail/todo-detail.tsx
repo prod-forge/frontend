@@ -145,7 +145,7 @@ export const TodoDetail = (): ReactNode => {
             maxLength={DESCRIPTION_MAX_LENGTH * 2}
             onSubmit={(description) => void dispatch(updateTodo({ description, id: todo.id }))}
             schema={descriptionSchema}
-            value={todo.description}
+            value={todo.description ?? ''}
           />
         </div>
       </div>

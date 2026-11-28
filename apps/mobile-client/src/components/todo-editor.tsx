@@ -31,14 +31,14 @@ const createStyles = createThemedStyles(({ space }) => ({
 // Remount with `key={todo.id}` to reset the draft when another todo is opened.
 export const TodoEditor = ({ onDelete, onSave, todo }: TodoEditorProps): ReactNode => {
   const styles = useThemedStyles(createStyles);
-  const [values, setValues] = useState<TodoFields>({ description: todo.description, title: todo.title });
+  const [values, setValues] = useState<TodoFields>({ description: todo.description ?? '', title: todo.title });
   const [errors, setErrors] = useState<FieldErrors<TodoFields>>({});
 
   // Only edited fields are sent, the same partial PATCH the web inline editors use.
   const save = (): void => {
     const result = parseTodoPatch({
       ...(values.title === todo.title ? {} : { title: values.title }),
-      ...(values.description === todo.description ? {} : { description: values.description }),
+      ...(values.description === (todo.description ?? '') ? {} : { description: values.description }),
     });
 
     if (!result.success) {
