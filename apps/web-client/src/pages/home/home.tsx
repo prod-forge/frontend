@@ -68,7 +68,8 @@ export const Home = (): ReactNode => {
       <section className="mx-auto flex max-w-xl flex-col items-center gap-6 py-16 text-center">
         <h1 className="text-4xl font-semibold leading-tight tracking-[-0.03em] text-fg">Welcome to TodoAI</h1>
         <p className="text-lg text-fg-soft">
-          Plan your day, capture your ideas, and tick things off as you go. Sign in to view your task list, or create a new account to get started.
+          Plan your day, capture your ideas, and tick things off as you go. Sign in to view your task list, or create a
+          new account to get started.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
@@ -90,7 +91,6 @@ export const Home = (): ReactNode => {
 
   const handleConfirmDelete = (): void => {
     const id = pendingDeleteId;
-
     setPendingDeleteId(null);
 
     if (!id) {
@@ -185,6 +185,7 @@ export const Home = (): ReactNode => {
               options={SORT_BY_OPTIONS}
               value={filters.sortBy}
             />
+
             <Select
               id="order"
               label="Order"
@@ -192,6 +193,7 @@ export const Home = (): ReactNode => {
               options={ORDER_OPTIONS}
               value={filters.order}
             />
+
             <Select
               id="limit"
               label="Per page"
