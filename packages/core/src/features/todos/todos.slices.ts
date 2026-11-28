@@ -18,6 +18,7 @@ const initialState: TodosState = {
   completed: 0,
   currentTodo: null,
   currentTodoStatus: 'idle',
+  error: null,
   filters: {
     limit: 10,
     offset: 0,
@@ -162,16 +163,19 @@ const todosSlice = createSlice({
       // fetchTodos
       .addCase(fetchTodos.pending, (state) => {
         state.status = 'loading';
+        state.error = null;
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
         state.status = 'idle';
+        state.error = null;
         state.items = action.payload.data;
         state.nextOffset = action.meta.arg.offset + action.payload.data.length;
         state.total = action.payload.meta.total;
         state.completed = action.payload.meta.completed;
       })
-      .addCase(fetchTodos.rejected, (state) => {
+      .addCase(fetchTodos.rejected, (state, action) => {
         state.status = 'error';
+        state.error = action.error;
       })
 
       // fetchMoreTodos

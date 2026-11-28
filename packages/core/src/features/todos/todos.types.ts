@@ -1,3 +1,4 @@
+import type { SerializedApiError } from '../../errors/serialize-api-error';
 import type { Todo } from '../../interfaces/todos';
 
 export type { Todo };
@@ -25,6 +26,8 @@ export type TodosState = {
   completed: number;
   currentTodo: null | Todo;
   currentTodoStatus: CurrentTodoStatus;
+  /** Last fetchTodos error, if the list failed to load; the UI shows its message and Retry-After wait. */
+  error?: null | SerializedApiError;
   filters: TodoFilters;
   items: Todo[];
   /** Server position after the last loaded page; optimistic inserts do not move it. */

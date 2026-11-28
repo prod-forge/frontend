@@ -9,6 +9,10 @@ describe('serializeApiError', () => {
       expect(serializeApiError(new Error('Boom'))).not.toHaveProperty('status');
     });
 
+    it('omits retryAfterSeconds for an error without one', () => {
+      expect(serializeApiError(new Error('Boom'))).not.toHaveProperty('retryAfterSeconds');
+    });
+
     it('omits status when it is not a number', () => {
       const error = Object.assign(new Error('Boom'), { status: '500' });
 
@@ -35,6 +39,25 @@ describe('serializeApiError', () => {
         message: 'The requested item could not be found.',
         name: 'BackendError',
         status: 404,
+      });
+    });
+
+    it('keeps retryAfterSeconds of a BackendError', () => {
+      const error = new BackendError({
+        code: 'TOO_MANY_REQUESTS',
+        details: {},
+        message: 'Too Many Requests',
+        retryAfterSeconds: 120,
+        status: 429,
+        traceId: 'trace',
+      });
+
+      expect(serializeApiError(error)).toMatchObject({
+        code: 'TOO_MANY_REQUESTS',
+        message: 'Too many requests. Please try again in 120 seconds.',
+        name: 'BackendError',
+        retryAfterSeconds: 120,
+        status: 429,
       });
     });
   });

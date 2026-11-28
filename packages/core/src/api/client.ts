@@ -7,10 +7,31 @@ class ApiError extends Error {
   constructor(
     message: string,
     public readonly status: number,
+    public readonly retryAfterSeconds?: number,
   ) {
     super(message);
     this.name = 'ApiError';
   }
+}
+
+// Parses a Retry-After header value (RFC 9110): either a number of seconds or an HTTP date.
+// Returns undefined when the header is missing or cannot be parsed.
+function parseRetryAfter(value: string | null): number | undefined {
+  if (value === null) {
+    return undefined;
+  }
+
+  const seconds = Number(value);
+  if (Number.isInteger(seconds) && seconds >= 0) {
+    return seconds;
+  }
+
+  const date = Date.parse(value);
+  if (!Number.isNaN(date)) {
+    return Math.max(0, Math.ceil((date - Date.now()) / 1000));
+  }
+
+  return undefined;
 }
 
 export async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
@@ -34,6 +55,7 @@ export async function apiRequest<T>(path: string, options?: RequestInit): Promis
 
   if (!response.ok) {
     const body: unknown = await response.json().catch(() => null);
+    const retryAfterSeconds = parseRetryAfter(response.headers.get('retry-after'));
 
     if (isBackendErrorResponse(body)) {
       const backendTraceId = body.traceId ?? response.headers.get('x-trace-id') ?? undefined;
@@ -47,11 +69,11 @@ export async function apiRequest<T>(path: string, options?: RequestInit): Promis
         },
         'api',
       );
-      throw new BackendError({ ...body, traceId: backendTraceId });
+      throw new BackendError({ ...body, retryAfterSeconds, traceId: backendTraceId });
     }
 
     logger.warn({ method, path, status: String(response.status) }, 'api');
-    throw new ApiError(`HTTP ${response.status}`, response.status);
+    throw new ApiError(`HTTP ${response.status}`, response.status, retryAfterSeconds);
   }
 
   if (response.status === 204) {

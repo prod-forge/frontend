@@ -15,6 +15,7 @@ import {
   selectFilters,
   selectIsAuthenticated,
   selectStatus,
+  selectTodosError,
   selectTotalTodos,
   selectVisibleTodos,
   setLimit,
@@ -55,13 +56,37 @@ export const Home = (): ReactNode => {
   const total = useAppSelector(selectTotalTodos);
   const completed = useAppSelector(selectCompletedTodos);
   const status = useAppSelector(selectStatus);
+  const todosError = useAppSelector(selectTodosError);
   const [pendingDeleteId, setPendingDeleteId] = useState<null | string>(null);
+  const [retryAvailableAt, setRetryAvailableAt] = useState<null | number>(null);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (isAuthenticated) {
       void dispatch(fetchTodos(filters));
     }
   }, [dispatch, filters, isAuthenticated]);
+
+  useEffect(() => {
+    const retryAfterSeconds = todosError?.retryAfterSeconds;
+
+    if (retryAfterSeconds === undefined) {
+      setRetryAvailableAt(null);
+      return;
+    }
+
+    setRetryAvailableAt(Date.now() + retryAfterSeconds * 1000);
+  }, [todosError]);
+
+  useEffect(() => {
+    if (retryAvailableAt === null) {
+      return;
+    }
+
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+
+    return () => clearInterval(timer);
+  }, [retryAvailableAt]);
 
   if (!isAuthenticated) {
     return (
@@ -112,6 +137,14 @@ export const Home = (): ReactNode => {
     });
   };
 
+  const errorMessage = todosError?.message ?? 'Failed to load tasks. Please refresh the page.';
+  const remainingSeconds =
+    retryAvailableAt === null ? 0 : Math.max(0, Math.ceil((retryAvailableAt - now) / 1000));
+  const isRetryDisabled = remainingSeconds > 0;
+  const retryErrorMessage = isRetryDisabled
+    ? `${errorMessage} Retry available in ${remainingSeconds} ${remainingSeconds === 1 ? 'second' : 'seconds'}.`
+    : errorMessage;
+
   return (
     <div>
       <div className="mb-6">
@@ -147,13 +180,14 @@ export const Home = (): ReactNode => {
         <ErrorBlock
           action={
             <RetryButton
+              disabled={isRetryDisabled}
               onClick={() => {
                 dispatch(clearErrors());
                 void dispatch(fetchTodos(filters));
               }}
             />
           }
-          message="Failed to load tasks. Please refresh the page."
+          message={retryErrorMessage}
         />
       ) : todos.length === 0 ? (
         <EmptyState

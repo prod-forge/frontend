@@ -19,6 +19,7 @@ type BackendErrorResponse = {
   readonly code: string;
   readonly details?: Record<string, unknown>;
   readonly message: string;
+  readonly retryAfterSeconds?: number;
   readonly status: number;
   readonly traceId?: string;
 };
@@ -42,15 +43,24 @@ const ERROR_MESSAGES: Record<BackendErrorCode, string> = {
 
 const FALLBACK_MESSAGE = 'Something went wrong. Please try again later.';
 
+const tooManyRequestsMessage = (retryAfterSeconds: number): string =>
+  `Too many requests. Please try again in ${retryAfterSeconds} second${retryAfterSeconds === 1 ? '' : 's'}.`;
+
 export class BackendError extends Error {
   readonly code: string;
+  readonly retryAfterSeconds: number | undefined;
   readonly status: number;
   readonly traceId: string | undefined;
 
   constructor(response: BackendErrorResponse) {
-    super((ERROR_MESSAGES as Partial<Record<string, string>>)[response.code] ?? FALLBACK_MESSAGE);
+    super(
+      response.code === 'TOO_MANY_REQUESTS' && response.retryAfterSeconds !== undefined
+        ? tooManyRequestsMessage(response.retryAfterSeconds)
+        : ((ERROR_MESSAGES as Partial<Record<string, string>>)[response.code] ?? FALLBACK_MESSAGE),
+    );
     this.name = 'BackendError';
     this.code = response.code;
+    this.retryAfterSeconds = response.retryAfterSeconds;
     this.status = response.status;
     this.traceId = response.traceId;
   }

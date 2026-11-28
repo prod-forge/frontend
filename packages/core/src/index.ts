@@ -49,6 +49,7 @@ export {
   selectFilters,
   selectItems,
   selectStatus,
+  selectTodosError,
   selectTotalTodos,
   selectVisibleTodos,
 } from './features/todos/todos.selectors';
