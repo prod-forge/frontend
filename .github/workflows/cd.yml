@@ -1,9 +1,11 @@
 name: Release Frontend
 
+
 on:
   push:
     tags:
       - 'v*'
+
 
 env:
   NODE_VERSION: 24.21.0
@@ -32,17 +34,47 @@ jobs:
           CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
           CLOUDFRONT_URL: ${{ vars.CLOUDFRONT_URL }}
         run: |
+          fail() {
+            echo "Invalid deploy variable $1: expected $2"
+            exit 1
+          }
           MISSING=""
           for NAME in AWS_DEPLOY_ROLE_ARN S3_WEB_CLIENT_BUCKET S3_ASSETS_BUCKET CLOUDFRONT_DISTRIBUTION_ID CLOUDFRONT_URL; do
-            if [ -z "${!NAME}" ]; then
+            if [ -z "${!NAME:-}" ]; then
               MISSING="$MISSING $NAME"
             fi
           done
-
           if [ -n "$MISSING" ]; then
             echo "Missing GitHub variables (set them from terraform output):$MISSING"
             exit 1
           fi
+          # Shape checks. Each failing check names the variable and the expected format.
+          if ! printf '%s' "$AWS_DEPLOY_ROLE_ARN" | grep -Eq '^arn:aws:iam::[0-9]{12}:role/.+$'; then
+            fail AWS_DEPLOY_ROLE_ARN 'arn:aws:iam::<12 digits>:role/<role-name>'
+          fi
+          if ! printf '%s' "$CLOUDFRONT_DISTRIBUTION_ID" | grep -Eq '^E[A-Z0-9]+$'; then
+            fail CLOUDFRONT_DISTRIBUTION_ID 'a CloudFront distribution id matching ^E[A-Z0-9]+$, e.g. E123ABC456DEF'
+          fi
+          if ! printf '%s' "$CLOUDFRONT_URL" | grep -Eq '^https://.+'; then
+            fail CLOUDFRONT_URL 'an https:// URL, e.g. https://d111111abcdef8.cloudfront.net'
+          fi
+          check_s3_bucket() {
+            NAME="$1"
+            VALUE="$2"
+            if ! printf '%s' "$VALUE" | grep -Eq '^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$'; then
+              fail "$NAME" 'a valid S3 bucket name: 3-63 characters, lowercase letters, digits, dots and hyphens, starting and ending with a letter or digit'
+            fi
+            case "$VALUE" in
+              *..*|*.-*|*-.*)
+                fail "$NAME" 'a valid S3 bucket name: no consecutive dots and no dot next to a hyphen'
+                ;;
+            esac
+            if printf '%s' "$VALUE" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
+              fail "$NAME" 'a valid S3 bucket name: must not be formatted as an IP address'
+            fi
+          }
+          check_s3_bucket S3_WEB_CLIENT_BUCKET "$S3_WEB_CLIENT_BUCKET"
+          check_s3_bucket S3_ASSETS_BUCKET "$S3_ASSETS_BUCKET"
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -64,52 +96,19 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Deploy assets
+      - name: Sync web client to S3
         run: |
-          aws s3 sync ./assets \
-            s3://${{ vars.S3_ASSETS_BUCKET }}/assets/ \
-            --cache-control "max-age=31536000,immutable"
+          aws s3 sync apps/web-client/dist "s3://${{ vars.S3_WEB_CLIENT_BUCKET }}" --delete
 
-      - name: Deploy versioned archive
+      - name: Sync assets to S3
         run: |
-          aws s3 sync apps/web-client/dist \
-            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/${{ github.ref_name }}/ \
-            --exclude "*.map" \
-            --delete
-
-      - name: Deploy to root (active version)
-        run: |
-          aws s3 sync apps/web-client/dist \
-            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/ \
-            --exclude "releases/*" \
-            --exclude "*.map" \
-            --delete \
-            --cache-control "max-age=31536000,immutable"
-          aws s3 cp apps/web-client/dist/index.html \
-            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/index.html \
-            --cache-control "no-cache, no-store, must-revalidate"
+          aws s3 sync packages/assets/dist "s3://${{ vars.S3_ASSETS_BUCKET }}" --delete
 
       - name: Invalidate CloudFront
-        env:
-          DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
         run: |
-          aws cloudfront create-invalidation \
-            --distribution-id "$DISTRIBUTION_ID" \
-            --paths "/*"
-
-      - name: Cleanup old versions
-        env:
-          BUCKET: ${{ vars.S3_WEB_CLIENT_BUCKET }}
-        run: |
-          VERSIONS=$(aws s3 ls "s3://${BUCKET}/releases/" | awk '/PRE/ {print $2}' | sort -V)
-          COUNT=$(echo "$VERSIONS" | grep -c . || true)
-          if [ "$COUNT" -gt "$KEEP" ]; then
-            echo "$VERSIONS" | head -n $((COUNT - KEEP)) | while read -r v; do
-              aws s3 rm "s3://${BUCKET}/releases/${v}" --recursive
-            done
-          fi
+          aws cloudfront create-invalidation --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" --paths "/*"
