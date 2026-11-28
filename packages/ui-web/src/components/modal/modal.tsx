@@ -113,3 +113,5 @@ export const Modal = ({ children, isOpen, onClose, title }: Props): ReactNode =>
     </div>
   );
 };
+
+Modal.displayName = 'Modal';
