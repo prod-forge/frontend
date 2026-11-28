@@ -37,7 +37,7 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
         </div>
         TodoAI
       </Link>
-      
+
       <nav aria-label="User" className="flex items-center gap-3">
         {isAuthenticated && user ? (
           <>
@@ -64,7 +64,7 @@ export const Header = ({ isAuthenticated = false, onLogout, onToggle, theme, use
             </Link>
           </>
         )}
-        
+
         <button
           aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           className="flex size-[38px] items-center justify-center rounded-full border border-line bg-card text-fg-soft transition duration-fast hover:border-brand hover:bg-brand-soft hover:text-brand"
