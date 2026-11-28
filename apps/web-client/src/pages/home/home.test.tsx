@@ -71,6 +71,7 @@ const renderHome = async (
 };
 
 const firstPage = applyTodosQuery(todos, { order: 'asc', sortBy: 'title' }).data;
+
 // The summary counts completed todos on every page, not only the first one
 const completedCount = todos.filter((t) => t.completed).length;
 const totalCount = todos.length;
@@ -175,8 +176,8 @@ describe('<Home /> page — authenticated', () => {
       await renderHome();
 
       await user.type(screen.getByRole('searchbox'), 'definitely-no-match-zzz');
-      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
 
+      await waitFor(() => expect(screen.queryAllByRole('article')).toHaveLength(0));
       expect(screen.queryByText(/no tasks yet/i)).not.toBeInTheDocument();
     });
   });
@@ -204,6 +205,32 @@ describe('<Home /> page — authenticated', () => {
 
       expect(cards).toHaveLength(1);
       expect(within(cards[0]).getByRole('link', { name: 'Storybook integration' })).toBeInTheDocument();
+    });
+
+    it('debounces the search so several keystrokes inside the delay send one request', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      await renderHome();
+      vi.useFakeTimers();
+
+      const getAllCallsBefore = vi.mocked(todosApi.getAll).mock.calls.length;
+
+      await user.type(screen.getByRole('searchbox'), 'groceries');
+
+      expect(vi.mocked(todosApi.getAll).mock.calls.length).toBe(getAllCallsBefore);
+      expect(screen.getByRole('searchbox')).toHaveValue('groceries');
+
+      await vi.advanceTimersByTimeAsync(300);
+
+      expect(vi.mocked(todosApi.getAll).mock.calls.length).toBe(getAllCallsBefore + 1);
+      expect(screen.getAllByRole('article')).toHaveLength(1);
+      expect(screen.getByRole('link', { name: 'Buy groceries' })).toBeInTheDocument();
+
+      await user.clear(screen.getByRole('searchbox'));
+      await vi.advanceTimersByTimeAsync(300);
+
+      expect(vi.mocked(todosApi.getAll).mock.calls.length).toBe(getAllCallsBefore + 2);
+      expect(screen.getAllByRole('article')).toHaveLength(10);
+      vi.useRealTimers();
     });
 
     it('does not match a term that only appears in a todo description', async () => {
@@ -513,8 +540,8 @@ describe('<Home /> page — delete from the list', () => {
       const user = userEvent.setup();
       vi.mocked(todosApi.delete).mockRejectedValue(new Error('Network error'));
       await renderHome();
-      const getAllCallsBefore = vi.mocked(todosApi.getAll).mock.calls.length;
 
+      const getAllCallsBefore = vi.mocked(todosApi.getAll).mock.calls.length;
       const dialog = await openDeleteConfirmation(user);
       await user.click(within(dialog).getByRole('button', { name: /^delete$/i }));
 
@@ -554,6 +581,7 @@ describe('<Home /> page — delete from the list', () => {
 
       await user.click(screen.getByRole('button', { name: 'Page 2' }));
       await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(1));
+
       const dialog = await openDeleteConfirmation(user);
       await user.click(within(dialog).getByRole('button', { name: /^delete$/i }));
 
