@@ -102,6 +102,65 @@ describe('todos slice — fetchTodos', () => {
 
       expect(store.getState().todos.status).toBe('error');
     });
+
+    it('keeps the latest request when two resolve in reverse order', async () => {
+      let resolveFirst: (value: TodosResponse) => void = () => undefined;
+      vi.mocked(todosApi.getAll)
+        .mockReturnValueOnce(
+          new Promise((resolve) => {
+            resolveFirst = resolve;
+          }),
+        )
+        .mockResolvedValueOnce({ data: [todoB], meta: { completed: 1, limit: 10, offset: 0, total: 1 } });
+      const store = makeTodosStore();
+
+      const first = store.dispatch(fetchTodos({ ...defaultFilters, query: 'a' }));
+      await store.dispatch(fetchTodos({ ...defaultFilters, query: 'ab' }));
+      resolveFirst({ data: [todoA, todoB], meta: { completed: 1, limit: 10, offset: 0, total: 2 } });
+      await first;
+
+      const state = store.getState().todos;
+      expect(state.items).toEqual([todoB]);
+      expect(state.total).toBe(1);
+      expect(state.status).toBe('idle');
+    });
+
+    it('ignores an error from an older request', async () => {
+      let rejectFirst: (reason: Error) => void = () => undefined;
+      vi.mocked(todosApi.getAll)
+        .mockReturnValueOnce(
+          new Promise((_resolve, reject) => {
+            rejectFirst = reject;
+          }),
+        )
+        .mockResolvedValueOnce(response);
+      const store = makeTodosStore();
+
+      const first = store.dispatch(fetchTodos(defaultFilters));
+      await store.dispatch(fetchTodos(defaultFilters));
+      rejectFirst(new Error('Network error'));
+      await first;
+
+      expect(store.getState().todos.status).toBe('idle');
+    });
+
+    it('ignores a response to a request started before logout', async () => {
+      let resolveFirst: (value: TodosResponse) => void = () => undefined;
+      vi.mocked(todosApi.getAll).mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveFirst = resolve;
+        }),
+      );
+      const store = makeTodosStore();
+
+      const pending = store.dispatch(fetchTodos(defaultFilters));
+      store.dispatch(logout());
+      resolveFirst(response);
+      await pending;
+
+      expect(store.getState().todos.items).toEqual([]);
+      expect(store.getState().todos.total).toBe(0);
+    });
   });
 
   describe('positive cases', () => {

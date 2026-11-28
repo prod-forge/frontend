@@ -50,6 +50,7 @@ The todos slice (`todos.slices.ts`) keeps this state:
   status: 'idle' | 'loading' | 'error';
   currentTodo: Todo | null; // the detail page
   currentTodoStatus: ...;   // idle | loading | error | not-found
+  _fetchTodosRequestId              // latest fetchTodos; older responses are dropped
   _pendingDeletes, _pendingUpdates  // rollback snapshots, keyed by requestId
 }
 ```

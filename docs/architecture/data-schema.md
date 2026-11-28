@@ -117,7 +117,10 @@ type TodosState = {
 
   filters: TodoFilters; // Active filter/sort/pagination state.
 
-  // Internal optimistic update bookkeeping — not rendered directly.
+  // Internal bookkeeping — not rendered directly.
+  _fetchTodosRequestId?: string;
+  // requestId of the latest fetchTodos; fulfilled/rejected of any other request are ignored.
+
   _pendingDeletes: Partial<Record<string, { index: number; item: Todo }>>;
   // Key: requestId of the in-flight deleteTodo. Value: snapshot for rollback (item + original index).
 
@@ -129,6 +132,8 @@ type TodosState = {
 **`_pendingDeletes`** — when `deleteTodo` is dispatched, the item is removed from `items` immediately and stored here. On rejection, the item is re-inserted at its original index.
 
 **`_pendingUpdates`** — when `updateTodo` is dispatched, the original title and description are stored here. On rejection, they are restored. `toggleTodo` keeps no snapshot: a rejection flips `completed` back.
+
+**`_fetchTodosRequestId`** — set on `fetchTodos.pending`. A response to an older request (the search field fires one per keystroke) or to a request started before `logout` does not match it and leaves the state alone.
 
 Fields prefixed with `_` are internal and must not be selected directly by UI components — use selectors.
 
