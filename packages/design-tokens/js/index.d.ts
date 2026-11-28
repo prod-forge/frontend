@@ -71,6 +71,7 @@ export declare const color: {
     warning: string;
     warningSubtle: string;
     danger: string;
+    dangerForeground: string;
     dangerSubtle: string;
   };
   dark: {
@@ -93,6 +94,7 @@ export declare const color: {
     warning: string;
     warningSubtle: string;
     danger: string;
+    dangerForeground: string;
     dangerSubtle: string;
   };
 };
