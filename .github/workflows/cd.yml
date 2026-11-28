@@ -1,11 +1,9 @@
 name: Release Frontend
 
-
 on:
   push:
     tags:
       - 'v*'
-
 
 env:
   NODE_VERSION: 24.21.0
@@ -96,19 +94,52 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Sync web client to S3
+      - name: Deploy assets
         run: |
-          aws s3 sync apps/web-client/dist "s3://${{ vars.S3_WEB_CLIENT_BUCKET }}" --delete
+          aws s3 sync ./assets \
+            s3://${{ vars.S3_ASSETS_BUCKET }}/assets/ \
+            --cache-control "max-age=31536000,immutable"
 
-      - name: Sync assets to S3
+      - name: Deploy versioned archive
         run: |
-          aws s3 sync packages/assets/dist "s3://${{ vars.S3_ASSETS_BUCKET }}" --delete
+          aws s3 sync apps/web-client/dist \
+            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/releases/${{ github.ref_name }}/ \
+            --exclude "*.map" \
+            --delete
+
+      - name: Deploy to root (active version)
+        run: |
+          aws s3 sync apps/web-client/dist \
+            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/ \
+            --exclude "releases/*" \
+            --exclude "*.map" \
+            --delete \
+            --cache-control "max-age=31536000,immutable"
+          aws s3 cp apps/web-client/dist/index.html \
+            s3://${{ vars.S3_WEB_CLIENT_BUCKET }}/index.html \
+            --cache-control "no-cache, no-store, must-revalidate"
 
       - name: Invalidate CloudFront
+        env:
+          DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
         run: |
-          aws cloudfront create-invalidation --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" --paths "/*"
+          aws cloudfront create-invalidation \
+            --distribution-id "$DISTRIBUTION_ID" \
+            --paths "/*"
+
+      - name: Cleanup old versions
+        env:
+          BUCKET: ${{ vars.S3_WEB_CLIENT_BUCKET }}
+        run: |
+          VERSIONS=$(aws s3 ls "s3://${BUCKET}/releases/" | awk '/PRE/ {print $2}' | sort -V)
+          COUNT=$(echo "$VERSIONS" | grep -c . || true)
+          if [ "$COUNT" -gt "$KEEP" ]; then
+            echo "$VERSIONS" | head -n $((COUNT - KEEP)) | while read -r v; do
+              aws s3 rm "s3://${BUCKET}/releases/${v}" --recursive
+            done
+          fi
